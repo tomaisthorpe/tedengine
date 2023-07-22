@@ -6,13 +6,21 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: npm ci
+
+      - run: npx nx run-many -t lint
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
       - run: npm ci
 
       - run: npx nx build ted
