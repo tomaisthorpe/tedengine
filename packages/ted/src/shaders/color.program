@@ -1,0 +1,53 @@
+#version 300 es
+
+in vec4 aVertexPosition;
+in vec4 aVertexNormal;
+in float aVertexColor;
+
+uniform mat4 uMMatrix;
+
+out highp vec4 vColor;
+out highp vec4 vNormal;
+out highp vec4 vPosition;
+
+uniform sampler2D uPalette;
+uniform float uPaletteSize;
+
+uniform Settings {
+  mat4 uVPMatrix;
+};
+
+void main() {
+  mat4 mvp = uVPMatrix * uMMatrix;
+  gl_Position = mvp * aVertexPosition;
+
+  float offset = 1.0 / uPaletteSize / 2.0;
+  vColor = texture(uPalette, vec2((aVertexColor / uPaletteSize) + offset, 0));
+
+  vNormal = aVertexNormal;
+  vPosition = aVertexPosition;
+}
+----
+#version 300 es
+precision mediump float;
+
+uniform highp mat4 uMMatrix;
+
+in highp vec4 vPosition;
+in highp vec4 vColor;
+in highp vec4 vNormal;
+
+out vec4 outputColor;
+
+void main() {
+  vec4 lightPosition = vec4(50, 0, 0, 0);
+
+  mat4 normalMatrix = transpose(inverse(uMMatrix));
+  vec4 normal = normalize(normalMatrix * vNormal);
+  vec4 fragPosition = vec4(uMMatrix * vPosition); 
+  vec4 surfaceToLight = (lightPosition - fragPosition);
+  vec4 color = vColor;
+  
+  float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal)) * 0.6 + 0.4;
+  outputColor = vec4(color.rgb * brightness, 1.0);
+}

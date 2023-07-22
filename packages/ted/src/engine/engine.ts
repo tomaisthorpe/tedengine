@@ -1,0 +1,331 @@
+import TAudio from '../audio/audio';
+import { getDefaultCameraView } from '../cameras/camera-view';
+import TEventQueue from '../core/event-queue';
+import type { TEvent } from '../core/event-queue';
+import TGameStateManager from '../core/game-state-manager';
+import { TMessageTypesCore } from '../core/messages';
+import TResourceManager from '../core/resource-manager';
+import TDebugPanel from '../debug/debug-panel';
+import type { TConfig } from '../engine/config';
+import { TFredMessageTypes } from '../fred/messages';
+import type { TMouseMoveEvent } from '../input/events';
+import { TKeyUpEvent } from '../input/events';
+import { TEventTypesInput } from '../input/events';
+import TKeyboard from '../input/keyboard';
+import TMouse from '../input/mouse';
+import { TJobContextTypes } from '../jobs/context-types';
+import TJobManager from '../jobs/job-manager';
+import type {
+  TJobsMessageRelay,
+  TJobsMessageRelayResult,
+} from '../jobs/messages';
+import { TMessageTypesJobs } from '../jobs/messages';
+import type { TFrameParams } from '../renderer/frame-params';
+import TShader from '../shaders/shader';
+import type { TGameContextData, TEngineContextData } from '../ui/context';
+import type {
+  TEngineMessageBootstrap,
+  TEngineMessageFrameReady,
+  TEngineMessageUpdateEngineContext,
+  TEngineMessageUpdateGameContext,
+} from './messages';
+import { TMessageTypesEngine } from './messages';
+
+const TIME_PER_ENGINE_TIME_UPDATE = 1000;
+
+// export const startGame = async (
+//   ref: HTMLElement,
+//   config: TConfig,
+//   updateEngineContext: (TEngineContextData) => void,
+//   updateGameContext: (TGameContextData) => void
+// ): Promise<TEngine> => {
+//   const engine = new TEngine(
+//     config,
+//     ref,
+//     updateEngineContext,
+//     updateGameContext
+//   );
+//   await engine.load();
+
+//   for (const [name, state] of Object.entries(config.states)) {
+//     engine.gameState.register(name, state);
+//   }
+
+//   await engine.gameState.switch(config.defaultState);
+//   engine.start();
+
+//   return engine;
+// };
+
+export type TPostMessageFunc =
+  | ((message: any, transfer?: Transferable[]) => void)
+  | ((message: any) => void);
+
+export type TPostMessageWithTargetFunc = (
+  message: any,
+  targetOrigin: string,
+  transfer?: Transferable[]
+) => void;
+
+export default class TEngine {
+  public events: TEventQueue;
+  public resources: TResourceManager;
+  public gameState: TGameStateManager = new TGameStateManager(this);
+  public debugPanel: TDebugPanel;
+
+  public jobs: TJobManager;
+  private frameNumber = 1;
+  private then = -1;
+
+  // todo: temporary
+  public mouse = { x: 0, y: 0 };
+
+  // @todo move this somewhere more relevant
+  public stats: {
+    engineTime: number;
+  } = {
+    engineTime: 0,
+  };
+  private lastEngineTimeUpdate = 0;
+  private postMessage!: TPostMessageFunc;
+
+  constructor(private config: TConfig, postMessage: TPostMessageFunc) {
+    this.postMessage = (message: any, transfer?: Transferable[]) => {
+      postMessage(message, transfer);
+    };
+    this.postMessage = this.postMessage.bind(this);
+
+    this.triggerBootstrap();
+
+    this.events = new TEventQueue([this.postMessage]);
+
+    this.update = this.update.bind(this);
+    this.onMessage = this.onMessage.bind(this);
+    this.jobs = new TJobManager([TJobContextTypes.Engine]);
+    this.jobs.addRelay(
+      [TJobContextTypes.Renderer, TJobContextTypes.Audio],
+      this.postMessage
+    );
+    this.resources = new TResourceManager(this.jobs);
+
+    this.jobs.additionalContext = {
+      resourceManager: this.resources,
+    };
+
+    this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen);
+  }
+
+  async onMessage(ev: MessageEvent) {
+    // console.log('fred said: ', ev.data);
+    const { data } = ev;
+    switch (data.type) {
+      case TFredMessageTypes.READY:
+        this.load();
+        break;
+      case TMessageTypesCore.EVENT_RELAY:
+        this.events.broadcast(data.event as TEvent, true);
+        break;
+      case TMessageTypesJobs.RELAY: {
+        const relayMessage = data as TJobsMessageRelay;
+
+        this.jobs.doRelayedJob(
+          relayMessage.wrappedJob,
+          this.postMessage.bind(this)
+        );
+        break;
+      }
+      case TMessageTypesJobs.RELAY_RESULT: {
+        const relayResultMessage = data as TJobsMessageRelayResult;
+        this.jobs.onRelayedResult(relayResultMessage.wrappedResult);
+        break;
+      }
+    }
+  }
+
+  private async load() {
+    // Register the provided game states into the manager
+    for (const [name, state] of Object.entries(this.config.states)) {
+      this.gameState.register(name, state);
+    }
+
+    this.start();
+  }
+
+  private async start() {
+    // Setup mouse move listeners, this will be replaced in future
+    this.events.addListener<TMouseMoveEvent>(
+      TEventTypesInput.MouseMove,
+      (e) => {
+        this.mouse.x = e.clientX;
+        this.mouse.y = e.clientY;
+      }
+    );
+
+    await this.gameState.switch(this.config.defaultState);
+
+    // Set this up to prevent issues on first frame, and to remove need for an if
+    this.then = Date.now();
+
+    setInterval(this.update, 1000 / 60);
+  }
+
+  private async update() {
+    const now = Date.now();
+    const delta = (now - this.then) / 1000.0;
+    this.then = now;
+
+    this.debugPanel.update(this, delta);
+
+    this.events.update();
+
+    await this.gameState.update(delta);
+
+    const params: TFrameParams = {
+      frameNumber: this.frameNumber,
+      renderTasks: this.gameState.getRenderTasks(),
+      cameraView:
+        this.gameState.getActiveCamera()?.getView() || getDefaultCameraView(),
+    };
+
+    const message: TEngineMessageFrameReady = {
+      type: TMessageTypesEngine.FRAME_READY,
+      params,
+    };
+
+    this.postMessage(message);
+
+    this.frameNumber++;
+
+    // Update stats
+    // @todo move this more relevant
+    const elapsed = now - this.lastEngineTimeUpdate;
+    if (elapsed > TIME_PER_ENGINE_TIME_UPDATE) {
+      this.stats.engineTime = Date.now() - now;
+      this.lastEngineTimeUpdate = now;
+    }
+  }
+
+  /**
+   * Sends a message to inform the mnain thread that the engine worker is ready for it to start configuring itself.
+   *
+   * In future this will also provide some config to the bootstrapper.
+   */
+  private triggerBootstrap() {
+    const message: TEngineMessageBootstrap = {
+      type: TMessageTypesEngine.BOOTSTRAP,
+    };
+
+    this.postMessage(message);
+  }
+
+  public updateGameContext(data: TGameContextData) {
+    const message: TEngineMessageUpdateGameContext = {
+      type: TMessageTypesEngine.UPDATE_GAME_CONTEXT,
+      data,
+    };
+
+    this.postMessage(message);
+  }
+
+  public updateEngineContext(data: TEngineContextData) {
+    const message: TEngineMessageUpdateEngineContext = {
+      type: TMessageTypesEngine.UPDATE_ENGINE_CONTEXT,
+      data,
+    };
+
+    this.postMessage(message);
+  }
+
+  // public resourceManager: TResourceManager = new TResourceManager();
+  // public events: TEventQueue = new TEventQueue();
+  // public mouse: TMouse = new TMouse(this);
+  // public graphics: TGraphics;
+  // public gameState: TGameStateManager = new TGameStateManager(this);
+  // public debugPanel: TDebugPanel;
+  // public audio: TAudio = new TAudio(this);
+
+  // private keyboard: TKeyboard = new TKeyboard();
+
+  // private then: number = 0;
+  // private canvas: HTMLCanvasElement;
+
+  // // @todo move this somewhere more relevant
+  // public stats: {
+  //   fps: number;
+  // } = {
+  //   fps: 0,
+  // };
+  // private lastFPSUpdate: number = 0;
+  // private frameCount: number = 0;
+
+  // constructor(
+  //   config: TConfig,
+  //   public container: HTMLElement,
+  //   public updateEngineContext: (TEngineContextData) => void,
+  //   public updateGameContext: (TGameContextData) => void
+  // ) {
+  //   this.container.classList.add('t-engine-container');
+
+  //   // Create the canvas inside the container
+  //   this.canvas = document.createElement('canvas');
+  //   this.onResize();
+
+  //   container.appendChild(this.canvas);
+
+  //   this.graphics = new TGraphics(this, this.canvas);
+
+  //   this.update = this.update.bind(this);
+
+  //   this.debugPanel = new TDebugPanel(this, config.debugPanelOpen);
+  // }
+
+  // public async load() {
+  //   await this.graphics.load();
+  // }
+
+  // public start(): void {
+  //   this.keyboard.addListeners(this);
+  //   this.mouse.addListeners(this);
+
+  //   window.requestAnimationFrame(this.update);
+  // }
+
+  // private async update(now: number): Promise<void> {
+  //   const delta = (now - this.then) / 1000;
+  //   this.then = now;
+
+  //   // Update stats
+  //   // @todo move this more relevant
+  //   const elapsed = now - this.lastFPSUpdate;
+  //   this.frameCount++;
+  //   if (elapsed > TIME_PER_FPS_UPDATE) {
+  //     this.stats.fps = this.frameCount / (elapsed / TIME_PER_FPS_UPDATE);
+  //     this.frameCount = 0;
+  //     this.lastFPSUpdate = now;
+  //   }
+
+  //   this.debugPanel.update(this, delta);
+
+  //   // Process the event queue
+  //   this.events.update();
+  //   await this.gameState.update(delta);
+
+  //   window.requestAnimationFrame(this.update);
+  // }
+
+  // private onResize() {
+  //   // @todo call this on window resize
+
+  //   this.canvas.width = this.container.clientWidth;
+  //   this.canvas.height = this.container.clientHeight;
+  // }
+
+  // /**
+  //  * Currently only ensures the physics worker is stopped.
+  //  */
+  // public destroy() {
+  //   if (this.gameState.current()) {
+  //     this.gameState.current().destroy();
+  //   }
+  // }
+}

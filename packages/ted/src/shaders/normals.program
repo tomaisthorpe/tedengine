@@ -1,0 +1,19 @@
+attribute vec4 aVertexPosition;
+attribute vec4 aVertexNormal;
+
+uniform mat4 uMVPMatrix;
+
+varying lowp vec4 vColor;
+
+void main() {
+  gl_Position = uMVPMatrix * aVertexPosition;
+  vColor = aVertexNormal * 0.5 + 0.5;
+}
+----
+precision mediump float;
+
+varying lowp vec4 vColor;
+
+void main() {
+  gl_FragColor = vColor;
+}

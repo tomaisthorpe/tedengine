@@ -1,0 +1,109 @@
+import { v4 as uuidv4 } from 'uuid';
+import TResourceManager from '../core/resource-manager';
+import type { TPostMessageFunc } from '../engine/engine';
+import { TJobContextTypes } from './context-types';
+import type { TAudioJobContext, TJobContext, TRenderJobContext } from './jobs';
+import { AllJobs } from './jobs';
+import type { TJobsMessageRelay, TJobsMessageRelayResult } from './messages';
+import { TMessageTypesJobs } from './messages';
+import TAudio from '../audio/audio';
+
+export interface TJob {
+  type: string;
+  args?: any[];
+}
+
+export interface TWrappedJob {
+  uuid: string;
+  job: TJob;
+  transferList: Transferable[];
+}
+
+export interface TWrappedJobResult {
+  uuid: string;
+  result: any;
+}
+
+export type TJobRelay = (job: TWrappedJob) => void;
+
+export default class TJobManager {
+  private relays: { [key: string]: TJobRelay } = {};
+  private canProcess: { [key: string]: boolean } = {};
+
+  private relayedJobs: { [key: string]: (_: any) => void } = {};
+
+  public additionalContext!: TJobContext | TRenderJobContext | TAudioJobContext;
+
+  constructor(contexts: TJobContextTypes[]) {
+    for (const context of contexts) {
+      this.canProcess[context] = true;
+    }
+  }
+
+  addRelay(contexts: TJobContextTypes[], postMessage: TPostMessageFunc) {
+    const func = (wrappedJob: TWrappedJob) => {
+      const message: TJobsMessageRelay = {
+        type: TMessageTypesJobs.RELAY,
+        wrappedJob,
+      };
+      postMessage(message, wrappedJob.transferList || []);
+    };
+
+    for (const context of contexts) {
+      this.relays[context] = func;
+    }
+  }
+
+  // @todo jobs don't currently ever reject
+  public do(job: TJob, transferList: Transferable[] = []): Promise<any> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      // Check if we can process this job
+      const config = AllJobs[job.type];
+
+      const args = job.args || [];
+
+      if (this.canProcess[config.requiredContext || TJobContextTypes.Engine]) {
+        // TODO sort this typing using generics instead
+        const func = config.func as any;
+        const result = await func.call(this, this.additionalContext, ...args);
+        resolve(result);
+        return;
+      }
+
+      const uuid = uuidv4();
+      this.relayedJobs[uuid] = resolve;
+
+      // If we can't process it, then it needs to be handled by another worker
+      this.relays[config.requiredContext || TJobContextTypes.Engine]({
+        uuid,
+        job,
+        transferList,
+      });
+    });
+  }
+
+  public async doRelayedJob(
+    wrappedJob: TWrappedJob,
+    returnPostMessage: (result: TJobsMessageRelayResult) => void
+  ) {
+    const result = await this.do(wrappedJob.job, []);
+
+    const wrappedResult: TWrappedJobResult = {
+      uuid: wrappedJob.uuid,
+      result,
+    };
+
+    const message: TJobsMessageRelayResult = {
+      type: TMessageTypesJobs.RELAY_RESULT,
+      wrappedResult,
+    };
+
+    returnPostMessage(message);
+  }
+
+  public onRelayedResult(wrappedResult: TWrappedJobResult) {
+    this.relayedJobs[wrappedResult.uuid](wrappedResult.result);
+    delete this.relayedJobs[wrappedResult.uuid];
+  }
+}

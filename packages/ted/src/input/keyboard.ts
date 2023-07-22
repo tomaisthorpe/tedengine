@@ -1,0 +1,61 @@
+import type TEventQueue from '../core/event-queue';
+import type { TKeyUpEvent, TKeyDownEvent } from './events';
+import { TEventTypesInput } from './events';
+
+// Used to block scrolling when using arrows keys and space
+const preventDefaultBehaviour = [
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowUp',
+  'ArrowDown',
+  ' ', // Space key
+];
+
+// @todo add remove event listeners
+export default class TKeyboard {
+  constructor(eventQueue: TEventQueue) {
+    this.addListeners(eventQueue);
+  }
+
+  private addListeners(eventQueue: TEventQueue) {
+    window.addEventListener('keyup', (e) => {
+      if (preventDefaultBehaviour.includes(e.key)) {
+        e.preventDefault();
+      }
+
+      let key = e.key;
+      if (key == ' ') {
+        key = 'Space';
+      }
+
+      const event: TKeyUpEvent = {
+        type: TEventTypesInput.KeyUp,
+        subType: key,
+      };
+
+      eventQueue.broadcast(event);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (preventDefaultBehaviour.includes(e.key)) {
+        e.preventDefault();
+      }
+
+      if (e.repeat) {
+        return;
+      }
+
+      let key = e.key;
+      if (key == ' ') {
+        key = 'Space';
+      }
+
+      const event: TKeyDownEvent = {
+        type: TEventTypesInput.KeyDown,
+        subType: key,
+      };
+
+      eventQueue.broadcast(event);
+    });
+  }
+}

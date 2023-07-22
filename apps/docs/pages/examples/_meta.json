@@ -1,0 +1,9 @@
+{
+  "2d": "2D",
+  "3d": "3D",
+  "cameras": "Cameras",
+  "audio": "Audio",
+  "physics": "Physics",
+  "debug": "Debug",
+  "ui": "UI"
+}
