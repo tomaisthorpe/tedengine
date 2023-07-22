@@ -1,11 +1,11 @@
 import shipMtl from '@assets/ship.mtl';
 import shipMesh from '@assets/ship.obj';
 import { vec3 } from 'gl-matrix';
+import type { TResourcePackConfig } from '@tedengine/ted';
 import {
   TGameState,
   TActor,
   TResourcePack,
-  TResourcePackConfig,
   TMeshComponent,
   TOrbitCamera,
   TPerspectiveCamera,

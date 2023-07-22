@@ -2,10 +2,10 @@ import asteroidTexture from '@assets/asteroid.png';
 import tilemap from '@assets/tilemap.ldtk';
 import tileset from '@assets/tileset.png';
 import { vec3 } from 'gl-matrix';
+import type { TResourcePackConfig } from '@tedengine/ted';
 import {
   TGameState,
   TActor,
-  TResourcePackConfig,
   TResourcePack,
   TTilemapComponent,
   TEngine,

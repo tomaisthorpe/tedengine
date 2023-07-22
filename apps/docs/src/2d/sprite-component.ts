@@ -1,11 +1,11 @@
 import asteroidTexture from '@assets/asteroid.png';
 import { vec3 } from 'gl-matrix';
+import type { TResourcePackConfig } from '@tedengine/ted';
 import {
   TGameState,
   TActor,
   TSpriteComponent,
   TOriginPoint,
-  TResourcePackConfig,
   TResourcePack,
   TEngine,
 } from '@tedengine/ted';

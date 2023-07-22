@@ -1,12 +1,6 @@
 import sound from '@assets/sound.wav';
-import {
-  TGameState,
-  TActor,
-  TResourcePackConfig,
-  TResourcePack,
-  TSound,
-  TEngine,
-} from '@tedengine/ted';
+import type { TResourcePackConfig, TSound } from '@tedengine/ted';
+import { TGameState, TActor, TResourcePack, TEngine } from '@tedengine/ted';
 
 class Actor extends TActor {
   public static resources: TResourcePackConfig = {

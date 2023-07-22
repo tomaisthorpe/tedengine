@@ -1,11 +1,11 @@
 import landscapeMtl from '@assets/landscape.mtl';
 import landscapeMesh from '@assets/landscape.obj';
 import { vec3 } from 'gl-matrix';
+import type { TResourcePackConfig } from '@tedengine/ted';
 import {
   TGameState,
   TActor,
   TResourcePack,
-  TResourcePackConfig,
   TMeshComponent,
   TEngine,
 } from '@tedengine/ted';

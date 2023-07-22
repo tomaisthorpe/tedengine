@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import type { TPhysicsBody } from './dynamic-world';
 import TDynamicWorld from './dynamic-world';
 import type {

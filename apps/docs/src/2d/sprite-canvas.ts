@@ -1,6 +1,6 @@
 import { vec3 } from 'gl-matrix';
+import type { TTexture } from '@tedengine/ted';
 import {
-  TTexture,
   TCanvas,
   TGameState,
   TActor,

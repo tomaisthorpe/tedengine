@@ -6,6 +6,7 @@ const { getConfigFileParsingDiagnostics } = require('typescript');
 
 const nextra = require('nextra');
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const withNextra = nextra({
   theme: 'nextra-theme-docs',
