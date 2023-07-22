@@ -1,4 +1,3 @@
-import TSpriteComponent from '../actor-components/sprite-component';
 import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import type { TSerializedRenderTask } from '../renderer/frame-params';

@@ -1,7 +1,6 @@
 import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import type TColorMaterial from '../graphics/color-material';
-import { TPalette } from '../graphics/color-material';
 import TMesh from '../graphics/mesh';
 import type { TSerializedMeshInstance } from '../renderer/frame-params';
 import { TRenderTask } from '../renderer/frame-params';

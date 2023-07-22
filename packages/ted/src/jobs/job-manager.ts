@@ -1,12 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
-import TResourceManager from '../core/resource-manager';
 import type { TPostMessageFunc } from '../engine/engine';
 import { TJobContextTypes } from './context-types';
 import type { TAudioJobContext, TJobContext, TRenderJobContext } from './jobs';
 import { AllJobs } from './jobs';
 import type { TJobsMessageRelay, TJobsMessageRelayResult } from './messages';
 import { TMessageTypesJobs } from './messages';
-import TAudio from '../audio/audio';
 
 export interface TJob {
   type: string;

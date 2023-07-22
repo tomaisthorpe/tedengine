@@ -1,4 +1,3 @@
-import TAudio from '../audio/audio';
 import { getDefaultCameraView } from '../cameras/camera-view';
 import TEventQueue from '../core/event-queue';
 import type { TEvent } from '../core/event-queue';
@@ -9,10 +8,7 @@ import TDebugPanel from '../debug/debug-panel';
 import type { TConfig } from '../engine/config';
 import { TFredMessageTypes } from '../fred/messages';
 import type { TMouseMoveEvent } from '../input/events';
-import { TKeyUpEvent } from '../input/events';
 import { TEventTypesInput } from '../input/events';
-import TKeyboard from '../input/keyboard';
-import TMouse from '../input/mouse';
 import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
 import type {
@@ -21,7 +17,6 @@ import type {
 } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import type { TFrameParams } from '../renderer/frame-params';
-import TShader from '../shaders/shader';
 import type { TGameContextData, TEngineContextData } from '../ui/context';
 import type {
   TEngineMessageBootstrap,
@@ -32,30 +27,6 @@ import type {
 import { TMessageTypesEngine } from './messages';
 
 const TIME_PER_ENGINE_TIME_UPDATE = 1000;
-
-// export const startGame = async (
-//   ref: HTMLElement,
-//   config: TConfig,
-//   updateEngineContext: (TEngineContextData) => void,
-//   updateGameContext: (TGameContextData) => void
-// ): Promise<TEngine> => {
-//   const engine = new TEngine(
-//     config,
-//     ref,
-//     updateEngineContext,
-//     updateGameContext
-//   );
-//   await engine.load();
-
-//   for (const [name, state] of Object.entries(config.states)) {
-//     engine.gameState.register(name, state);
-//   }
-
-//   await engine.gameState.switch(config.defaultState);
-//   engine.start();
-
-//   return engine;
-// };
 
 export type TPostMessageFunc =
   | ((message: any, transfer?: Transferable[]) => void)
@@ -235,97 +206,4 @@ export default class TEngine {
 
     this.postMessage(message);
   }
-
-  // public resourceManager: TResourceManager = new TResourceManager();
-  // public events: TEventQueue = new TEventQueue();
-  // public mouse: TMouse = new TMouse(this);
-  // public graphics: TGraphics;
-  // public gameState: TGameStateManager = new TGameStateManager(this);
-  // public debugPanel: TDebugPanel;
-  // public audio: TAudio = new TAudio(this);
-
-  // private keyboard: TKeyboard = new TKeyboard();
-
-  // private then: number = 0;
-  // private canvas: HTMLCanvasElement;
-
-  // // @todo move this somewhere more relevant
-  // public stats: {
-  //   fps: number;
-  // } = {
-  //   fps: 0,
-  // };
-  // private lastFPSUpdate: number = 0;
-  // private frameCount: number = 0;
-
-  // constructor(
-  //   config: TConfig,
-  //   public container: HTMLElement,
-  //   public updateEngineContext: (TEngineContextData) => void,
-  //   public updateGameContext: (TGameContextData) => void
-  // ) {
-  //   this.container.classList.add('t-engine-container');
-
-  //   // Create the canvas inside the container
-  //   this.canvas = document.createElement('canvas');
-  //   this.onResize();
-
-  //   container.appendChild(this.canvas);
-
-  //   this.graphics = new TGraphics(this, this.canvas);
-
-  //   this.update = this.update.bind(this);
-
-  //   this.debugPanel = new TDebugPanel(this, config.debugPanelOpen);
-  // }
-
-  // public async load() {
-  //   await this.graphics.load();
-  // }
-
-  // public start(): void {
-  //   this.keyboard.addListeners(this);
-  //   this.mouse.addListeners(this);
-
-  //   window.requestAnimationFrame(this.update);
-  // }
-
-  // private async update(now: number): Promise<void> {
-  //   const delta = (now - this.then) / 1000;
-  //   this.then = now;
-
-  //   // Update stats
-  //   // @todo move this more relevant
-  //   const elapsed = now - this.lastFPSUpdate;
-  //   this.frameCount++;
-  //   if (elapsed > TIME_PER_FPS_UPDATE) {
-  //     this.stats.fps = this.frameCount / (elapsed / TIME_PER_FPS_UPDATE);
-  //     this.frameCount = 0;
-  //     this.lastFPSUpdate = now;
-  //   }
-
-  //   this.debugPanel.update(this, delta);
-
-  //   // Process the event queue
-  //   this.events.update();
-  //   await this.gameState.update(delta);
-
-  //   window.requestAnimationFrame(this.update);
-  // }
-
-  // private onResize() {
-  //   // @todo call this on window resize
-
-  //   this.canvas.width = this.container.clientWidth;
-  //   this.canvas.height = this.container.clientHeight;
-  // }
-
-  // /**
-  //  * Currently only ensures the physics worker is stopped.
-  //  */
-  // public destroy() {
-  //   if (this.gameState.current()) {
-  //     this.gameState.current().destroy();
-  //   }
-  // }
 }

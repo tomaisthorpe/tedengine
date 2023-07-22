@@ -1,8 +1,6 @@
 // @todo has limited error handling
 import { mat4, vec3 } from 'gl-matrix';
-import TSpriteComponent, {
-  TSpriteLayer,
-} from '../actor-components/sprite-component';
+import { TSpriteLayer } from '../actor-components/sprite-component';
 import type { TCameraView } from '../cameras/camera-view';
 import type TResourceManager from '../core/resource-manager';
 import { TProjectionType } from '../graphics';

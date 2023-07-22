@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import type TEventQueue from '../../core/event-queue';
 import type { TDebugPanelSectionSerializedData } from '../../debug/debug-panel-section';
