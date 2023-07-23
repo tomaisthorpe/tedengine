@@ -28,7 +28,7 @@ export default class TDynamicWorld {
   constructor(private onWorldUpdate: (bodies: TPhysicsBody[]) => void) {}
 
   public async create(config: TWorldConfig): Promise<void> {
-    ammo = await ammo();
+    ammo = await ammo.bind(global)();
 
     const collisionConfiguration = new ammo.btDefaultCollisionConfiguration();
     const dispatcher = new ammo.btCollisionDispatcher(collisionConfiguration);
