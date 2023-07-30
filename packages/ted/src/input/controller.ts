@@ -1,6 +1,7 @@
 import TEventQueue from '../core/event-queue';
 import type TPawn from '../core/pawn';
 import { TEventTypesInput } from './events';
+import type { TMouseMoveEvent } from './events';
 import type {
   TKeyDownEvent,
   TKeyUpEvent,
@@ -21,6 +22,8 @@ export default class TController {
   private possessing?: TPawn;
   private events: TEventQueue = new TEventQueue();
   private axes: { [key: string]: number } = {};
+
+  public mouseLocation?: { clientX: number; clientY: number };
 
   constructor(private engineEventQueue: TEventQueue) {}
 
@@ -101,6 +104,18 @@ export default class TController {
       key,
       (e) => {
         this.axes[axis] -= scale;
+      }
+    );
+  }
+
+  public enableMouseTracking() {
+    this.engineEventQueue.addListener<TMouseMoveEvent>(
+      TEventTypesInput.MouseMove,
+      (e) => {
+        this.mouseLocation = {
+          clientX: e.clientX,
+          clientY: e.clientY,
+        };
       }
     );
   }

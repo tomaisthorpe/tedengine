@@ -24,5 +24,8 @@ export default class TSimpleController extends TController {
     // Interaction buttons
     this.addActionFromKeyEvent('E', 'e');
     this.addActionFromKeyEvent('Q', 'q');
+
+    // Mouse location
+    this.enableMouseTracking();
   }
 }
