@@ -135,7 +135,7 @@ export default class TFred {
 
     this.events = new TEventQueue([], [this.engineWorker]);
     this.keyboard = new TKeyboard(this.events);
-    this.mouse = new TMouse(this.events);
+    this.mouse = new TMouse(this.events, this.canvas);
 
     this.jobs = new TJobManager([
       TJobContextTypes.Renderer,

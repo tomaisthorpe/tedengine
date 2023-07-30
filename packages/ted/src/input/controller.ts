@@ -23,7 +23,12 @@ export default class TController {
   private events: TEventQueue = new TEventQueue();
   private axes: { [key: string]: number } = {};
 
-  public mouseLocation?: { clientX: number; clientY: number };
+  public mouseLocation?: {
+    clientX: number;
+    clientY: number;
+    x: number;
+    y: number;
+  };
 
   constructor(private engineEventQueue: TEventQueue) {}
 
@@ -115,6 +120,8 @@ export default class TController {
         this.mouseLocation = {
           clientX: e.clientX,
           clientY: e.clientY,
+          x: e.x,
+          y: e.y,
         };
       }
     );

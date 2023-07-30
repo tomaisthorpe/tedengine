@@ -32,6 +32,8 @@ export interface TMouseMoveEvent {
   type: TEventTypesInput.MouseMove;
   clientX: number;
   clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface TActionPressedEvent {
