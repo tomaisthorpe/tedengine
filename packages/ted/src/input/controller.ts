@@ -125,13 +125,13 @@ export default class TController {
    * @todo throw error if state is invalid
    */
   public bindAction(action: string, state: string, callback: () => void) {
-    if (state == 'pressed') {
+    if (state === 'pressed') {
       this.events.addListener<TActionPressedEvent>(
         TEventTypesInput.ActionPressed,
         action,
         callback
       );
-    } else if (state == 'released') {
+    } else if (state === 'released') {
       this.events.addListener<TActionReleasedEvent>(
         TEventTypesInput.ActionReleased,
         action,
