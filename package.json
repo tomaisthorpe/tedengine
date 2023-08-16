@@ -9,7 +9,6 @@
   "private": true,
   "dependencies": {
     "@changesets/cli": "^2.26.2",
-    "@tomaisthorpe/ammojs-typed": "^1.0.7",
     "cannon-es": "^0.20.0",
     "gl-matrix": "^3.4.3",
     "next": "13.4.1",
