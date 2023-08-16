@@ -6,25 +6,19 @@ import type { TBoxColliderConfig } from '../colliders/box-collider';
 import type { TPlaneColliderConfig } from '../colliders/plane-collider';
 import type { TSphereColliderConfig } from '../colliders/sphere-collider';
 import type { TWorldConfig } from '../world';
-import type { TPhysicsWorld } from './physics-world';
+import type { TPhysicsBody, TPhysicsWorld } from './physics-world';
 
 let ammo = Ammo;
 
-export interface TPhysicsBody {
-  uuid: string;
-  translation: [number, number, number];
-  rotation: [number, number, number, number];
-}
-
-export interface TPhysicsObject {
+export interface TAmmoPhysicsObject {
   uuid: string;
   body: Ammo.btRigidBody;
 }
 
-export default class TDynamicWorld implements TPhysicsWorld {
+export default class TAmmoWorld implements TPhysicsWorld {
   private world!: Ammo.btDiscreteDynamicsWorld;
   private interval!: ReturnType<typeof setInterval>;
-  private objects: TPhysicsObject[] = [];
+  private objects: TAmmoPhysicsObject[] = [];
 
   constructor(private onWorldUpdate: (bodies: TPhysicsBody[]) => void) {}
 
@@ -43,7 +37,7 @@ export default class TDynamicWorld implements TPhysicsWorld {
     );
 
     if (config.enableGravity) {
-      this.world.setGravity(new ammo.btVector3(0, -10, 0));
+      this.world.setGravity(new ammo.btVector3(0, -9.82, 0));
     }
   }
 

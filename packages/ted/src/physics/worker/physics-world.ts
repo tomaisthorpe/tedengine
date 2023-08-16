@@ -15,3 +15,9 @@ export interface TPhysicsWorld {
   applyCentralForce(uuid: string, force: vec3): void;
   applyCentralImpulse(uuid: string, impulse: vec3): void;
 }
+
+export interface TPhysicsBody {
+  uuid: string;
+  translation: [number, number, number];
+  rotation: [number, number, number, number];
+}

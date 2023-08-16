@@ -1,6 +1,6 @@
 import { quat, vec3 } from 'gl-matrix';
 import type TEngine from '../engine/engine';
-import type { TPhysicsBody } from '../physics/worker/dynamic-world';
+import type { TPhysicsBody } from '../physics/worker/physics-world';
 import TWorld from '../physics/world';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';

@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-globals */
-import type { TPhysicsBody } from './dynamic-world';
-import TDynamicWorld from './dynamic-world';
+import TCannonWorld from './cannon-world';
 import type {
   TPhysicsInMessageRegisterBody,
   TPhysicsInMessageWorldSetup,
@@ -12,7 +11,7 @@ import type {
   TPhysicsInMessageApplyCentralImpulse,
 } from './messages';
 import { TPhysicsMessageTypes } from './messages';
-import type { TPhysicsWorld } from './physics-world';
+import type { TPhysicsBody, TPhysicsWorld } from './physics-world';
 
 const onWorldUpdate = (bodies: TPhysicsBody[]) => {
   const message: TPhysicsOutMessageSimulateDone = {
@@ -22,7 +21,8 @@ const onWorldUpdate = (bodies: TPhysicsBody[]) => {
   self.postMessage(message);
 };
 
-const world = new TDynamicWorld(onWorldUpdate) as TPhysicsWorld;
+// const world = new TAmmoWorld(onWorldUpdate) as TPhysicsWorld;
+const world = new TCannonWorld(onWorldUpdate) as TPhysicsWorld;
 
 self.onmessage = async (event: MessageEvent) => {
   const { data } = event;

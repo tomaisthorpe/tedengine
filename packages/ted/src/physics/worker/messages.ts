@@ -1,7 +1,7 @@
 import type { vec3 } from 'gl-matrix';
 import type { TColliderConfig } from '../colliders';
 import type { TWorldConfig } from '../world';
-import type { TPhysicsBody } from './dynamic-world';
+import type { TPhysicsBody } from './physics-world';
 
 export enum TPhysicsMessageTypes {
   INIT = 'init',
