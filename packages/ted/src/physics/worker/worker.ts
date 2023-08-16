@@ -12,6 +12,7 @@ import type {
   TPhysicsInMessageApplyCentralImpulse,
 } from './messages';
 import { TPhysicsMessageTypes } from './messages';
+import type { TPhysicsWorld } from './physics-world';
 
 const onWorldUpdate = (bodies: TPhysicsBody[]) => {
   const message: TPhysicsOutMessageSimulateDone = {
@@ -21,7 +22,7 @@ const onWorldUpdate = (bodies: TPhysicsBody[]) => {
   self.postMessage(message);
 };
 
-const world = new TDynamicWorld(onWorldUpdate);
+const world = new TDynamicWorld(onWorldUpdate) as TPhysicsWorld;
 
 self.onmessage = async (event: MessageEvent) => {
   const { data } = event;
@@ -36,7 +37,7 @@ self.onmessage = async (event: MessageEvent) => {
     }
     case TPhysicsMessageTypes.SIMULATE_STEP: {
       const stepMessage = data as TPhysicsInMessageSimulateStep;
-      world.simulateStep(stepMessage.delta);
+      world.step(stepMessage.delta);
       break;
     }
     case TPhysicsMessageTypes.REGISTER_BODY: {

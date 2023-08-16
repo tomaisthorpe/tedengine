@@ -6,6 +6,7 @@ import type { TBoxColliderConfig } from '../colliders/box-collider';
 import type { TPlaneColliderConfig } from '../colliders/plane-collider';
 import type { TSphereColliderConfig } from '../colliders/sphere-collider';
 import type { TWorldConfig } from '../world';
+import type { TPhysicsWorld } from './physics-world';
 
 let ammo = Ammo;
 
@@ -20,7 +21,7 @@ export interface TPhysicsObject {
   body: Ammo.btRigidBody;
 }
 
-export default class TDynamicWorld {
+export default class TDynamicWorld implements TPhysicsWorld {
   private world!: Ammo.btDiscreteDynamicsWorld;
   private interval!: ReturnType<typeof setInterval>;
   private objects: TPhysicsObject[] = [];
@@ -46,12 +47,8 @@ export default class TDynamicWorld {
     }
   }
 
-  public simulateStep(delta: number) {
-    this.simulate(delta);
-  }
-
-  private simulate(dt: number) {
-    this.world.stepSimulation(dt, 2);
+  public step(delta: number) {
+    this.world.stepSimulation(delta, 2);
 
     const worldState: TPhysicsBody[] = [];
 
