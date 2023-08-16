@@ -17,8 +17,6 @@ export default class TCannonWorld implements TPhysicsWorld {
   private world!: CANNON.World;
   private objects: TCannonPhysicsObject[] = [];
 
-  constructor(private onWorldUpdate: (bodies: TPhysicsBody[]) => void) {}
-
   public async create(config: TWorldConfig): Promise<void> {
     const options: { gravity?: CANNON.Vec3 } = {};
 
@@ -29,7 +27,7 @@ export default class TCannonWorld implements TPhysicsWorld {
     this.world = new CANNON.World(options);
   }
 
-  public step(delta: number) {
+  public step(delta: number): TPhysicsBody[] {
     this.world.step(1 / 60, delta, 2);
 
     const worldState: TPhysicsBody[] = [];
@@ -41,9 +39,7 @@ export default class TCannonWorld implements TPhysicsWorld {
       });
     }
 
-    this.onWorldUpdate(worldState);
-
-    console.log('it work');
+    return worldState;
   }
 
   public addBody(

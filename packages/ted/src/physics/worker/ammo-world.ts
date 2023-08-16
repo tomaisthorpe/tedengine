@@ -20,8 +20,6 @@ export default class TAmmoWorld implements TPhysicsWorld {
   private interval!: ReturnType<typeof setInterval>;
   private objects: TAmmoPhysicsObject[] = [];
 
-  constructor(private onWorldUpdate: (bodies: TPhysicsBody[]) => void) {}
-
   public async create(config: TWorldConfig): Promise<void> {
     ammo = await ammo.bind(globalThis)();
 
@@ -41,7 +39,7 @@ export default class TAmmoWorld implements TPhysicsWorld {
     }
   }
 
-  public step(delta: number) {
+  public step(delta: number): TPhysicsBody[] {
     this.world.stepSimulation(delta, 2);
 
     const worldState: TPhysicsBody[] = [];
@@ -59,7 +57,7 @@ export default class TAmmoWorld implements TPhysicsWorld {
       });
     }
 
-    this.onWorldUpdate(worldState);
+    return worldState;
   }
 
   public addBody(

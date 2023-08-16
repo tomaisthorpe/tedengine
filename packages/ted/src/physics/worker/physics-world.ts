@@ -4,7 +4,7 @@ import type { TWorldConfig } from '../world';
 
 export interface TPhysicsWorld {
   create(config: TWorldConfig): Promise<void>;
-  step(delta: number): void;
+  step(delta: number): TPhysicsBody[];
   addBody(
     uuid: string,
     collider: TColliderConfig,
