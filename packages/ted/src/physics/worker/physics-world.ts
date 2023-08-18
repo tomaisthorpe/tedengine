@@ -4,7 +4,10 @@ import type { TWorldConfig } from '../world';
 
 export interface TPhysicsWorld {
   create(config: TWorldConfig): Promise<void>;
-  step(delta: number): TPhysicsBody[];
+  step(delta: number): {
+    bodies: TPhysicsBody[];
+    collisions: TPhysicsCollision[];
+  };
   addBody(
     uuid: string,
     collider: TColliderConfig,
@@ -20,4 +23,9 @@ export interface TPhysicsBody {
   uuid: string;
   translation: [number, number, number];
   rotation: [number, number, number, number];
+}
+
+export interface TPhysicsCollision {
+  bodyA: string;
+  bodyB: string;
 }

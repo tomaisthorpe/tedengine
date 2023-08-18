@@ -29,11 +29,11 @@ self.onmessage = async (event: MessageEvent) => {
     }
     case TPhysicsMessageTypes.SIMULATE_STEP: {
       const stepMessage = data as TPhysicsInMessageSimulateStep;
-      const bodies = world.step(stepMessage.delta);
+      const worldState = world.step(stepMessage.delta);
 
       const message: TPhysicsOutMessageSimulateDone = {
         type: TPhysicsMessageTypes.SIMULATE_DONE,
-        bodies,
+        ...worldState,
       };
       self.postMessage(message);
       break;

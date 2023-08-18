@@ -5,7 +5,11 @@ import type { TBoxColliderConfig } from '../colliders/box-collider';
 import type { TPlaneColliderConfig } from '../colliders/plane-collider';
 import type { TSphereColliderConfig } from '../colliders/sphere-collider';
 import type { TWorldConfig } from '../world';
-import type { TPhysicsBody, TPhysicsWorld } from './physics-world';
+import type {
+  TPhysicsBody,
+  TPhysicsCollision,
+  TPhysicsWorld,
+} from './physics-world';
 import * as CANNON from 'cannon-es';
 
 export interface TCannonPhysicsObject {
@@ -17,6 +21,8 @@ export default class TCannonWorld implements TPhysicsWorld {
   private world!: CANNON.World;
   private objects: TCannonPhysicsObject[] = [];
 
+  public collisions: TPhysicsCollision[] = [];
+
   public async create(config: TWorldConfig): Promise<void> {
     const options: { gravity?: CANNON.Vec3 } = {};
 
@@ -25,19 +31,42 @@ export default class TCannonWorld implements TPhysicsWorld {
     }
 
     this.world = new CANNON.World(options);
+
+    this.world.addEventListener(
+      'beginContact',
+      (e: { bodyA: CANNON.Body; bodyB: CANNON.Body }) => {
+        const bodyAUUID = this.findUUID(e.bodyA.id);
+        const bodyBUUID = this.findUUID(e.bodyB.id);
+
+        if (!bodyAUUID || !bodyBUUID) return;
+
+        // @todo collisions are going to be one frame behind?
+        this.collisions.push({ bodyA: bodyAUUID, bodyB: bodyBUUID });
+      }
+    );
   }
 
-  public step(delta: number): TPhysicsBody[] {
+  public step(delta: number): {
+    bodies: TPhysicsBody[];
+    collisions: TPhysicsCollision[];
+  } {
     this.world.step(1 / 60, delta, 2);
 
-    const worldState: TPhysicsBody[] = [];
+    const bodies: TPhysicsBody[] = [];
     for (const obj of this.objects) {
-      worldState.push({
+      bodies.push({
         uuid: obj.uuid,
         translation: obj.body.position.toArray(),
         rotation: obj.body.quaternion.toArray(),
       });
     }
+
+    const worldState = {
+      bodies,
+      collisions: [...this.collisions],
+    };
+
+    this.collisions = [];
 
     return worldState;
   }
@@ -80,6 +109,11 @@ export default class TCannonWorld implements TPhysicsWorld {
   private findBody(uuid: string): CANNON.Body | undefined {
     // @todo this might not return a body
     return this.objects.find((body) => body.uuid === uuid)?.body;
+  }
+
+  private findUUID(id: number): string | undefined {
+    // @todo this might not return a uuid
+    return this.objects.find((obj) => obj.body.id === id)?.uuid;
   }
 
   public applyCentralForce(uuid: string, force: vec3): void {

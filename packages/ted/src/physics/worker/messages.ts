@@ -1,7 +1,7 @@
 import type { vec3 } from 'gl-matrix';
 import type { TColliderConfig } from '../colliders';
 import type { TWorldConfig } from '../world';
-import type { TPhysicsBody } from './physics-world';
+import type { TPhysicsBody, TPhysicsCollision } from './physics-world';
 
 export enum TPhysicsMessageTypes {
   INIT = 'init',
@@ -35,6 +35,7 @@ export interface TPhysicsInMessageSimulateStep {
 export interface TPhysicsOutMessageSimulateDone {
   type: TPhysicsMessageTypes.SIMULATE_DONE;
   bodies: TPhysicsBody[];
+  collisions: TPhysicsCollision[];
 }
 
 export interface TPhysicsInMessageRegisterBody {
