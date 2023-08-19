@@ -1,7 +1,7 @@
 import type { IAsset } from '../core/resource-manager';
 import type { TSerializedMaterial } from '../renderer/frame-params';
 import MTLParser from '../utils/mtl-parser';
-import type IMaterial from './material';
+import type { IMaterial } from './material';
 
 export type TColor = [number, number, number, number];
 export interface TPalette {

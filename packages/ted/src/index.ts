@@ -1,190 +1,95 @@
-import TActorComponent from './actor-components/actor-component';
-import type { TActorComponentWithOnUpdate } from './actor-components/actor-component';
-import TBoxComponent from './actor-components/box-component';
-import TMeshComponent from './actor-components/mesh-component';
-import TPlaneComponent from './actor-components/plane-component';
-import TRotatingComponent from './actor-components/rotating-component';
-import TSceneComponent from './actor-components/scene-component';
-import TSphereComponent from './actor-components/sphere-component';
-import TSpriteComponent, {
-  TOriginPoint,
-  TSpriteLayer,
-} from './actor-components/sprite-component';
-import TTexturedMeshComponent from './actor-components/textured-mesh-component';
-import TTilemapComponent from './actor-components/tilemap-component';
-import type {
-  TTileset,
-  TTilesetConfig,
-} from './actor-components/tilemap-component';
-import TAudio from './audio/audio';
-import TSound from './audio/sound';
-import TBaseCamera from './cameras/base-camera';
-import type { ICamera } from './cameras/camera';
-import TCameraComponent from './cameras/camera-component';
-import { getDefaultCameraView } from './cameras/camera-view';
-import type { TCameraView } from './cameras/camera-view';
-import TOrbitCamera from './cameras/orbit-camera';
-import TOrthographicCamera from './cameras/orthographic-camera';
-import TPerspectiveCamera from './cameras/perspective-camera';
-import TActor from './core/actor';
-import type { TActorWithOnUpdate } from './core/actor';
-import TEventQueue from './core/event-queue';
-import type { TEvent } from './core/event-queue';
-import TGameState from './core/game-state';
-import type {
-  TGameStateWithOnUpdate,
-  TGameStateWithOnCreate,
-  TGameStateWithOnEnter,
-  TGameStateWithOnLeave,
-  TGameStateWithOnResume,
-} from './core/game-state';
-import TGameStateManager from './core/game-state-manager';
-import TLevel from './core/level';
-import type { TMessageTypesCore, TMessageEventRelay } from './core/messages';
-import TPawn from './core/pawn';
-import TResourceManager from './core/resource-manager';
-import TResourcePack from './core/resource-pack';
-import type { TResourcePackConfig } from './core/resource-pack';
-import TDebugPanel from './debug/debug-panel';
-import type { TConfig } from './engine/config';
-import TEngine from './engine/engine';
-import type { TPostMessageFunc } from './engine/engine';
-import TFred from './fred/fred';
-import { TProjectionType } from './graphics';
-import TCanvas from './graphics/canvas';
-import TImage from './graphics/image';
-import type IMaterial from './graphics/material';
-import TMesh from './graphics/mesh';
-import TTexture, { TTextureFilter } from './graphics/texture';
-import TTilemap from './graphics/tilemap';
-import type { TGridTile, TTilemapLayer, TTilesetDef } from './graphics/tilemap';
-import TController from './input/controller';
-import type {
-  TEventTypesInput,
-  TKeyUpEvent,
-  TKeyDownEvent,
-  TMouseUpEvent,
-  TMouseDownEvent,
-  TMouseMoveEvent,
-  TActionPressedEvent,
-  TActionReleasedEvent,
-} from './input/events';
-import TKeyboard from './input/keyboard';
-import TMouse from './input/mouse';
-import TSimpleController from './input/simple-controller';
-import TTransform from './math/transform';
-import { TColliderType } from './physics/colliders';
-import type { TColliderConfig, ICollider } from './physics/colliders';
-import TBoxCollider from './physics/colliders/box-collider';
-import type { TBoxColliderConfig } from './physics/colliders/box-collider';
-import TPlaneCollider from './physics/colliders/plane-collider';
-import type { TPlaneColliderConfig } from './physics/colliders/plane-collider';
-import TSphereCollider from './physics/colliders/sphere-collider';
-import type { TSphereColliderConfig } from './physics/colliders/sphere-collider';
-import TProgram from './renderer/program';
-import TGame from './ui/components/Game';
-import type { TGameContextData, TEngineContextData } from './ui/context';
-import { useGameContext, useEngineContext, useEventQueue } from './ui/hooks';
+export { default as TActorComponent } from './actor-components/actor-component';
+export * from './actor-components/actor-component';
+export { default as TBoxComponent } from './actor-components/box-component';
+export { default as TMeshComponent } from './actor-components/mesh-component';
+export { default as TPlaneComponent } from './actor-components/plane-component';
+export { default as TRotatingComponent } from './actor-components/rotating-component';
+export { default as TSceneComponent } from './actor-components/scene-component';
+export { default as TSphereComponent } from './actor-components/sphere-component';
+export { default as TSpriteComponent } from './actor-components/sprite-component';
+export * from './actor-components/sprite-component';
+export { default as TTexturedMeshComponent } from './actor-components/textured-mesh-component';
+export { default as TTilemapComponent } from './actor-components/tilemap-component';
+export * from './actor-components/tilemap-component';
 
-export { TAudio, TSound };
+export { default as TAudio } from './audio/audio';
+export { default as TSound } from './audio/sound';
 
-export {
-  TActor,
-  TEngine,
-  TFred,
-  TEventQueue,
-  TPawn,
-  TResourceManager,
-  TResourcePack,
-  TGameState,
-  TGameStateManager,
-  TLevel,
-};
+export { default as TBaseCamera } from './cameras/base-camera';
+export * from './cameras/camera';
 
-export type {
-  TConfig,
-  TResourcePackConfig,
-  TPostMessageFunc,
-  TEvent,
-  TMessageTypesCore,
-  TMessageEventRelay,
-  TActorWithOnUpdate,
-  TActorComponentWithOnUpdate,
-  TGameStateWithOnUpdate,
-  TGameStateWithOnCreate,
-  TGameStateWithOnEnter,
-  TGameStateWithOnLeave,
-  TGameStateWithOnResume,
-};
+export { default as TCameraComponent } from './cameras/camera-component';
+export * from './cameras/camera-view';
 
-export {
-  TActorComponent,
-  TBoxComponent,
-  TSphereComponent,
-  TPlaneComponent,
-  TMeshComponent,
-  TRotatingComponent,
-  TSceneComponent,
-  TSpriteComponent,
-  TOriginPoint,
-  TSpriteLayer,
-  TTexturedMeshComponent,
-  TTilemapComponent,
-};
-export type { TTileset, TTilesetConfig };
+export { default as TOrbitCamera } from './cameras/orbit-camera';
+export { default as TOrthographicCamera } from './cameras/orthographic-camera';
+export { default as TPerspectiveCamera } from './cameras/perspective-camera';
 
-export { TDebugPanel };
+export { default as TActor } from './core/actor';
+export * from './core/actor';
 
-export {
-  TProjectionType,
-  TMesh,
-  TProgram,
-  TCanvas,
-  TImage,
-  TTexture,
-  TTextureFilter,
-  TTilemap,
-};
-export type { IMaterial, TGridTile, TTilemapLayer, TTilesetDef };
+export { default as TEventQueue } from './core/event-queue';
+export * from './core/event-queue';
 
-export {
-  TBaseCamera,
-  TPerspectiveCamera,
-  TOrthographicCamera,
-  TOrbitCamera,
-  TCameraComponent,
-  getDefaultCameraView,
-};
-export type { TCameraView, ICamera };
+export { default as TGameState } from './core/game-state';
+export * from './core/game-state';
 
-export {
-  TActionPressedEvent,
-  TActionReleasedEvent,
-  TController,
-  TSimpleController,
-  TKeyboard,
-  TMouseMoveEvent,
-  TMouseUpEvent,
-  TMouseDownEvent,
-  TMouse,
-};
+export { default as TGameStateManager } from './core/game-state-manager';
 
-export type { TEventTypesInput as TInputEventType, TKeyUpEvent, TKeyDownEvent };
+export { default as TLevel } from './core/level';
+export * from './core/messages';
 
-export { TTransform };
+export { default as TPawn } from './core/pawn';
 
-export { TColliderType, TBoxCollider, TPlaneCollider, TSphereCollider };
-export type {
-  ICollider,
-  TColliderConfig,
-  TBoxColliderConfig,
-  TPlaneColliderConfig,
-  TSphereColliderConfig,
-};
+export { default as TResourceManager } from './core/resource-manager';
+export { default as TResourcePack } from './core/resource-pack';
+export * from './core/resource-pack';
 
-export { TGame, useGameContext, useEngineContext, useEventQueue };
+export { default as TDebugPanel } from './debug/debug-panel';
+export * from './engine/config';
+export { default as TEngine } from './engine/engine';
+export * from './engine/engine';
 
-export type { TGameContextData, TEngineContextData };
+export { default as TFred } from './fred/fred';
+
+export * from './graphics';
+export { default as TCanvas } from './graphics/canvas';
+export { default as TImage } from './graphics/image';
+export * from './graphics/material';
+
+export { default as TMesh } from './graphics/mesh';
+
+export { default as TTexture } from './graphics/texture';
+export * from './graphics/texture';
+
+export { default as TTilemap } from './graphics/tilemap';
+export * from './graphics/tilemap';
+
+export { default as TController } from './input/controller';
+export * from './input/events';
+
+export { default as TKeyboard } from './input/keyboard';
+export { default as TMouse } from './input/mouse';
+export { default as TSimpleController } from './input/simple-controller';
+
+export { default as TTransform } from './math/transform';
 
 export * from './physics/world';
 export { default as TWorld } from './physics/world';
+
+export * from './physics/colliders';
+
+export { default as TBoxCollider } from './physics/colliders/box-collider';
+export * from './physics/colliders/box-collider';
+
+export { default as TPlaneCollider } from './physics/colliders/plane-collider';
+export * from './physics/colliders/plane-collider';
+
+export { default as TSphereCollider } from './physics/colliders/sphere-collider';
+export * from './physics/colliders/sphere-collider';
+
+export { default as TProgram } from './renderer/program';
+
+export { default as TGame } from './ui/components/Game';
+export * from './ui/context';
+export * from './ui/hooks';
