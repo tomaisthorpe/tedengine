@@ -20,6 +20,11 @@ export default class TLevel {
     this.world = new TWorld(this);
     await this.world.create({
       enableGravity: true,
+      defaultCollisionClass: 'Solid',
+      collisionClasses: [
+        { name: 'Solid' },
+        { name: 'NoCollide', ignores: ['Solid'] },
+      ],
     });
   }
 

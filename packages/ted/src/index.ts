@@ -81,7 +81,6 @@ import TPlaneCollider from './physics/colliders/plane-collider';
 import type { TPlaneColliderConfig } from './physics/colliders/plane-collider';
 import TSphereCollider from './physics/colliders/sphere-collider';
 import type { TSphereColliderConfig } from './physics/colliders/sphere-collider';
-import TWorld from './physics/world';
 import TProgram from './renderer/program';
 import TGame from './ui/components/Game';
 import type { TGameContextData, TEngineContextData } from './ui/context';
@@ -174,8 +173,6 @@ export type { TEventTypesInput as TInputEventType, TKeyUpEvent, TKeyDownEvent };
 
 export { TTransform };
 
-export { TWorld };
-
 export { TColliderType, TBoxCollider, TPlaneCollider, TSphereCollider };
 export type {
   ICollider,
@@ -188,3 +185,6 @@ export type {
 export { TGame, useGameContext, useEngineContext, useEventQueue };
 
 export type { TGameContextData, TEngineContextData };
+
+export * from './physics/world';
+export { default as TWorld } from './physics/world';

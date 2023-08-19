@@ -23,11 +23,62 @@ export default class TCannonWorld implements TPhysicsWorld {
 
   public collisions: TPhysicsCollision[] = [];
 
+  private defaultCollisionClass!: string;
+  private collisionClasses: {
+    [key: string]: {
+      groupNumber: number;
+      mask?: number;
+      ignoredBy: number[];
+    };
+  } = {};
+
   public async create(config: TWorldConfig): Promise<void> {
     const options: { gravity?: CANNON.Vec3 } = {};
 
     if (config.enableGravity) {
       options.gravity = new CANNON.Vec3(0, -9.82, 0);
+    }
+
+    this.defaultCollisionClass = config.defaultCollisionClass;
+
+    // Setup collision classes
+    let nextGroup = 1;
+    for (const cc of config.collisionClasses) {
+      let mask: number | undefined = undefined;
+
+      if (cc.ignores) {
+        for (const ig of cc.ignores) {
+          // Find the group number
+          const id = this.collisionClasses[ig];
+          id.ignoredBy.push(nextGroup);
+
+          if (mask === undefined) {
+            mask = ~id;
+          } else {
+            mask &= ~id;
+          }
+        }
+      }
+
+      this.collisionClasses[cc.name] = {
+        groupNumber: nextGroup,
+        mask,
+        ignoredBy: [],
+      };
+
+      nextGroup *= 2;
+    }
+
+    // Apply ignoredBy to masks
+    for (const name in this.collisionClasses) {
+      const cc = this.collisionClasses[name];
+      for (const ig of cc.ignoredBy) {
+        if (cc.mask === undefined) {
+          cc.mask = ~ig;
+        } else {
+          cc.mask &= ~ig;
+        }
+      }
     }
 
     this.world = new CANNON.World(options);
@@ -41,7 +92,7 @@ export default class TCannonWorld implements TPhysicsWorld {
         if (!bodyAUUID || !bodyBUUID) return;
 
         // @todo collisions are going to be one frame behind?
-        this.collisions.push({ bodyA: bodyAUUID, bodyB: bodyBUUID });
+        this.collisions.push({ bodies: [bodyAUUID, bodyBUUID] });
       }
     );
   }
@@ -98,7 +149,27 @@ export default class TCannonWorld implements TPhysicsWorld {
       return;
     }
 
-    const body = new CANNON.Body({ mass, shape });
+    const colliderFilter: {
+      collisionFilterGroup?: number;
+      collisionFilterMask?: number;
+    } = {};
+
+    if (collider.collisionClass) {
+      const collisionClass = this.collisionClasses[collider.collisionClass];
+
+      colliderFilter.collisionFilterGroup = collisionClass.groupNumber;
+      colliderFilter.collisionFilterMask = collisionClass.mask;
+    } else {
+      const defaultClass = this.collisionClasses[this.defaultCollisionClass];
+      colliderFilter.collisionFilterGroup = defaultClass.groupNumber;
+      colliderFilter.collisionFilterMask = defaultClass.mask;
+    }
+
+    const body = new CANNON.Body({
+      mass,
+      shape,
+      ...colliderFilter,
+    });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
 

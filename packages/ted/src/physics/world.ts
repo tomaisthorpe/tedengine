@@ -14,6 +14,13 @@ import { TPhysicsMessageTypes } from './worker/messages';
 
 export interface TWorldConfig {
   enableGravity: boolean;
+  defaultCollisionClass: string;
+  collisionClasses: TCollisionClass[];
+}
+
+export interface TCollisionClass {
+  name: string;
+  ignores?: [string];
 }
 
 export default class TWorld {

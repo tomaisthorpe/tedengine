@@ -26,6 +26,5 @@ export interface TPhysicsBody {
 }
 
 export interface TPhysicsCollision {
-  bodyA: string;
-  bodyB: string;
+  bodies: [string, string];
 }
