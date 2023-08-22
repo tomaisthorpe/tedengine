@@ -5,11 +5,16 @@ import {
   TEngine,
   TPawn,
   TSimpleController,
+  TEventTypesInput,
 } from '@tedengine/ted';
-import type { TController, TActorWithOnUpdate } from '@tedengine/ted';
+import type {
+  TController,
+  TActorWithOnUpdate,
+  TMouseUpEvent,
+} from '@tedengine/ted';
 
 class Cube extends TPawn implements TActorWithOnUpdate {
-  constructor(_: TEngine, x: number, y: number, z: number) {
+  constructor(engine: TEngine, x: number, y: number, z: number) {
     super();
 
     const controller = new TSimpleController(engine);
@@ -19,6 +24,13 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     this.rootComponent = box;
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
+
+    engine.events.addListener<TMouseUpEvent>(
+      TEventTypesInput.MouseUp,
+      (e: TMouseUpEvent) => {
+        console.log('You clicked on the game!');
+      }
+    );
   }
 
   async onUpdate(): Promise<void> {

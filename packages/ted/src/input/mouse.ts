@@ -22,7 +22,7 @@ export default class TMouse {
       eventQueue.broadcast(event);
     });
 
-    window.addEventListener('mouseup', (e) => {
+    this.canvas.addEventListener('mouseup', (e) => {
       const event: TMouseUpEvent = {
         type: TEventTypesInput.MouseUp,
         subType: e.button.toString(),
@@ -31,7 +31,7 @@ export default class TMouse {
       eventQueue.broadcast(event);
     });
 
-    window.addEventListener('mousedown', (e) => {
+    this.canvas.addEventListener('mousedown', (e) => {
       const event: TMouseDownEvent = {
         type: TEventTypesInput.MouseDown,
         subType: e.button.toString(),
