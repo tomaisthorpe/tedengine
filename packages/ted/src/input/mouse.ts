@@ -10,13 +10,9 @@ export default class TMouse {
 
   private addListeners(eventQueue: TEventQueue) {
     window.addEventListener('mousemove', (e) => {
-      const offset = this.canvas.getBoundingClientRect();
       const event: TMouseMoveEvent = {
         type: TEventTypesInput.MouseMove,
-        clientX: e.clientX,
-        clientY: e.clientY,
-        x: e.clientX - offset.left,
-        y: e.clientY - offset.top,
+        ...this.getMouseLocation(e),
       };
 
       eventQueue.broadcast(event);
@@ -26,6 +22,7 @@ export default class TMouse {
       const event: TMouseUpEvent = {
         type: TEventTypesInput.MouseUp,
         subType: e.button.toString(),
+        ...this.getMouseLocation(e),
       };
 
       eventQueue.broadcast(event);
@@ -35,9 +32,20 @@ export default class TMouse {
       const event: TMouseDownEvent = {
         type: TEventTypesInput.MouseDown,
         subType: e.button.toString(),
+        ...this.getMouseLocation(e),
       };
 
       eventQueue.broadcast(event);
     });
+  }
+
+  private getMouseLocation(e: MouseEvent) {
+    const offset = this.canvas.getBoundingClientRect();
+    return {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      x: e.clientX - offset.left,
+      y: e.clientY - offset.top,
+    };
   }
 }

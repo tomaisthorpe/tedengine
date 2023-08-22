@@ -28,7 +28,7 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     engine.events.addListener<TMouseUpEvent>(
       TEventTypesInput.MouseUp,
       (e: TMouseUpEvent) => {
-        console.log('You clicked on the game!');
+        console.log(`You clicked on the game at (${e.x},${e.y})!`);
       }
     );
   }

@@ -21,11 +21,19 @@ export interface TKeyDownEvent {
 export interface TMouseUpEvent {
   type: TEventTypesInput.MouseUp;
   subType: string; // Button released
+  clientX: number;
+  clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface TMouseDownEvent {
   type: TEventTypesInput.MouseDown;
   subType: string; // Button pressed
+  clientX: number;
+  clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface TMouseMoveEvent {
