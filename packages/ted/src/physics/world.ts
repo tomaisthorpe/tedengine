@@ -26,6 +26,7 @@ export interface TCollisionClass {
 export default class TWorld {
   private worker?: Worker;
   private config?: TWorldConfig;
+  private workerPort?: MessagePort;
 
   constructor(private level: TLevel) {}
 
@@ -46,7 +47,7 @@ export default class TWorld {
       delta,
     };
 
-    this.worker?.postMessage(message);
+    this.workerPort?.postMessage(message);
   }
 
   public registerActor(actor: TActor) {
@@ -76,7 +77,7 @@ export default class TWorld {
     };
 
     // @todo this shouldn't be optional
-    this.worker?.postMessage(message);
+    this.workerPort?.postMessage(message);
   }
 
   public applyCentralForce(component: TSceneComponent, force: vec3) {
@@ -86,7 +87,7 @@ export default class TWorld {
       force,
     };
 
-    this.worker?.postMessage(message);
+    this.workerPort?.postMessage(message);
   }
 
   public applyCentralImpulse(component: TSceneComponent, impulse: vec3) {
@@ -96,7 +97,7 @@ export default class TWorld {
       impulse,
     };
 
-    this.worker?.postMessage(message);
+    this.workerPort?.postMessage(message);
   }
 
   private onMessage(event: MessageEvent) {
@@ -107,6 +108,8 @@ export default class TWorld {
     const { data } = event;
     switch (data.type) {
       case TPhysicsMessageTypes.INIT:
+        this.workerPort = event.ports[0];
+        this.workerPort.onmessage = this.onMessage.bind(this);
         this.setupWorld();
         break;
       case TPhysicsMessageTypes.WORLD_CREATED:
@@ -132,7 +135,7 @@ export default class TWorld {
       config: this.config,
     };
 
-    this.worker?.postMessage(message);
+    this.workerPort?.postMessage(message);
   }
 
   public destroy() {

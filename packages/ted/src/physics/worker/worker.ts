@@ -16,7 +16,10 @@ import type { TPhysicsWorld } from './physics-world';
 // const world = new TAmmoWorld() as TPhysicsWorld;
 const world = new TCannonWorld() as TPhysicsWorld;
 
-self.onmessage = async (event: MessageEvent) => {
+const channel = new MessageChannel();
+const enginePort = channel.port1;
+
+enginePort.onmessage = async (event: MessageEvent) => {
   const { data } = event;
   switch (data.type) {
     case TPhysicsMessageTypes.WORLD_SETUP: {
@@ -24,7 +27,7 @@ self.onmessage = async (event: MessageEvent) => {
       const message: TPhysicsOutMessageWorldCreated = {
         type: TPhysicsMessageTypes.WORLD_CREATED,
       };
-      self.postMessage(message);
+      enginePort.postMessage(message);
       break;
     }
     case TPhysicsMessageTypes.SIMULATE_STEP: {
@@ -35,7 +38,7 @@ self.onmessage = async (event: MessageEvent) => {
         type: TPhysicsMessageTypes.SIMULATE_DONE,
         ...worldState,
       };
-      self.postMessage(message);
+      enginePort.postMessage(message);
       break;
     }
     case TPhysicsMessageTypes.REGISTER_BODY: {
@@ -64,4 +67,4 @@ self.onmessage = async (event: MessageEvent) => {
 
 // Everything is setup, let the game world know
 const initMessage: TPhysicsOutMessageInit = { type: TPhysicsMessageTypes.INIT };
-self.postMessage(initMessage);
+self.postMessage(initMessage, [channel.port2] as any);

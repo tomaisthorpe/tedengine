@@ -132,8 +132,6 @@ export default class TFred {
 
     this.container.append(this.canvas);
 
-    console.log(this.enginePort);
-
     this.events = new TEventQueue([this.enginePort]);
     this.keyboard = new TKeyboard(this.events);
     this.mouse = new TMouse(this.events, this.canvas);
