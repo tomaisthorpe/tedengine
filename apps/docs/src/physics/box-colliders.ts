@@ -13,7 +13,7 @@ import {
 } from '@tedengine/ted';
 
 class Cube extends TActor {
-  constructor(_: TEngine, x: number, y: number, z: number) {
+  constructor(engine: TEngine, x: number, y: number, z: number) {
     super();
 
     const box = new TBoxComponent(engine, this, 1, 1, 1);
@@ -25,7 +25,7 @@ class Cube extends TActor {
 }
 
 class Sphere extends TActor {
-  constructor(_: TEngine, x: number, y: number, z: number) {
+  constructor(engine: TEngine, x: number, y: number, z: number) {
     super();
 
     const box = new TSphereComponent(engine, this, 0.5, 9, 12);

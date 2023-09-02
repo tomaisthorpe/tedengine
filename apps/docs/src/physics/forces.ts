@@ -17,7 +17,7 @@ class Cube extends TPawn implements TActorWithOnUpdate {
   private speed = 10;
   private isDown: { [key: string]: boolean } = {};
 
-  constructor(_: TEngine, x: number, y: number, z: number) {
+  constructor(engine: TEngine, x: number, y: number, z: number) {
     super();
 
     const controller = new TSimpleController(engine);
