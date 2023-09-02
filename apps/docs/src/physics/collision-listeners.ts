@@ -32,6 +32,10 @@ class Sphere extends TActor {
     this.rootComponent = box;
     this.rootComponent.collider = new TSphereCollider(engine, this, 0.5);
 
+    this.rootComponent.collider.addListener('Solid', (e) => {
+      console.log(e);
+    });
+
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
   }
 }

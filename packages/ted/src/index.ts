@@ -79,6 +79,9 @@ export { default as TWorld } from './physics/world';
 
 export * from './physics/colliders';
 
+export { default as TBaseCollider } from './physics/colliders/base-collider';
+export * from './physics/colliders/base-collider';
+
 export { default as TBoxCollider } from './physics/colliders/box-collider';
 export * from './physics/colliders/box-collider';
 

@@ -18,7 +18,7 @@ class Cube extends TActor {
 
     const box = new TBoxComponent(engine, this, 1, 1, 1);
     this.rootComponent = box;
-    this.rootComponent.collider = new TBoxCollider(1, 1, 1);
+    this.rootComponent.collider = new TBoxCollider(engine, this, 1, 1, 1);
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
   }
@@ -30,7 +30,12 @@ class Sphere extends TActor {
 
     const box = new TSphereComponent(engine, this, 0.5, 9, 12);
     this.rootComponent = box;
-    this.rootComponent.collider = new TSphereCollider(0.5, 'NoCollide');
+    this.rootComponent.collider = new TSphereCollider(
+      engine,
+      this,
+      0.5,
+      'NoCollide'
+    );
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
   }
@@ -42,7 +47,7 @@ class Plane extends TActor {
 
     const box = new TPlaneComponent(engine, this, 10, 10);
     this.rootComponent = box;
-    this.rootComponent.collider = new TPlaneCollider(10, 10);
+    this.rootComponent.collider = new TPlaneCollider(engine, this, 10, 10);
     this.rootComponent.mass = 0;
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, 0);
