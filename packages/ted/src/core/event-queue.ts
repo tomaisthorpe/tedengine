@@ -1,4 +1,3 @@
-import type { TPostMessageFunc } from '../engine/engine';
 import type { TMessageEventRelay } from './messages';
 import { TMessageTypesCore } from './messages';
 
@@ -20,10 +19,7 @@ export default class TEventQueue {
   /**
    * @param relayTo workers to rely all events to
    */
-  constructor(
-    private relayTo: TPostMessageFunc[] = [],
-    private workers: Worker[] = []
-  ) {}
+  constructor(private relayTo: MessagePort[] = []) {}
 
   /**
    * Adds the event to the event queue, ready to be processed.
@@ -35,16 +31,8 @@ export default class TEventQueue {
 
     if (dontRelay) return;
 
-    // @todo figure out why we need two types of relay
-    for (const worker of this.relayTo) {
-      worker({
-        type: TMessageTypesCore.EVENT_RELAY,
-        event,
-      } as TMessageEventRelay);
-    }
-
-    for (const worker of this.workers) {
-      worker.postMessage({
+    for (const port of this.relayTo) {
+      port.postMessage({
         type: TMessageTypesCore.EVENT_RELAY,
         event,
       } as TMessageEventRelay);

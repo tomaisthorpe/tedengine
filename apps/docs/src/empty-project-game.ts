@@ -9,5 +9,4 @@ export const gameConfig = {
   defaultState: 'empty',
 };
 
-const engine = new TEngine(gameConfig, self.postMessage.bind(self));
-onmessage = engine.onMessage;
+new TEngine(gameConfig, self.postMessage.bind(self));

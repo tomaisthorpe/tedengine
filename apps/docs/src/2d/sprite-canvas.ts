@@ -51,5 +51,4 @@ const config = {
   defaultState: 'game',
 };
 
-const engine = new TEngine(config, postMessage.bind(self));
-onmessage = engine.onMessage;
+new TEngine(config, postMessage.bind(self));

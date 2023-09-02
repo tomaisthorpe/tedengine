@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { TPostMessageFunc } from '../engine/engine';
 import { TJobContextTypes } from './context-types';
 import type { TAudioJobContext, TJobContext, TRenderJobContext } from './jobs';
 import { AllJobs } from './jobs';
@@ -38,13 +37,13 @@ export default class TJobManager {
     }
   }
 
-  addRelay(contexts: TJobContextTypes[], postMessage: TPostMessageFunc) {
+  addRelay(contexts: TJobContextTypes[], port: MessagePort) {
     const func = (wrappedJob: TWrappedJob) => {
       const message: TJobsMessageRelay = {
         type: TMessageTypesJobs.RELAY,
         wrappedJob,
       };
-      postMessage(message, wrappedJob.transferList || []);
+      port.postMessage(message, wrappedJob.transferList || []);
     };
 
     for (const context of contexts) {
@@ -83,7 +82,9 @@ export default class TJobManager {
 
   public async doRelayedJob(
     wrappedJob: TWrappedJob,
-    returnPostMessage: (result: TJobsMessageRelayResult) => void
+    port: {
+      postMessage: (result: TJobsMessageRelayResult) => void;
+    }
   ) {
     const result = await this.do(wrappedJob.job, []);
 
@@ -97,7 +98,7 @@ export default class TJobManager {
       wrappedResult,
     };
 
-    returnPostMessage(message);
+    port.postMessage(message);
   }
 
   public onRelayedResult(wrappedResult: TWrappedJobResult) {

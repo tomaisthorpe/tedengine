@@ -115,5 +115,4 @@ const config = {
   debugPanelOpen: true,
 };
 
-const engine = new TEngine(config, postMessage.bind(self));
-onmessage = engine.onMessage;
+new TEngine(config, postMessage.bind(self));

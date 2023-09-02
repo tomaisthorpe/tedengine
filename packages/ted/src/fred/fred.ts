@@ -55,13 +55,15 @@ export default class TFred {
     renderTime: '0.0',
   };
 
+  private enginePort!: MessagePort;
+
   constructor(
-    private engineWorker: Worker,
+    engineWorker: Worker,
     private container: HTMLElement,
     private updateEngineContext: (ctx: TEngineContextData) => void,
     private updateGameContext: (ctx: TGameContextData) => void
   ) {
-    this.engineWorker.onmessage = this.onEngineMessage.bind(this);
+    engineWorker.onmessage = this.onEngineMessage.bind(this);
 
     this.update = this.update.bind(this);
   }
@@ -72,6 +74,7 @@ export default class TFred {
     const { data } = ev;
     switch (data.type) {
       case TMessageTypesEngine.BOOTSTRAP:
+        this.enginePort = ev.ports[0];
         this.bootstrap();
         break;
       case TMessageTypesCore.EVENT_RELAY:
@@ -89,11 +92,7 @@ export default class TFred {
       }
       case TMessageTypesJobs.RELAY: {
         const relayMessage = data as TJobsMessageRelay;
-        this.jobs.doRelayedJob(
-          relayMessage.wrappedJob,
-          (message: TJobsMessageRelayResult) =>
-            this.engineWorker.postMessage(message)
-        );
+        this.jobs.doRelayedJob(relayMessage.wrappedJob, this.enginePort);
         break;
       }
       case TMessageTypesJobs.RELAY_RESULT: {
@@ -133,7 +132,9 @@ export default class TFred {
 
     this.container.append(this.canvas);
 
-    this.events = new TEventQueue([], [this.engineWorker]);
+    console.log(this.enginePort);
+
+    this.events = new TEventQueue([this.enginePort]);
     this.keyboard = new TKeyboard(this.events);
     this.mouse = new TMouse(this.events, this.canvas);
 
@@ -152,17 +153,16 @@ export default class TFred {
       audio: this.audio,
     };
 
-    this.jobs.addRelay(
-      [TJobContextTypes.Engine],
-      this.engineWorker.postMessage
-    );
+    this.jobs.addRelay([TJobContextTypes.Engine], this.enginePort);
 
     this.update();
+
+    this.enginePort.onmessage = this.onEngineMessage.bind(this);
 
     const message: TFredMessageRead = {
       type: TFredMessageTypes.READY,
     };
-    this.engineWorker.postMessage(message);
+    this.enginePort.postMessage(message);
   }
 
   private update() {

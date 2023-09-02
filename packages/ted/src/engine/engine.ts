@@ -32,12 +32,6 @@ export type TPostMessageFunc =
   | ((message: any, transfer?: Transferable[]) => void)
   | ((message: any) => void);
 
-export type TPostMessageWithTargetFunc = (
-  message: any,
-  targetOrigin: string,
-  transfer?: Transferable[]
-) => void;
-
 export default class TEngine {
   public events: TEventQueue;
   public resources: TResourceManager;
@@ -58,24 +52,24 @@ export default class TEngine {
     engineTime: 0,
   };
   private lastEngineTimeUpdate = 0;
-  private postMessage!: TPostMessageFunc;
+  private fredPort!: MessagePort;
 
   constructor(private config: TConfig, postMessage: TPostMessageFunc) {
-    this.postMessage = (message: any, transfer?: Transferable[]) => {
-      postMessage(message, transfer);
-    };
-    this.postMessage = this.postMessage.bind(this);
+    // Create channel for Fred
+    const channel = new MessageChannel();
+    this.fredPort = channel.port1;
+    this.fredPort.onmessage = this.onMessage.bind(this);
 
-    this.triggerBootstrap();
+    this.triggerBootstrap(postMessage, channel);
 
-    this.events = new TEventQueue([this.postMessage]);
+    this.events = new TEventQueue([this.fredPort]);
 
     this.update = this.update.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.jobs = new TJobManager([TJobContextTypes.Engine]);
     this.jobs.addRelay(
       [TJobContextTypes.Renderer, TJobContextTypes.Audio],
-      this.postMessage
+      this.fredPort
     );
     this.resources = new TResourceManager(this.jobs);
 
@@ -99,10 +93,7 @@ export default class TEngine {
       case TMessageTypesJobs.RELAY: {
         const relayMessage = data as TJobsMessageRelay;
 
-        this.jobs.doRelayedJob(
-          relayMessage.wrappedJob,
-          this.postMessage.bind(this)
-        );
+        this.jobs.doRelayedJob(relayMessage.wrappedJob, this.fredPort);
         break;
       }
       case TMessageTypesJobs.RELAY_RESULT: {
@@ -163,7 +154,7 @@ export default class TEngine {
       params,
     };
 
-    this.postMessage(message);
+    this.fredPort.postMessage(message);
 
     this.frameNumber++;
 
@@ -181,12 +172,15 @@ export default class TEngine {
    *
    * In future this will also provide some config to the bootstrapper.
    */
-  private triggerBootstrap() {
+  private triggerBootstrap(
+    postMessage: TPostMessageFunc,
+    channel: MessageChannel
+  ) {
     const message: TEngineMessageBootstrap = {
       type: TMessageTypesEngine.BOOTSTRAP,
     };
 
-    this.postMessage(message);
+    postMessage(message, [channel.port2]);
   }
 
   public updateGameContext(data: TGameContextData) {
@@ -195,7 +189,7 @@ export default class TEngine {
       data,
     };
 
-    this.postMessage(message);
+    this.fredPort.postMessage(message);
   }
 
   public updateEngineContext(data: TEngineContextData) {
@@ -204,6 +198,6 @@ export default class TEngine {
       data,
     };
 
-    this.postMessage(message);
+    this.fredPort.postMessage(message);
   }
 }
