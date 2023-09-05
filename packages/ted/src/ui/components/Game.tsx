@@ -9,8 +9,6 @@ import LoadingScreen from './LoadingScreen';
 
 const Container = styled.div`
   display: block;
-  width: 1024px;
-  height: 768px;
   position: relative;
   border: 1px solid #181b1f;
   box-shadow: 0px 1px 2px #161a20;
@@ -19,9 +17,13 @@ const Container = styled.div`
 const TGame = ({
   game,
   children,
+  width = '1024px',
+  height = '768px',
 }: {
   game: Worker;
   children?: React.ReactNode;
+  width?: string;
+  height?: string;
 }) => {
   const container = useRef(null);
   const [fred, setFred] = useState<TFred | null>(null);
@@ -50,7 +52,13 @@ const TGame = ({
     <TEventQueueContext.Provider value={{ events }}>
       <TEngineContext.Provider value={engineData}>
         <TGameContext.Provider value={gameData}>
-          <Container ref={container}>
+          <Container
+            style={{
+              width,
+              height,
+            }}
+            ref={container}
+          >
             {fred !== null && fred.events && (
               <>
                 <DebugPanel events={fred.events} stats={fred.stats} />
