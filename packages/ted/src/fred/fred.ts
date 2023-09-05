@@ -128,12 +128,8 @@ export default class TFred {
     // Create the canvas
     this.container.classList.add('t-game-container');
     this.canvas = document.createElement('canvas');
-    this.onResize();
-
-    // @todo remove this listener when cleaning up
-    window.addEventListener('resize', () => {
-      this.onResize();
-    });
+    this.onResize(this.container.clientWidth, this.container.clientHeight);
+    this.setupResizeObserver();
 
     this.container.append(this.canvas);
 
@@ -189,17 +185,26 @@ export default class TFred {
     }
   }
 
-  private onResize() {
+  private setupResizeObserver() {
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      this.onResize(entry.contentRect.width, entry.contentRect.height);
+    });
+
+    observer.observe(this.container);
+  }
+
+  private onResize(containerWidth: number, containerHeight: number) {
     // @todo call this on window resize
     if (this.canvas) {
       // This is the size that WebGL will render at
       // On High DPI screens, this should be increased, e.g. * 2
-      this.canvas.width = this.container.clientWidth;
-      this.canvas.height = this.container.clientHeight;
+      this.canvas.width = containerWidth;
+      this.canvas.height = containerHeight;
 
       // This is the size that the canvas itself displays as in the browser
-      this.canvas.style.width = `${this.container.clientWidth}px`;
-      this.canvas.style.height = `${this.container.clientHeight}px`;
+      this.canvas.style.width = `${containerWidth}px`;
+      this.canvas.style.height = `${containerHeight}px`;
     }
 
     if (this.renderer) {
