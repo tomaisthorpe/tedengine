@@ -1,7 +1,7 @@
 # Game Config
 
 Simple example to show what can be configured.
-So far, is just canvas size.
+This example shows 100% game width.
 
 import useBrowserOnly from '@hooks/useBrowserOnly';
 import { TGame } from '@tedengine/ted';
@@ -13,7 +13,7 @@ export const Game = () => {
   }
   return (
     <TGame
-      width="600px"
+      width="100%"
       height="600px"
       game={new Worker(new URL('@examples/game-config.ts', import.meta.url))}
     />

@@ -177,6 +177,11 @@ export default class TRenderer {
     }
   }
 
+  public onResize() {
+    const gl = this.context();
+    gl.viewport(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+  }
+
   private generateProjectionMatrix(
     gl: WebGL2RenderingContext,
     cameraView: TCameraView

@@ -130,6 +130,11 @@ export default class TFred {
     this.canvas = document.createElement('canvas');
     this.onResize();
 
+    // @todo remove this listener when cleaning up
+    window.addEventListener('resize', () => {
+      this.onResize();
+    });
+
     this.container.append(this.canvas);
 
     this.events = new TEventQueue([this.enginePort]);
@@ -189,6 +194,10 @@ export default class TFred {
     if (this.canvas) {
       this.canvas.width = this.container.clientWidth;
       this.canvas.height = this.container.clientHeight;
+    }
+
+    if (this.renderer) {
+      this.renderer.onResize();
     }
   }
 }
