@@ -1,5 +1,24 @@
 # @tedengine/ted
 
+## 0.2.0
+
+### Minor Changes
+
+- 046a475: Add ability to change game size after bootstrap
+- 7efb324: Add location of mouse clicks
+- 94633ea: Add ability to provide game canvas size
+- 0f4616f: Add draft of collision classes with Solid and NoCollide
+
+### Patch Changes
+
+- 062c6bc: Fix WebGL viewpoint size using document size instead of canvas size
+- da2f643: Prevent mouse clicks triggering events outside of canvas
+- 8955a01: Refactor physics worker communication to use Channel Message API
+- 956ce20: Change window resize event to Resize Observer
+- 26b4dcf: Refactor index exports to use export \* from
+- 53884f9: Refactor Engine <> Fred communication to use Channel Message API
+- ba182a2: Add collisions in internal physics simulate event
+
 ## 0.1.0
 
 ### Minor Changes
