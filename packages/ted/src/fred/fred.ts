@@ -192,8 +192,14 @@ export default class TFred {
   private onResize() {
     // @todo call this on window resize
     if (this.canvas) {
+      // This is the size that WebGL will render at
+      // On High DPI screens, this should be increased, e.g. * 2
       this.canvas.width = this.container.clientWidth;
       this.canvas.height = this.container.clientHeight;
+
+      // This is the size that the canvas itself displays as in the browser
+      this.canvas.style.width = `${this.container.clientWidth}px`;
+      this.canvas.style.height = `${this.container.clientHeight}px`;
     }
 
     if (this.renderer) {

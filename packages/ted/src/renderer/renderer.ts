@@ -52,7 +52,7 @@ export default class TRenderer {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
 
-    gl.viewport(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
     this.colorProgram = new TColorProgram(this, this.resourceManager);
     await this.colorProgram.load();
@@ -179,7 +179,7 @@ export default class TRenderer {
 
   public onResize() {
     const gl = this.context();
-    gl.viewport(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   private generateProjectionMatrix(
