@@ -132,7 +132,7 @@ export default class TRenderer {
     const sprites: TSerializedSpriteInstance[] = [];
 
     for (const task of frameParams.renderTasks) {
-      if (task.type == TRenderTask.SpriteInstance) {
+      if (task.type === TRenderTask.SpriteInstance) {
         sprites.push(task);
         continue;
       }
@@ -194,7 +194,7 @@ export default class TRenderer {
     const zFar = 100.0;
     const projection = mat4.create();
 
-    if (cameraView.projectionType == TProjectionType.Perspective) {
+    if (cameraView.projectionType === TProjectionType.Perspective) {
       mat4.perspective(projection, fieldOfView, aspect, zNear, zFar);
     } else {
       mat4.ortho(

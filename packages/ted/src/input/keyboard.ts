@@ -24,7 +24,7 @@ export default class TKeyboard {
       }
 
       let key = e.key;
-      if (key == ' ') {
+      if (key === ' ') {
         key = 'Space';
       }
 
@@ -46,7 +46,7 @@ export default class TKeyboard {
       }
 
       let key = e.key;
-      if (key == ' ') {
+      if (key === ' ') {
         key = 'Space';
       }
 

@@ -72,7 +72,7 @@ export default class MTLFile {
         .trim()
         .split(' ');
 
-      if (lineItems.length == 0 || !lineItems[0]) {
+      if (lineItems.length === 0 || !lineItems[0]) {
         return; // Skip blank lines
       }
 
@@ -221,7 +221,7 @@ export default class MTLFile {
     this.materials.push(newMaterial);
   }
   _getCurrentMaterial() {
-    if (this.materials.length == 0) {
+    if (this.materials.length === 0) {
       this._createMaterial(this.defaultMaterialName);
     }
     return this.materials[this.materials.length - 1];
@@ -246,7 +246,7 @@ export default class MTLFile {
   // Ka spectral file.rfl factor
   // Ka xyz x y z
   _parseKa(lineItems: string[]) {
-    if (lineItems.length != 4) {
+    if (lineItems.length !== 4) {
       this._notImplemented(
         'Ka statements must have exactly 3 arguments (only Ka R G B syntax is supported'
       );
@@ -265,7 +265,7 @@ export default class MTLFile {
   // Kd spectral file.rfl factor
   // Kd xyz x y z
   _parseKd(lineItems: string[]) {
-    if (lineItems.length != 4) {
+    if (lineItems.length !== 4) {
       this._notImplemented(
         'Kd statements must have exactly 3 arguments (only Kd R G B syntax is supported'
       );
@@ -284,7 +284,7 @@ export default class MTLFile {
   // Ks spectral file.rfl factor
   // Ks xyz x y z
   _parseKs(lineItems: string[]) {
-    if (lineItems.length != 4) {
+    if (lineItems.length !== 4) {
       this._notImplemented(
         'Ks statements must have exactly 3 arguments (only Ks R G B syntax is supported'
       );
@@ -306,10 +306,10 @@ export default class MTLFile {
         'to few arguments, expected: Ka/Kd/Ks keyword followed by: r g b values'
       );
     }
-    if (lineItems[1].toLowerCase() == 'spectral') {
+    if (lineItems[1].toLowerCase() === 'spectral') {
       this._notImplemented('Ka spectral <filename> <factor>');
       return;
-    } else if (lineItems[1].toLowerCase() == 'xyz') {
+    } else if (lineItems[1].toLowerCase() === 'xyz') {
       this._notImplemented('Ka xyz <x> <y> <z>');
       return;
     }

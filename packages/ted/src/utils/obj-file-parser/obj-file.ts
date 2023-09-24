@@ -86,7 +86,7 @@ export default class OBJFile {
   }
 
   _currentModel() {
-    if (this.result.models.length == 0) {
+    if (this.result.models.length === 0) {
       this.result.models.push({
         name: this.defaultModelName,
         vertices: [],
@@ -116,7 +116,7 @@ export default class OBJFile {
   }
 
   _parseGroup(lineItems: string[]) {
-    if (lineItems.length != 2) {
+    if (lineItems.length !== 2) {
       throw 'Group statements must have exactly 1 argument (eg. g group_1)';
     }
 
@@ -177,14 +177,14 @@ export default class OBJFile {
       let textureCoordsIndex = 0;
       let vertexNormalIndex = 0;
       vertexIndex = parseInt(vertexValues[0]);
-      if (vertexValues.length > 1 && !(vertexValues[1] == '')) {
+      if (vertexValues.length > 1 && !(vertexValues[1] === '')) {
         textureCoordsIndex = parseInt(vertexValues[1]);
       }
       if (vertexValues.length > 2) {
         vertexNormalIndex = parseInt(vertexValues[2]);
       }
 
-      if (vertexIndex == 0) {
+      if (vertexIndex === 0) {
         throw 'Faces uses invalid vertex index of 0';
       }
 
@@ -216,12 +216,12 @@ export default class OBJFile {
   }
 
   _parseSmoothShadingStatement(lineItems: string[]) {
-    if (lineItems.length != 2) {
+    if (lineItems.length !== 2) {
       throw 'Smoothing group statements must have exactly 1 argument (eg. s <number|off>)';
     }
 
     const groupNumber =
-      lineItems[1].toLowerCase() == 'off' ? 0 : parseInt(lineItems[1]);
+      lineItems[1].toLowerCase() === 'off' ? 0 : parseInt(lineItems[1]);
     this.smoothingGroup = groupNumber;
   }
 }
