@@ -25,7 +25,9 @@ export default class TGameStateManager {
 
   /**
    * Pushes a new state onto the stack.
-   * Triggers [[`TGameState.onLeave`]] on the previously active state, then [[`TGameState.onEnter`]] on the new state.
+   * It triggers [[`TGameState.onEnter`]] on the new state.
+   *
+   * It does not trigger [[`TGameState.onLeave`]] on previously active state.
    *
    * @param name state name
    * @param args args to pass to the resumed state
@@ -36,8 +38,6 @@ export default class TGameStateManager {
     if (!this.isValidState(name)) {
       throw new Error(`Game State '${name}' does not exist`);
     }
-
-    await this.current()?.leave(this.engine);
 
     // If state hasn't been created, then create it
     if (!this.states[name]) {
