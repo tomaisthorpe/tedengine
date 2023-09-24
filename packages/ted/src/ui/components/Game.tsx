@@ -42,7 +42,7 @@ const TGame = ({
     setFred(fred);
 
     return function cleanup() {
-      // fred.destroy();
+      fred.destroy();
     };
   }, []);
 

@@ -21,7 +21,7 @@ import { TMessageTypesJobs } from '../jobs/messages';
 import type { TFrameParams } from '../renderer/frame-params';
 import TRenderer from '../renderer/renderer';
 import type { TEngineContextData, TGameContextData } from '../ui/context';
-import type { TFredMessageRead } from './messages';
+import type { TFredMessageReady, TFredMessageShutdown } from './messages';
 import { TFredMessageTypes } from './messages';
 
 const TIME_PER_FRAME_TIME_UPDATE = 1000;
@@ -158,7 +158,7 @@ export default class TFred {
 
     this.enginePort.onmessage = this.onEngineMessage.bind(this);
 
-    const message: TFredMessageRead = {
+    const message: TFredMessageReady = {
       type: TFredMessageTypes.READY,
     };
     this.enginePort.postMessage(message);
@@ -210,6 +210,18 @@ export default class TFred {
     if (this.renderer) {
       this.renderer.onResize();
     }
+  }
+
+  /**
+   * Trigger cleanup across the whole engine
+   */
+  public destroy() {
+    // @todo should this be an event? might be nicer when there's more threds
+    const message: TFredMessageShutdown = {
+      type: TFredMessageTypes.SHUTDOWN,
+    };
+    this.enginePort.postMessage(message);
+    // @todo do teardown on this thread
   }
 }
 

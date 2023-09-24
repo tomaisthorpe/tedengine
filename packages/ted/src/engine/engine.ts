@@ -104,6 +104,14 @@ export default class TEngine {
         this.jobs.onRelayedResult(relayResultMessage.wrappedResult);
         break;
       }
+      case TFredMessageTypes.SHUTDOWN:
+        // Instruct current state to destroy, this includes the physics workers
+        this.gameState.current()?.destroy();
+
+        // Stop this worker
+        this.workerScope.close();
+
+        break;
     }
   }
 
