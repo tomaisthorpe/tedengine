@@ -9,4 +9,4 @@ export const gameConfig = {
   defaultState: 'empty',
 };
 
-new TEngine(gameConfig, self.postMessage.bind(self));
+new TEngine(gameConfig, self as DedicatedWorkerGlobalScope);

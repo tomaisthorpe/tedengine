@@ -80,4 +80,4 @@ const config = {
   debugPanelOpen: true,
 };
 
-new TEngine(config, postMessage.bind(self));
+new TEngine(config, self as DedicatedWorkerGlobalScope);

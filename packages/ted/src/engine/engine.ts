@@ -54,13 +54,16 @@ export default class TEngine {
   private lastEngineTimeUpdate = 0;
   private fredPort!: MessagePort;
 
-  constructor(private config: TConfig, postMessage: TPostMessageFunc) {
+  constructor(
+    private config: TConfig,
+    private workerScope: DedicatedWorkerGlobalScope
+  ) {
     // Create channel for Fred
     const channel = new MessageChannel();
     this.fredPort = channel.port1;
     this.fredPort.onmessage = this.onMessage.bind(this);
 
-    this.triggerBootstrap(postMessage, channel);
+    this.triggerBootstrap(workerScope.postMessage, channel);
 
     this.events = new TEventQueue([this.fredPort]);
 

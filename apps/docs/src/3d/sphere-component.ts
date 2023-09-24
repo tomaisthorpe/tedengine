@@ -40,4 +40,4 @@ const config = {
   defaultState: 'game',
 };
 
-new TEngine(config, postMessage.bind(self));
+new TEngine(config, self as DedicatedWorkerGlobalScope);
