@@ -33,7 +33,7 @@ export default class TSceneComponent extends TActorComponent {
 
   /**
    * Parent of this component.
-   * If null, it is a root component.
+   * If undefined, it is a root component.
    */
   public parentComponent?: TSceneComponent;
 
@@ -59,8 +59,8 @@ export default class TSceneComponent extends TActorComponent {
     | TSerializedRenderTask
     | TSerializedMeshInstance
     | TSerializedSpriteInstance
-    | null {
-    return null;
+    | undefined {
+    return undefined;
   }
 
   /**

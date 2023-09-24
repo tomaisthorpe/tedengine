@@ -24,9 +24,9 @@ export default class TTexturedMeshComponent extends TSceneComponent {
   public getRenderTask():
     | TSerializedMeshInstance
     | TSerializedSpriteInstance
-    | null {
+    | undefined {
     if (!this.mesh || !this.mesh.uuid || !this.texture) {
-      return null;
+      return undefined;
     }
 
     return {

@@ -6,17 +6,19 @@ export interface TEventQueueContextData {
 }
 
 export const TEventQueueContext = React.createContext<TEventQueueContextData>(
-  null!
+  undefined!
 );
 
 export interface TGameContextData {
   [key: string]: any;
 }
 
-export const TGameContext = React.createContext<TGameContextData>(null!);
+export const TGameContext = React.createContext<TGameContextData>(undefined!);
 
 export interface TEngineContextData {
   loading: boolean;
 }
 
-export const TEngineContext = React.createContext<TEngineContextData>(null!);
+export const TEngineContext = React.createContext<TEngineContextData>(
+  undefined!
+);

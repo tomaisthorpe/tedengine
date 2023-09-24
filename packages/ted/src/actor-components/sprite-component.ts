@@ -59,9 +59,9 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
     this.generateMesh();
   }
 
-  public getRenderTask(): TSerializedSpriteInstance | null {
+  public getRenderTask(): TSerializedSpriteInstance | undefined {
     if (!this.mesh || !this.mesh.uuid || !this.texture) {
-      return null;
+      return undefined;
     }
 
     return {

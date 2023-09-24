@@ -18,15 +18,15 @@ export default class TMeshComponent extends TSceneComponent {
     this.shouldRender = true;
   }
 
-  public getRenderTask(): TSerializedMeshInstance | null {
-    // Return null if a mesh isn't ready to be rendered
+  public getRenderTask(): TSerializedMeshInstance | undefined {
+    // Return undefined if a mesh isn't ready to be rendered
     if (!this.mesh || !this.mesh.uuid || !this.material) {
-      return null;
+      return undefined;
     }
 
     const material = this.material.serialize();
     if (!material) {
-      return null;
+      return undefined;
     }
 
     return {

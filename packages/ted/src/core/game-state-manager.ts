@@ -127,11 +127,11 @@ export default class TGameStateManager {
   }
 
   /**
-   * Returns the current active state or null if no state active.
+   * Returns the current active state or undefined if no state active.
    */
-  public current(): TGameState | null {
+  public current(): TGameState | undefined {
     if (this.stack.length === 0) {
-      return null;
+      return undefined;
     }
 
     return this.stack[this.stack.length - 1];
