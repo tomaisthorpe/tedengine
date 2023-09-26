@@ -4,7 +4,7 @@ import { TColliderType } from '../colliders';
 import type { TBoxColliderConfig } from '../colliders/box-collider';
 import type { TPlaneColliderConfig } from '../colliders/plane-collider';
 import type { TSphereColliderConfig } from '../colliders/sphere-collider';
-import type { TWorldConfig } from '../world';
+import type { TWorldConfig } from '../../core/world';
 import type {
   TPhysicsBody,
   TPhysicsCollision,

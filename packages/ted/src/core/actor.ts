@@ -3,7 +3,7 @@ import type TActorComponent from '../actor-components/actor-component';
 import TSceneComponent from '../actor-components/scene-component';
 import type TEngine from '../engine/engine';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
-import type TLevel from './level';
+import type TWorld from './world';
 
 export interface TActorWithOnUpdate extends TActor {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -14,7 +14,7 @@ const hasOnUpdate = (state: TActor): state is TActorWithOnUpdate =>
 
 export default class TActor {
   public uuid: string = uuidv4();
-  public level?: TLevel;
+  public world?: TWorld;
 
   /**
    * List of components that belong to this actor

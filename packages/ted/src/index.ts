@@ -36,7 +36,7 @@ export * from './core/game-state';
 
 export { default as TGameStateManager } from './core/game-state-manager';
 
-export { default as TLevel } from './core/level';
+export { default as TWorld } from './core/world';
 export * from './core/messages';
 
 export { default as TPawn } from './core/pawn';
@@ -73,9 +73,6 @@ export { default as TMouse } from './input/mouse';
 export { default as TSimpleController } from './input/simple-controller';
 
 export { default as TTransform } from './math/transform';
-
-export * from './physics/world';
-export { default as TWorld } from './physics/world';
 
 export * from './physics/colliders';
 

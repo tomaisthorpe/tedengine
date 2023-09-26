@@ -76,11 +76,11 @@ export default class TSceneComponent extends TActorComponent {
 
   public applyCentralForce(force: vec3) {
     if (!this.collider) return;
-    this.actor.level?.world?.applyCentralForce(this, force);
+    this.actor?.world?.applyCentralForce(this, force);
   }
 
   public applyCentralImpulse(impulse: vec3) {
     if (!this.collider) return;
-    this.actor.level?.world?.applyCentralImpulse(this, impulse);
+    this.actor?.world?.applyCentralImpulse(this, impulse);
   }
 }

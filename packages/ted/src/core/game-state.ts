@@ -1,7 +1,7 @@
 import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import type TActor from './actor';
-import TLevel from './level';
+import TWorld from './world';
 
 export interface TGameStateWithOnUpdate extends TGameState {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -40,18 +40,18 @@ const hasOnLeave = (state: TGameState): state is TGameStateWithOnLeave =>
 
 export default class TGameState {
   public created = false;
-  public level?: TLevel;
+  public world?: TWorld;
 
   public activeCamera?: ICamera;
 
   /**
-   * Adds actor to the level in this game state.
+   * Adds actor to the world in this game state.
    * This is here for convience.
    *
    * @param actor
    */
   public addActor(actor: TActor): void {
-    this.level?.addActor(actor);
+    this.world?.addActor(actor);
   }
 
   /**
@@ -64,7 +64,7 @@ export default class TGameState {
    * @hidden
    */
   public async update(engine: TEngine, delta: number): Promise<void> {
-    await this.level?.update(engine, delta);
+    await this.world?.update(engine, delta);
 
     if (hasOnUpdate(this)) {
       await this.onUpdate(engine, delta);
@@ -72,7 +72,7 @@ export default class TGameState {
   }
 
   public getRenderTasks() {
-    return this.level?.getRenderTasks() || [];
+    return this.world?.getRenderTasks() || [];
   }
 
   /**
@@ -82,9 +82,9 @@ export default class TGameState {
    * @hidden
    */
   public async create(engine: TEngine) {
-    this.level = new TLevel(engine);
+    this.world = new TWorld(engine);
 
-    await this.level.load();
+    await this.world.create();
 
     if (hasOnCreate(this)) {
       await this.onCreate(engine);
@@ -98,7 +98,7 @@ export default class TGameState {
    * @hidden
    */
   public async enter(engine: TEngine, ...args: any[]) {
-    this.level?.start();
+    this.world?.start();
 
     if (hasOnEnter(this)) {
       await this.onEnter(engine, ...args);
@@ -112,7 +112,7 @@ export default class TGameState {
    * @hidden
    */
   public async leave(engine: TEngine) {
-    this.level?.pause();
+    this.world?.pause();
 
     if (hasOnLeave(this)) {
       await this.onLeave(engine);
@@ -132,9 +132,9 @@ export default class TGameState {
   }
 
   /**
-   * Currently only calls destroy on the level which stops the physics worker
+   * Currently only calls destroy on the world which stops the physics worker
    */
   public async destroy() {
-    this.level?.destroy();
+    this.world?.destroy();
   }
 }
