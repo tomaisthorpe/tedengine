@@ -1,6 +1,6 @@
 import { quat, vec3 } from 'gl-matrix';
 import type TEngine from '../engine/engine';
-import type { TPhysicsBody } from '../physics/worker/physics-world';
+import type { TPhysicsBody } from '../physics/physics-world';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';
 import type {
@@ -10,8 +10,8 @@ import type {
   TPhysicsInMessageWorldSetup,
   TPhysicsInMessageApplyCentralForce,
   TPhysicsInMessageApplyCentralImpulse,
-} from '../physics/worker/messages';
-import { TPhysicsMessageTypes } from '../physics/worker/messages';
+} from '../physics/messages';
+import { TPhysicsMessageTypes } from '../physics/messages';
 import type TSceneComponent from '../actor-components/scene-component';
 
 export interface TWorldConfig {
@@ -52,7 +52,7 @@ export default class TWorld {
     return new Promise<void>((resolve) => {
       this.onCreatedResolve = resolve;
       this.worker = new Worker(
-        new URL('../physics/worker/worker.ts', import.meta.url)
+        new URL('../physics/worker.ts', import.meta.url)
       );
       this.worker.onmessage = this.onMessage.bind(this);
     });

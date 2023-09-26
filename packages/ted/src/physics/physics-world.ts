@@ -1,6 +1,6 @@
 import type { vec3 } from 'gl-matrix';
-import type { TColliderConfig } from '../colliders';
-import type { TWorldConfig } from '../../core/world';
+import type { TColliderConfig } from './colliders';
+import type { TWorldConfig } from '../core/world';
 
 export interface TPhysicsWorld {
   create(config: TWorldConfig): Promise<void>;

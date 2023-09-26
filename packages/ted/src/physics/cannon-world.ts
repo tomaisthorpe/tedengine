@@ -1,10 +1,10 @@
 import type { vec3 } from 'gl-matrix';
-import type { TColliderConfig } from '../colliders';
-import { TColliderType } from '../colliders';
-import type { TBoxColliderConfig } from '../colliders/box-collider';
-import type { TPlaneColliderConfig } from '../colliders/plane-collider';
-import type { TSphereColliderConfig } from '../colliders/sphere-collider';
-import type { TWorldConfig } from '../../core/world';
+import type { TColliderConfig } from './colliders';
+import { TColliderType } from './colliders';
+import type { TBoxColliderConfig } from './colliders/box-collider';
+import type { TPlaneColliderConfig } from './colliders/plane-collider';
+import type { TSphereColliderConfig } from './colliders/sphere-collider';
+import type { TWorldConfig } from '../core/world';
 import type {
   TPhysicsBody,
   TPhysicsCollision,
