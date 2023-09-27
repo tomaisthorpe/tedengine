@@ -42,6 +42,8 @@ export default class TEngine {
   private frameNumber = 1;
   private then = -1;
 
+  private processing = false;
+
   // todo: temporary
   public mouse = { x: 0, y: 0 };
 
@@ -143,6 +145,9 @@ export default class TEngine {
   }
 
   private async update() {
+    if (this.processing) return;
+    this.processing = true;
+
     const now = Date.now();
     const delta = (now - this.then) / 1000.0;
     this.then = now;
@@ -176,6 +181,8 @@ export default class TEngine {
       this.stats.engineTime = Date.now() - now;
       this.lastEngineTimeUpdate = now;
     }
+
+    this.processing = false;
   }
 
   /**
