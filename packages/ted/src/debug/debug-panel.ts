@@ -71,9 +71,19 @@ export default class TDebugPanel extends TDebugPanelSection {
 
   private createDefaultRows() {
     this.addValue('Engine (ms)', (engine: TEngine) => {
-      const fps = engine.stats.engineTime;
-
-      return fps.toFixed(1);
+      return engine.stats.engineTime.toFixed(1);
+    });
+    this.addValue('World Update (ms)', (engine: TEngine) => {
+      return engine.stats.worldUpdateTime.toFixed(1);
+    });
+    this.addValue('Physics Total (ms)', (engine: TEngine) => {
+      return engine.stats.physicsTotalTime.toFixed(1);
+    });
+    this.addValue('Physics Step (ms)', (engine: TEngine) => {
+      return engine.stats.physicsStepTime.toFixed(1);
+    });
+    this.addValue('Actor Update (ms)', (engine: TEngine) => {
+      return engine.stats.actorUpdateTime.toFixed(1);
     });
 
     this.addFredValue('Render (ms)', 'renderTime');

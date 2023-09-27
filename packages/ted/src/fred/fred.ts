@@ -165,7 +165,7 @@ export default class TFred {
   }
 
   private update() {
-    const start = Date.now();
+    const start = performance.now();
     this.events.update();
 
     if (this.latestFrame) {
@@ -176,7 +176,7 @@ export default class TFred {
 
     const elapsed = start - this.lastFrameTimeUpdate;
     if (elapsed > TIME_PER_FRAME_TIME_UPDATE) {
-      this.frameTime = Date.now() - start;
+      this.frameTime = performance.now() - start;
       this.lastFrameTimeUpdate = start;
 
       this.stats = {

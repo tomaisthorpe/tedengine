@@ -36,6 +36,7 @@ export interface TPhysicsOutMessageSimulateDone {
   type: TPhysicsMessageTypes.SIMULATE_DONE;
   bodies: TPhysicsBody[];
   collisions: TPhysicsCollision[];
+  stepElapsedTime: number;
 }
 
 export interface TPhysicsInMessageRegisterBody {

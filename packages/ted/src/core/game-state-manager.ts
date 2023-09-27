@@ -2,6 +2,7 @@ import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TGameState from './game-state';
+import type { TWorldUpdateStats } from './world';
 
 interface GameStateType {
   new (): TGameState;
@@ -109,10 +110,10 @@ export default class TGameStateManager {
     this.doneLoading();
   }
 
-  public async update(delta: number) {
+  public async update(delta: number): Promise<TWorldUpdateStats | undefined> {
     if (this.loading) return;
 
-    await this.current()?.update(this.engine, delta);
+    return await this.current()?.update(this.engine, delta);
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {

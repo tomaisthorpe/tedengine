@@ -31,12 +31,14 @@ enginePort.onmessage = async (event: MessageEvent) => {
       break;
     }
     case TPhysicsMessageTypes.SIMULATE_STEP: {
+      const now = performance.now();
       const stepMessage = data as TPhysicsInMessageSimulateStep;
       const worldState = world.step(stepMessage.delta);
 
       const message: TPhysicsOutMessageSimulateDone = {
         type: TPhysicsMessageTypes.SIMULATE_DONE,
         ...worldState,
+        stepElapsedTime: performance.now() - now,
       };
       enginePort.postMessage(message);
       break;

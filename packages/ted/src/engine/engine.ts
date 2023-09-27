@@ -4,6 +4,7 @@ import type { TEvent } from '../core/event-queue';
 import TGameStateManager from '../core/game-state-manager';
 import { TMessageTypesCore } from '../core/messages';
 import TResourceManager from '../core/resource-manager';
+import type { TWorldUpdateStats } from '../core/world';
 import TDebugPanel from '../debug/debug-panel';
 import type { TConfig } from '../engine/config';
 import { TFredMessageTypes } from '../fred/messages';
@@ -50,8 +51,12 @@ export default class TEngine {
   // @todo move this somewhere more relevant
   public stats: {
     engineTime: number;
-  } = {
+  } & TWorldUpdateStats = {
     engineTime: 0,
+    physicsTotalTime: 0,
+    physicsStepTime: 0,
+    actorUpdateTime: 0,
+    worldUpdateTime: 0,
   };
   private lastEngineTimeUpdate = 0;
   private fredPort!: MessagePort;
@@ -139,7 +144,7 @@ export default class TEngine {
     await this.gameState.switch(this.config.defaultState);
 
     // Set this up to prevent issues on first frame, and to remove need for an if
-    this.then = Date.now();
+    this.then = performance.now();
 
     setInterval(this.update, 1000 / 60);
   }
@@ -148,7 +153,7 @@ export default class TEngine {
     if (this.processing) return;
     this.processing = true;
 
-    const now = Date.now();
+    const now = performance.now();
     const delta = (now - this.then) / 1000.0;
     this.then = now;
 
@@ -156,7 +161,7 @@ export default class TEngine {
 
     this.events.update();
 
-    await this.gameState.update(delta);
+    const stats = await this.gameState.update(delta);
 
     const params: TFrameParams = {
       frameNumber: this.frameNumber,
@@ -178,7 +183,12 @@ export default class TEngine {
     // @todo move this more relevant
     const elapsed = now - this.lastEngineTimeUpdate;
     if (elapsed > TIME_PER_ENGINE_TIME_UPDATE) {
-      this.stats.engineTime = Date.now() - now;
+      this.stats.engineTime = performance.now() - now;
+
+      if (stats) {
+        this.stats = { ...this.stats, ...stats };
+      }
+
       this.lastEngineTimeUpdate = now;
     }
 

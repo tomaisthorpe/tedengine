@@ -2,6 +2,7 @@ import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import type TActor from './actor';
 import TWorld from './world';
+import type { TWorldUpdateStats } from './world';
 
 export interface TGameStateWithOnUpdate extends TGameState {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -63,12 +64,19 @@ export default class TGameState {
    * **DO NOT OVERRIDE!** Add [[`onUpdate`]] instead.
    * @hidden
    */
-  public async update(engine: TEngine, delta: number): Promise<void> {
-    await this.world?.update(engine, delta);
+  public async update(
+    engine: TEngine,
+    delta: number
+  ): Promise<TWorldUpdateStats | undefined> {
+    if (!this.world) return;
+
+    const stats = await this.world.update(engine, delta);
 
     if (hasOnUpdate(this)) {
       await this.onUpdate(engine, delta);
     }
+
+    return stats;
   }
 
   public getRenderTasks() {

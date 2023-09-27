@@ -25,6 +25,13 @@ export interface TCollisionClass {
   ignores?: [string];
 }
 
+export interface TWorldUpdateStats {
+  worldUpdateTime: number;
+  physicsTotalTime: number;
+  physicsStepTime: number;
+  actorUpdateTime: number;
+}
+
 export default class TWorld {
   public actors: TActor[] = [];
 
@@ -41,8 +48,9 @@ export default class TWorld {
 
   private paused = false;
 
-  private updateResolve?: () => void;
+  private updateResolve?: (stats: TWorldUpdateStats) => void;
   private lastDelta = 0;
+  private updateStartTime = 0;
 
   private onCreatedResolve?: () => void;
 
@@ -119,7 +127,7 @@ export default class TWorld {
         break;
       case TPhysicsMessageTypes.SIMULATE_DONE: {
         const message = data as TPhysicsOutMessageSimulateDone;
-        this.onPhysicsUpdate(message.bodies);
+        this.onPhysicsUpdate(message.bodies, message.stepElapsedTime);
         break;
       }
     }
@@ -144,11 +152,18 @@ export default class TWorld {
   /**
    * Called every frame with delta and triggers update on all actors
    */
-  public update(engine: TEngine, delta: number): Promise<void> {
+  public update(engine: TEngine, delta: number): Promise<TWorldUpdateStats> {
     return new Promise((resolve) => {
       if (this.paused) {
-        resolve();
+        resolve({
+          worldUpdateTime: 0,
+          physicsStepTime: 0,
+          physicsTotalTime: 0,
+          actorUpdateTime: 0,
+        });
       }
+
+      this.updateStartTime = performance.now();
 
       this.lastDelta = delta;
       this.updateResolve = resolve;
@@ -187,7 +202,7 @@ export default class TWorld {
     this.paused = true;
   }
 
-  public onPhysicsUpdate(worldState: TPhysicsBody[]) {
+  public onPhysicsUpdate(worldState: TPhysicsBody[], stepElapsedTime: number) {
     for (const obj of worldState) {
       // Find the actor with root component with this uuid
       for (const actor of this.actors) {
@@ -204,11 +219,23 @@ export default class TWorld {
       }
     }
 
+    const startActorUpdate = performance.now();
+    const physicsElapsedTime = startActorUpdate - this.updateStartTime;
+
     for (const actor of this.actors) {
       actor.update(this.engine, this.lastDelta);
     }
 
-    this.updateResolve?.();
+    const afterActorUpdate = performance.now();
+
+    const stats: TWorldUpdateStats = {
+      worldUpdateTime: afterActorUpdate - this.updateStartTime,
+      physicsTotalTime: physicsElapsedTime,
+      physicsStepTime: stepElapsedTime,
+      actorUpdateTime: afterActorUpdate - startActorUpdate,
+    };
+
+    this.updateResolve?.(stats);
   }
 
   public destroy() {
