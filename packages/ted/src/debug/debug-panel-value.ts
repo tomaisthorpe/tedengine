@@ -12,7 +12,11 @@ export default class TDebugPanelValue
   public type = 'value';
   public value = '';
 
-  constructor(label: string, private updateFunction: TUpdateFunction) {
+  constructor(
+    label: string,
+    private updateFunction: TUpdateFunction,
+    private indentLevel: number
+  ) {
     super(label);
   }
 
@@ -29,6 +33,7 @@ export default class TDebugPanelValue
       type: this.type,
       data: {
         value: this.value,
+        indentLevel: this.indentLevel,
       },
     };
   }

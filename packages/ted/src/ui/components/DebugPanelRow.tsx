@@ -258,7 +258,13 @@ export default function DebugPanelRow({ row, events, fredValues }: Props) {
     return null;
   }
   return (
-    <RowContainer>
+    <RowContainer
+      style={{
+        paddingLeft: row.data.indentLevel
+          ? `${row.data.indentLevel * 10}px`
+          : 0,
+      }}
+    >
       {row.label && <RowLabel>{row.label}</RowLabel>}
       <RowComponent row={row} events={events} fredValues={fredValues} />
     </RowContainer>

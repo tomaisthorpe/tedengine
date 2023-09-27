@@ -52,9 +52,10 @@ export default class TDebugPanelSection {
    */
   public addValue(
     label: string,
-    updateFunction: TUpdateFunction
+    updateFunction: TUpdateFunction,
+    indentLevel = 0
   ): TDebugPanelValue {
-    const row = new TDebugPanelValue(label, updateFunction);
+    const row = new TDebugPanelValue(label, updateFunction, indentLevel);
     this.rows.push(row);
 
     return row;
