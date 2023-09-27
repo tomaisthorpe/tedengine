@@ -6,5 +6,6 @@
   "physics": "Physics",
   "debug": "Debug",
   "input": "Input",
-  "ui": "UI"
+  "ui": "UI",
+  "benchmarks": "Benchmarks"
 }

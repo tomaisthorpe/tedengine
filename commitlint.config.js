@@ -27,6 +27,7 @@ module.exports = {
         'resources',
         'gamestate',
         'release',
+        'perf',
       ],
     ],
   },
