@@ -61,7 +61,8 @@ export default class TFred {
     engineWorker: Worker,
     private container: HTMLElement,
     private updateEngineContext: (ctx: TEngineContextData) => void,
-    private updateGameContext: (ctx: TGameContextData) => void
+    private updateGameContext: (ctx: TGameContextData) => void,
+    private setErrorMessage: (message: string) => void
   ) {
     engineWorker.onmessage = this.onEngineMessage.bind(this);
 
@@ -130,6 +131,14 @@ export default class TFred {
     this.canvas = document.createElement('canvas');
     this.onResize(this.container.clientWidth, this.container.clientHeight);
     this.setupResizeObserver();
+
+    this.canvas.addEventListener(
+      'webglcontextlost',
+      (e) => {
+        this.setErrorMessage('Context Lost');
+      },
+      false
+    );
 
     this.container.append(this.canvas);
 

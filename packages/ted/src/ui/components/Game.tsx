@@ -6,6 +6,7 @@ import { TGameContext, TEngineContext, TEventQueueContext } from '../context';
 import type { TGameContextData, TEngineContextData } from '../context';
 import DebugPanel from './DebugPanel';
 import LoadingScreen from './LoadingScreen';
+import ErrorScreen from './ErrorScreen';
 
 const Container = styled.div`
   display: block;
@@ -31,13 +32,15 @@ const TGame = ({
     loading: false,
   });
   const [gameData, setGameData] = useState<TGameContextData>({});
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     const fred = new TFred(
       game,
       container.current!,
       setEngineData,
-      setGameData
+      setGameData,
+      setErrorMessage
     );
     setFred(fred);
 
@@ -66,6 +69,7 @@ const TGame = ({
               </>
             )}
             {engineData.loading && <LoadingScreen />}
+            {errorMessage && <ErrorScreen error={errorMessage} />}
           </Container>
         </TGameContext.Provider>
       </TEngineContext.Provider>
