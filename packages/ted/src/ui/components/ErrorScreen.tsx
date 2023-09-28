@@ -5,8 +5,8 @@ const Container = styled.div`
   top: 0;
   left: 0;
   background: rgba(150, 51, 51, 1);
-  width: 1024px;
-  height: 768px;
+  width: 100%;
+  height: 100%;
   font-family: sans-serif;
   color: white;
   display: flex;
