@@ -39,6 +39,15 @@ export interface TGameStateWithOnLeave extends TGameState {
 const hasOnLeave = (state: TGameState): state is TGameStateWithOnLeave =>
   (state as TGameStateWithOnLeave).onLeave !== undefined;
 
+export interface TGameStateWithBeforeWorldCreate extends TGameState {
+  beforeWorldCreate(engine: TEngine): Promise<void>;
+}
+
+const hasBeforeWorldCreate = (
+  state: TGameState
+): state is TGameStateWithBeforeWorldCreate =>
+  (state as TGameStateWithBeforeWorldCreate).beforeWorldCreate !== undefined;
+
 export default class TGameState {
   public created = false;
   public world?: TWorld;
@@ -91,6 +100,10 @@ export default class TGameState {
    */
   public async create(engine: TEngine) {
     this.world = new TWorld(engine);
+
+    if (hasBeforeWorldCreate(this)) {
+      await this.beforeWorldCreate(engine);
+    }
 
     await this.world.create();
 

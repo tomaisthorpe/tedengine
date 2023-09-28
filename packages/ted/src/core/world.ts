@@ -36,7 +36,7 @@ export default class TWorld {
   public actors: TActor[] = [];
 
   private worker?: Worker;
-  private config: TWorldConfig = {
+  public config: TWorldConfig = {
     enableGravity: true,
     defaultCollisionClass: 'Solid',
     collisionClasses: [

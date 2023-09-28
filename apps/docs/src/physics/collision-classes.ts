@@ -18,7 +18,7 @@ class Cube extends TActor {
 
     const box = new TBoxComponent(engine, this, 1, 1, 1);
     this.rootComponent = box;
-    this.rootComponent.collider = new TBoxCollider(1, 1, 1);
+    this.rootComponent.collider = new TBoxCollider(1, 1, 1, 'CustomClass');
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
   }
@@ -50,6 +50,13 @@ class Plane extends TActor {
 }
 
 class ColliderState extends TGameState {
+  public async beforeWorldCreate(engine: TEngine) {
+    // Hook into before world create so that world config can be modified before it is created
+    this.world?.config.collisionClasses.push({
+      name: 'CustomClass',
+    });
+  }
+
   public async onCreate(engine: TEngine) {
     this.onReady(engine);
   }
