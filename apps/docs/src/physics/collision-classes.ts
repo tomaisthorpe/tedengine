@@ -11,6 +11,7 @@ import {
   TBoxCollider,
   TEngine,
 } from '@tedengine/ted';
+import type { TActorWithOnWorldAdd, TWorld } from '@tedengine/ted';
 
 class Cube extends TActor {
   constructor(engine: TEngine, x: number, y: number, z: number) {
@@ -24,7 +25,7 @@ class Cube extends TActor {
   }
 }
 
-class Sphere extends TActor {
+class Sphere extends TActor implements TActorWithOnWorldAdd {
   constructor(engine: TEngine, x: number, y: number, z: number) {
     super();
 
@@ -33,6 +34,12 @@ class Sphere extends TActor {
     this.rootComponent.collider = new TSphereCollider(0.5, 'NoCollide');
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
+  }
+
+  onWorldAdd(engine: TEngine, world: TWorld): void {
+    this.onEnterCollisionClass('CustomClass', (hitActor: TActor) => {
+      console.log('Collided with: Actor ', hitActor.uuid);
+    });
   }
 }
 

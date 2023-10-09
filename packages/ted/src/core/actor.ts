@@ -4,6 +4,7 @@ import TSceneComponent from '../actor-components/scene-component';
 import type TEngine from '../engine/engine';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TWorld from './world';
+import type { TCollisionCallback } from './world';
 
 export interface TActorWithOnUpdate extends TActor {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -69,5 +70,16 @@ export default class TActor {
     }
 
     return tasks;
+  }
+
+  public onEnterCollisionClass(
+    className: string,
+    callback: TCollisionCallback
+  ) {
+    if (!this.world) {
+      throw new Error('world not initialised');
+    }
+
+    this.world.onEnterCollisionClass(this, className, callback);
   }
 }

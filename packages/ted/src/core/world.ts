@@ -1,6 +1,6 @@
 import { quat, vec3 } from 'gl-matrix';
 import type TEngine from '../engine/engine';
-import type { TPhysicsBody } from '../physics/physics-world';
+import type { TPhysicsBody, TPhysicsCollision } from '../physics/physics-world';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';
 import type {
@@ -17,6 +17,14 @@ import type { TActorWithOnWorldAdd } from './actor';
 
 const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
   (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
+
+export type TCollisionCallback = (actor: TActor) => void;
+
+export interface TCollisionListener {
+  componentUUID: string;
+  collisionClass?: string;
+  handler: TCollisionCallback;
+}
 
 export interface TWorldConfig {
   enableGravity: boolean;
@@ -52,11 +60,16 @@ export default class TWorld {
 
   private paused = false;
 
+  // @todo should we store the class in the actor, or get it from the collider instead?
+  private collisionClassLookup: { [key: string]: string } = {};
+
   private updateResolve?: (stats: TWorldUpdateStats) => void;
   private lastDelta = 0;
   private updateStartTime = 0;
 
   private onCreatedResolve?: () => void;
+
+  private collisionListeners: { [key: string]: TCollisionListener } = {};
 
   constructor(private engine: TEngine) {}
 
@@ -94,10 +107,12 @@ export default class TWorld {
 
     const transform = component.getWorldTransform();
 
+    const colliderConfig = component.collider.getConfig();
+
     const message: TPhysicsInMessageRegisterBody = {
       type: TPhysicsMessageTypes.REGISTER_BODY,
       uuid: component.uuid,
-      collider: component.collider.getConfig(),
+      collider: colliderConfig,
       translation: [
         transform.translation[0],
         transform.translation[1],
@@ -114,6 +129,9 @@ export default class TWorld {
 
     // @todo this shouldn't be optional
     this.workerPort?.postMessage(message);
+
+    this.collisionClassLookup[component.uuid] =
+      colliderConfig.collisionClass || this.config.defaultCollisionClass;
   }
 
   private onMessage(event: MessageEvent) {
@@ -135,7 +153,11 @@ export default class TWorld {
         break;
       case TPhysicsMessageTypes.SIMULATE_DONE: {
         const message = data as TPhysicsOutMessageSimulateDone;
-        this.onPhysicsUpdate(message.bodies, message.stepElapsedTime);
+        this.onPhysicsUpdate(
+          message.bodies,
+          message.collisions,
+          message.stepElapsedTime
+        );
         break;
       }
     }
@@ -210,7 +232,11 @@ export default class TWorld {
     this.paused = true;
   }
 
-  public onPhysicsUpdate(worldState: TPhysicsBody[], stepElapsedTime: number) {
+  private onPhysicsUpdate(
+    worldState: TPhysicsBody[],
+    collisions: TPhysicsCollision[],
+    stepElapsedTime: number
+  ) {
     for (const obj of worldState) {
       // Find the actor with root component with this uuid
       for (const actor of this.actors) {
@@ -225,6 +251,12 @@ export default class TWorld {
           break;
         }
       }
+    }
+
+    for (const collision of collisions) {
+      // Check if either body has a listener waiting
+      this.checkCollision(collision.bodies[0], collision.bodies[1]);
+      this.checkCollision(collision.bodies[1], collision.bodies[0]);
     }
 
     const startActorUpdate = performance.now();
@@ -244,6 +276,27 @@ export default class TWorld {
     };
 
     this.updateResolve?.(stats);
+  }
+
+  private checkCollision(bodyA: string, bodyB: string) {
+    const listener = this.collisionListeners[bodyA];
+    if (!listener) return;
+
+    // Just incase wasn't supplied
+    if (!listener.collisionClass) return;
+
+    // Check if the collision class matches what the listener is looking for
+    if (this.collisionClassLookup[bodyB] !== listener.collisionClass) {
+      return;
+    }
+
+    const actor = this.actors.find(
+      (actor) => actor.rootComponent.uuid === bodyB
+    );
+
+    if (actor) {
+      listener.handler(actor);
+    }
   }
 
   public destroy() {
@@ -268,5 +321,17 @@ export default class TWorld {
     };
 
     this.workerPort?.postMessage(message);
+  }
+
+  public onEnterCollisionClass(
+    actor: TActor,
+    collisionClass: string,
+    handler: TCollisionCallback
+  ) {
+    this.collisionListeners[actor.rootComponent.uuid] = {
+      componentUUID: actor.rootComponent.uuid,
+      collisionClass,
+      handler,
+    };
   }
 }
