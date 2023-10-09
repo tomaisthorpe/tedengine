@@ -13,6 +13,10 @@ import type {
 } from '../physics/messages';
 import { TPhysicsMessageTypes } from '../physics/messages';
 import type TSceneComponent from '../actor-components/scene-component';
+import type { TActorWithOnWorldAdd } from './actor';
+
+const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
+  (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
 
 export interface TWorldConfig {
   enableGravity: boolean;
@@ -76,6 +80,10 @@ export default class TWorld {
     this.actors.push(actor);
 
     this.registerActorWithPhysicsWorker(actor);
+
+    if (actorHasOnWorldAdd(actor)) {
+      actor.onWorldAdd(this.engine, this);
+    }
   }
 
   private registerActorWithPhysicsWorker(actor: TActor) {

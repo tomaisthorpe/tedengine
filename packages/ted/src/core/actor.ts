@@ -12,6 +12,10 @@ export interface TActorWithOnUpdate extends TActor {
 const hasOnUpdate = (state: TActor): state is TActorWithOnUpdate =>
   (state as TActorWithOnUpdate).onUpdate !== undefined;
 
+export interface TActorWithOnWorldAdd extends TActor {
+  onWorldAdd(engine: TEngine, world: TWorld): void;
+}
+
 export default class TActor {
   public uuid: string = uuidv4();
   public world?: TWorld;
