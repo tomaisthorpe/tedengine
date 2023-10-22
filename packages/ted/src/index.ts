@@ -74,6 +74,7 @@ export { default as TSimpleController } from './input/simple-controller';
 
 export { default as TTransform } from './math/transform';
 
+export * from './physics/state-changes';
 export * from './physics/colliders';
 
 export { default as TBoxCollider } from './physics/colliders/box-collider';

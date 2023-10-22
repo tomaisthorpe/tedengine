@@ -1,7 +1,7 @@
-import type { vec3 } from 'gl-matrix';
 import type { TColliderConfig } from './colliders';
 import type { TWorldConfig } from '../core/world';
 import type { TPhysicsBody, TPhysicsCollision } from './physics-world';
+import type { TPhysicsStateChange } from './state-changes';
 
 export enum TPhysicsMessageTypes {
   INIT = 'init',
@@ -10,8 +10,6 @@ export enum TPhysicsMessageTypes {
   SIMULATE_STEP = 'simulate_step',
   SIMULATE_DONE = 'simulate_done',
   REGISTER_BODY = 'body_register',
-  APPLY_CENTRAL_FORCE = 'apply_central_force',
-  APPLY_CENTRAL_IMPULSE = 'apply_central_impulse',
 }
 
 export interface TPhysicsOutMessageInit {
@@ -30,6 +28,7 @@ export interface TPhysicsOutMessageWorldCreated {
 export interface TPhysicsInMessageSimulateStep {
   type: TPhysicsMessageTypes.SIMULATE_STEP;
   delta: number;
+  stateChanges: TPhysicsStateChange[];
 }
 
 export interface TPhysicsOutMessageSimulateDone {
@@ -46,16 +45,4 @@ export interface TPhysicsInMessageRegisterBody {
   translation: [number, number, number];
   rotation: [number, number, number, number];
   mass: number;
-}
-
-export interface TPhysicsInMessageApplyCentralForce {
-  type: TPhysicsMessageTypes.APPLY_CENTRAL_FORCE;
-  uuid: string;
-  force: vec3;
-}
-
-export interface TPhysicsInMessageApplyCentralImpulse {
-  type: TPhysicsMessageTypes.APPLY_CENTRAL_IMPULSE;
-  uuid: string;
-  impulse: vec3;
 }

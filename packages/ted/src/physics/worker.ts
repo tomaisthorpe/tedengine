@@ -7,11 +7,11 @@ import type {
   TPhysicsOutMessageWorldCreated,
   TPhysicsOutMessageSimulateDone,
   TPhysicsInMessageSimulateStep,
-  TPhysicsInMessageApplyCentralForce,
-  TPhysicsInMessageApplyCentralImpulse,
 } from './messages';
 import { TPhysicsMessageTypes } from './messages';
 import type { TPhysicsWorld } from './physics-world';
+import { TPhysicsStateChangeType } from './state-changes';
+import type { TPhysicsStateChange } from './state-changes';
 
 // const world = new TAmmoWorld() as TPhysicsWorld;
 const world = new TCannonWorld() as TPhysicsWorld;
@@ -33,6 +33,10 @@ enginePort.onmessage = async (event: MessageEvent) => {
     case TPhysicsMessageTypes.SIMULATE_STEP: {
       const now = performance.now();
       const stepMessage = data as TPhysicsInMessageSimulateStep;
+
+      // Apply the state changes
+      applyStateChanges(world, stepMessage.stateChanges);
+
       const worldState = world.step(stepMessage.delta);
 
       const message: TPhysicsOutMessageSimulateDone = {
@@ -54,18 +58,23 @@ enginePort.onmessage = async (event: MessageEvent) => {
       );
       break;
     }
-    case TPhysicsMessageTypes.APPLY_CENTRAL_FORCE: {
-      const message = data as TPhysicsInMessageApplyCentralForce;
-      world.applyCentralForce(message.uuid, message.force);
-      break;
-    }
-    case TPhysicsMessageTypes.APPLY_CENTRAL_IMPULSE: {
-      const message = data as TPhysicsInMessageApplyCentralImpulse;
-      world.applyCentralImpulse(message.uuid, message.impulse);
-      break;
-    }
   }
 };
+
+function applyStateChanges(
+  world: TPhysicsWorld,
+  stateChanges: TPhysicsStateChange[]
+) {
+  for (const stateChange of stateChanges) {
+    switch (stateChange.type) {
+      case TPhysicsStateChangeType.APPLY_CENTRAL_FORCE:
+        world.applyCentralForce(stateChange.uuid, stateChange.force);
+        break;
+      case TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE:
+        world.applyCentralImpulse(stateChange.uuid, stateChange.impulse);
+    }
+  }
+}
 
 // Everything is setup, let the game world know
 const initMessage: TPhysicsOutMessageInit = { type: TPhysicsMessageTypes.INIT };

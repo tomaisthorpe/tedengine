@@ -8,12 +8,16 @@ import type {
   TPhysicsInMessageSimulateStep,
   TPhysicsOutMessageSimulateDone,
   TPhysicsInMessageWorldSetup,
-  TPhysicsInMessageApplyCentralForce,
-  TPhysicsInMessageApplyCentralImpulse,
 } from '../physics/messages';
 import { TPhysicsMessageTypes } from '../physics/messages';
 import type TSceneComponent from '../actor-components/scene-component';
 import type { TActorWithOnWorldAdd } from './actor';
+import type {
+  TPhysicsApplyCentralForce,
+  TPhysicsStateChange,
+  TPhysicsApplyCentralImpulse,
+} from '../physics/state-changes';
+import { TPhysicsStateChangeType } from '../physics/state-changes';
 
 const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
   (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
@@ -62,6 +66,9 @@ export default class TWorld {
 
   // @todo should we store the class in the actor, or get it from the collider instead?
   private collisionClassLookup: { [key: string]: string } = {};
+
+  // List of state changes to send to physics worker on next step
+  private queuedStateChanges: TPhysicsStateChange[] = [];
 
   private updateResolve?: (stats: TWorldUpdateStats) => void;
   private lastDelta = 0;
@@ -201,10 +208,13 @@ export default class TWorld {
       const message: TPhysicsInMessageSimulateStep = {
         type: TPhysicsMessageTypes.SIMULATE_STEP,
         delta,
+        stateChanges: this.queuedStateChanges,
       };
 
       // This will trigger a message that will eventually result in updateResolve being triggered
       this.workerPort?.postMessage(message);
+
+      this.queuedStateChanges = [];
     });
   }
 
@@ -304,23 +314,21 @@ export default class TWorld {
   }
 
   public applyCentralForce(component: TSceneComponent, force: vec3) {
-    const message: TPhysicsInMessageApplyCentralForce = {
-      type: TPhysicsMessageTypes.APPLY_CENTRAL_FORCE,
+    const sc: TPhysicsApplyCentralForce = {
+      type: TPhysicsStateChangeType.APPLY_CENTRAL_FORCE,
       uuid: component.uuid,
       force,
     };
-
-    this.workerPort?.postMessage(message);
+    this.queuePhysicsStateChange(sc);
   }
 
   public applyCentralImpulse(component: TSceneComponent, impulse: vec3) {
-    const message: TPhysicsInMessageApplyCentralImpulse = {
-      type: TPhysicsMessageTypes.APPLY_CENTRAL_IMPULSE,
+    const sc: TPhysicsApplyCentralImpulse = {
+      type: TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE,
       uuid: component.uuid,
       impulse,
     };
-
-    this.workerPort?.postMessage(message);
+    this.queuePhysicsStateChange(sc);
   }
 
   public onEnterCollisionClass(
@@ -333,5 +341,9 @@ export default class TWorld {
       collisionClass,
       handler,
     };
+  }
+
+  private queuePhysicsStateChange(stateChange: TPhysicsStateChange) {
+    this.queuedStateChanges.push(stateChange);
   }
 }
