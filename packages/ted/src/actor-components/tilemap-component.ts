@@ -4,6 +4,7 @@ import TCanvas from '../graphics/canvas';
 import TImage from '../graphics/image';
 import { TTextureFilter } from '../graphics/texture';
 import TTilemap from '../graphics/tilemap';
+import type { TPhysicsBodyOptions } from '../physics/physics-world';
 import TSpriteComponent from './sprite-component';
 
 export interface TTileset {
@@ -25,7 +26,8 @@ export default class TTilemapComponent extends TSpriteComponent {
     engine: TEngine,
     actor: TActor,
     tilemapPath: string | TTilemap,
-    tilesets: TTilesetConfig[]
+    tilesets: TTilesetConfig[],
+    bodyOptions?: TPhysicsBodyOptions
   ) {
     super(engine, actor, 1, 1);
 

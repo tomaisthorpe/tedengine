@@ -13,10 +13,16 @@ export interface TPhysicsWorld {
     collider: TColliderConfig,
     translation: [number, number, number],
     rotation: [number, number, number, number],
-    mass: number
+    mass: number,
+    options?: TPhysicsBodyOptions
   ): void;
   applyCentralForce(uuid: string, force: vec3): void;
   applyCentralImpulse(uuid: string, impulse: vec3): void;
+  updateBodyOptions(uuid: string, options: TPhysicsBodyOptions): void;
+}
+
+export interface TPhysicsBodyOptions {
+  fixedRotation?: boolean;
 }
 
 export interface TPhysicsBody {

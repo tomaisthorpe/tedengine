@@ -2,6 +2,7 @@ import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import TTexture from '../graphics/texture';
 import TTexturedMesh from '../graphics/textured-mesh';
+import type { TPhysicsBodyOptions } from '../physics/physics-world';
 import type {
   TSerializedMeshInstance,
   TSerializedSpriteInstance,
@@ -13,8 +14,8 @@ export default class TTexturedMeshComponent extends TSceneComponent {
   protected mesh: TTexturedMesh = new TTexturedMesh();
   public texture: TTexture = new TTexture();
 
-  constructor(actor: TActor) {
-    super(actor);
+  constructor(actor: TActor, bodyOptions?: TPhysicsBodyOptions) {
+    super(actor, bodyOptions);
 
     this.canRender = true;
     this.shouldRender = true;

@@ -54,7 +54,8 @@ enginePort.onmessage = async (event: MessageEvent) => {
         registerMessage.collider,
         registerMessage.translation,
         registerMessage.rotation,
-        registerMessage.mass
+        registerMessage.mass,
+        registerMessage.options
       );
       break;
     }
@@ -72,6 +73,10 @@ function applyStateChanges(
         break;
       case TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE:
         world.applyCentralImpulse(stateChange.uuid, stateChange.impulse);
+        break;
+      case TPhysicsStateChangeType.UPDATE_BODY_OPTIONS:
+        world.updateBodyOptions(stateChange.uuid, stateChange.options);
+        break;
     }
   }
 }

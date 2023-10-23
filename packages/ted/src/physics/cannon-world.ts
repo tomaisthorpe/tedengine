@@ -7,6 +7,7 @@ import type { TSphereColliderConfig } from './colliders/sphere-collider';
 import type { TWorldConfig } from '../core/world';
 import type {
   TPhysicsBody,
+  TPhysicsBodyOptions,
   TPhysicsCollision,
   TPhysicsWorld,
 } from './physics-world';
@@ -127,7 +128,8 @@ export default class TCannonWorld implements TPhysicsWorld {
     collider: TColliderConfig,
     translation: [number, number, number],
     rotation: [number, number, number, number],
-    mass: number
+    mass: number,
+    options?: TPhysicsBodyOptions
   ): void {
     let shape: CANNON.Shape;
 
@@ -169,6 +171,7 @@ export default class TCannonWorld implements TPhysicsWorld {
       mass,
       shape,
       ...colliderFilter,
+      fixedRotation: options?.fixedRotation,
     });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
@@ -195,5 +198,17 @@ export default class TCannonWorld implements TPhysicsWorld {
   public applyCentralImpulse(uuid: string, impulse: vec3): void {
     const body = this.findBody(uuid);
     body?.applyImpulse(new CANNON.Vec3(...impulse));
+  }
+
+  public updateBodyOptions(uuid: string, options: TPhysicsBodyOptions): void {
+    const body = this.findBody(uuid);
+    if (!body) return;
+
+    if (options.fixedRotation !== undefined) {
+      body.fixedRotation = options.fixedRotation;
+    }
+
+    // Needs to be called after changing options
+    body.updateMassProperties();
   }
 }

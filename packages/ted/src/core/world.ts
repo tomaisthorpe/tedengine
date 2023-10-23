@@ -1,6 +1,10 @@
 import { quat, vec3 } from 'gl-matrix';
 import type TEngine from '../engine/engine';
-import type { TPhysicsBody, TPhysicsCollision } from '../physics/physics-world';
+import type {
+  TPhysicsBody,
+  TPhysicsBodyOptions,
+  TPhysicsCollision,
+} from '../physics/physics-world';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';
 import type {
@@ -16,6 +20,7 @@ import type {
   TPhysicsApplyCentralForce,
   TPhysicsStateChange,
   TPhysicsApplyCentralImpulse,
+  TPhysicsUpdateBodyOptions,
 } from '../physics/state-changes';
 import { TPhysicsStateChangeType } from '../physics/state-changes';
 
@@ -132,6 +137,7 @@ export default class TWorld {
         transform.rotation[3],
       ],
       mass: component.mass,
+      options: component.bodyOptions,
     };
 
     // @todo this shouldn't be optional
@@ -345,5 +351,18 @@ export default class TWorld {
 
   private queuePhysicsStateChange(stateChange: TPhysicsStateChange) {
     this.queuedStateChanges.push(stateChange);
+  }
+
+  public updateBodyOptions(
+    component: TSceneComponent,
+    options: TPhysicsBodyOptions
+  ) {
+    // @todo check if this body is registered yet, if not, we can just wait until it's registered
+    const sc: TPhysicsUpdateBodyOptions = {
+      type: TPhysicsStateChangeType.UPDATE_BODY_OPTIONS,
+      uuid: component.uuid,
+      options,
+    };
+    this.queuePhysicsStateChange(sc);
   }
 }

@@ -1,13 +1,16 @@
 import type { vec3 } from 'gl-matrix';
+import type { TPhysicsBodyOptions } from './physics-world';
 
 export enum TPhysicsStateChangeType {
   APPLY_CENTRAL_FORCE = 'apply_force',
   APPLY_CENTRAL_IMPULSE = 'apply_central_impulse',
+  UPDATE_BODY_OPTIONS = 'update_body_options',
 }
 
 export type TPhysicsStateChange =
   | TPhysicsApplyCentralForce
-  | TPhysicsApplyCentralImpulse;
+  | TPhysicsApplyCentralImpulse
+  | TPhysicsUpdateBodyOptions;
 
 export interface TPhysicsApplyCentralForce {
   type: TPhysicsStateChangeType.APPLY_CENTRAL_FORCE;
@@ -19,4 +22,10 @@ export interface TPhysicsApplyCentralImpulse {
   type: TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE;
   uuid: string;
   impulse: vec3;
+}
+
+export interface TPhysicsUpdateBodyOptions {
+  type: TPhysicsStateChangeType.UPDATE_BODY_OPTIONS;
+  uuid: string;
+  options: TPhysicsBodyOptions;
 }

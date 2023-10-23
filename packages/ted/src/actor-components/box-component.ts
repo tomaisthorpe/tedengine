@@ -2,6 +2,7 @@ import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import type { TColor } from '../graphics/color-material';
 import TColorMaterial from '../graphics/color-material';
+import type { TPhysicsBodyOptions } from '../physics/physics-world';
 import TMeshComponent from './mesh-component';
 
 export default class TBoxComponent extends TMeshComponent {
@@ -10,9 +11,10 @@ export default class TBoxComponent extends TMeshComponent {
     actor: TActor,
     public width: number,
     public height: number,
-    public depth: number
+    public depth: number,
+    bodyOptions?: TPhysicsBodyOptions
   ) {
-    super(engine, actor);
+    super(engine, actor, bodyOptions);
 
     this.generateMesh();
   }

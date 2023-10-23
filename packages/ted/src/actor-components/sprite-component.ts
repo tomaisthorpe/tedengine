@@ -5,6 +5,7 @@ import TTransform from '../math/transform';
 import type { TSerializedSpriteInstance } from '../renderer/frame-params';
 import { TRenderTask } from '../renderer/frame-params';
 import TTexturedMeshComponent from './textured-mesh-component';
+import type { TPhysicsBodyOptions } from '../physics/physics-world';
 
 export enum TOriginPoint {
   TopLeft,
@@ -46,9 +47,10 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
     public width: number,
     public height: number,
     private origin: TOriginPoint = TOriginPoint.Center,
-    public layer: TSpriteLayer = TSpriteLayer.Foreground_0
+    public layer: TSpriteLayer = TSpriteLayer.Foreground_0,
+    bodyOptions?: TPhysicsBodyOptions
   ) {
-    super(actor);
+    super(actor, bodyOptions);
 
     this.width = width;
     this.height = height;

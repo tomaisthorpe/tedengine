@@ -8,6 +8,7 @@ import type {
   TSerializedSpriteInstance,
 } from '../renderer/frame-params';
 import TActorComponent from './actor-component';
+import type { TPhysicsBodyOptions } from '../physics/physics-world';
 
 export default class TSceneComponent extends TActorComponent {
   /**
@@ -37,13 +38,26 @@ export default class TSceneComponent extends TActorComponent {
    */
   public parentComponent?: TSceneComponent;
 
-  constructor(actor: TActor) {
+  constructor(actor: TActor, bodyOptions?: TPhysicsBodyOptions) {
     super(actor);
+
+    this.physicsBodyOptions = bodyOptions || {};
 
     // Always attach to the root component by default, unless this is the root component
     if (actor.rootComponent !== this) {
       this.attachTo(actor.rootComponent);
     }
+  }
+
+  // Hidden to prevent editing from outside class
+  // as we need to ensure updates are propagated to the physics world
+  private physicsBodyOptions: TPhysicsBodyOptions;
+
+  /**
+   * Get physics body config for scene component
+   */
+  public get bodyOptions(): TPhysicsBodyOptions {
+    return this.physicsBodyOptions;
   }
 
   /**
@@ -82,5 +96,12 @@ export default class TSceneComponent extends TActorComponent {
   public applyCentralImpulse(impulse: vec3) {
     if (!this.collider) return;
     this.actor?.world?.applyCentralImpulse(this, impulse);
+  }
+
+  public setFixedRotation(fixedRotation: boolean) {
+    this.physicsBodyOptions.fixedRotation = fixedRotation;
+
+    // Update with the world
+    this.actor?.world?.updateBodyOptions(this, this.bodyOptions);
   }
 }

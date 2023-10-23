@@ -2,6 +2,7 @@ import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import type TColorMaterial from '../graphics/color-material';
 import TMesh from '../graphics/mesh';
+import type { TPhysicsBodyOptions } from '../physics/physics-world';
 import type { TSerializedMeshInstance } from '../renderer/frame-params';
 import { TRenderTask } from '../renderer/frame-params';
 import type { TPaletteIndex } from '../renderer/renderable-mesh';
@@ -11,8 +12,12 @@ export default class TMeshComponent extends TSceneComponent {
   protected mesh: TMesh = new TMesh();
   public material?: TColorMaterial;
 
-  constructor(protected engine: TEngine, actor: TActor) {
-    super(actor);
+  constructor(
+    protected engine: TEngine,
+    actor: TActor,
+    bodyOptions?: TPhysicsBodyOptions
+  ) {
+    super(actor, bodyOptions);
 
     this.canRender = true;
     this.shouldRender = true;

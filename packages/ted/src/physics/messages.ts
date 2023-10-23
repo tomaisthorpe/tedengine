@@ -1,6 +1,10 @@
 import type { TColliderConfig } from './colliders';
 import type { TWorldConfig } from '../core/world';
-import type { TPhysicsBody, TPhysicsCollision } from './physics-world';
+import type {
+  TPhysicsBody,
+  TPhysicsBodyOptions,
+  TPhysicsCollision,
+} from './physics-world';
 import type { TPhysicsStateChange } from './state-changes';
 
 export enum TPhysicsMessageTypes {
@@ -45,4 +49,5 @@ export interface TPhysicsInMessageRegisterBody {
   translation: [number, number, number];
   rotation: [number, number, number, number];
   mass: number;
+  options?: TPhysicsBodyOptions;
 }
