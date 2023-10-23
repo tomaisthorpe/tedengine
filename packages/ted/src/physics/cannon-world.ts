@@ -5,11 +5,12 @@ import type { TBoxColliderConfig } from './colliders/box-collider';
 import type { TPlaneColliderConfig } from './colliders/plane-collider';
 import type { TSphereColliderConfig } from './colliders/sphere-collider';
 import type { TWorldConfig } from '../core/world';
-import type {
-  TPhysicsBody,
-  TPhysicsBodyOptions,
-  TPhysicsCollision,
-  TPhysicsWorld,
+import {
+  TPhysicsBodyType,
+  type TPhysicsBody,
+  type TPhysicsBodyOptions,
+  type TPhysicsCollision,
+  type TPhysicsWorld,
 } from './physics-world';
 import * as CANNON from 'cannon-es';
 
@@ -172,6 +173,7 @@ export default class TCannonWorld implements TPhysicsWorld {
       shape,
       ...colliderFilter,
       fixedRotation: options?.fixedRotation,
+      type: mapBodyType(options?.type),
     });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
@@ -208,7 +210,27 @@ export default class TCannonWorld implements TPhysicsWorld {
       body.fixedRotation = options.fixedRotation;
     }
 
+    const mappedType = mapBodyType(options.type);
+    if (mappedType) {
+      body.type = mappedType;
+    }
+
     // Needs to be called after changing options
     body.updateMassProperties();
+  }
+}
+
+function mapBodyType(
+  type: TPhysicsBodyType | undefined
+): CANNON.BodyType | undefined {
+  if (type === undefined) {
+    return undefined;
+  }
+
+  switch (type) {
+    case TPhysicsBodyType.DYNAMIC:
+      return CANNON.BODY_TYPES.DYNAMIC;
+    case TPhysicsBodyType.STATIC:
+      return CANNON.BODY_TYPES.STATIC;
   }
 }

@@ -8,7 +8,10 @@ import type {
   TSerializedSpriteInstance,
 } from '../renderer/frame-params';
 import TActorComponent from './actor-component';
-import type { TPhysicsBodyOptions } from '../physics/physics-world';
+import type {
+  TPhysicsBodyOptions,
+  TPhysicsBodyType,
+} from '../physics/physics-world';
 
 export default class TSceneComponent extends TActorComponent {
   /**
@@ -102,6 +105,12 @@ export default class TSceneComponent extends TActorComponent {
     this.physicsBodyOptions.fixedRotation = fixedRotation;
 
     // Update with the world
+    this.actor?.world?.updateBodyOptions(this, this.bodyOptions);
+  }
+
+  public setBodyType(type: TPhysicsBodyType) {
+    this.physicsBodyOptions.type = type;
+
     this.actor?.world?.updateBodyOptions(this, this.bodyOptions);
   }
 }

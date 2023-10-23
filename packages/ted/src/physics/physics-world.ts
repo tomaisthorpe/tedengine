@@ -21,8 +21,14 @@ export interface TPhysicsWorld {
   updateBodyOptions(uuid: string, options: TPhysicsBodyOptions): void;
 }
 
+export enum TPhysicsBodyType {
+  STATIC = 'static',
+  DYNAMIC = 'dynamic',
+}
+
 export interface TPhysicsBodyOptions {
   fixedRotation?: boolean;
+  type?: TPhysicsBodyType;
 }
 
 export interface TPhysicsBody {
