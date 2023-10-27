@@ -12,8 +12,8 @@ export const AudioJobs: TJobConfigs = {
   },
   play_sound: {
     requiredContext: TJobContextTypes.Audio,
-    func: async (ctx: TAudioJobContext, uuid: string) => {
-      ctx.audio.play(uuid);
+    func: async (ctx: TAudioJobContext, uuid: string, volume: number) => {
+      ctx.audio.play(uuid, volume);
     },
   },
 };

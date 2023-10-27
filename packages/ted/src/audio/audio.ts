@@ -25,7 +25,8 @@ export default class TAudio {
     return uuid;
   }
 
-  public play(uuid: string) {
+  public play(uuid: string, volume: number) {
+    this.sounds[uuid].volume = volume;
     this.sounds[uuid].play();
   }
 }

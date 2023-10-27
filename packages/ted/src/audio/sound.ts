@@ -5,6 +5,11 @@ export default class TSound implements IJobAsset {
   private uuid?: string;
   private jobs?: TJobManager;
 
+  /**
+   * Volume which the sound will play within [0, 1] range
+   */
+  public volume = 1.0;
+
   // @todo look at AudioBuffers
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {
     const result = await jobs.do({
@@ -21,7 +26,7 @@ export default class TSound implements IJobAsset {
 
     this.jobs.do({
       type: 'play_sound',
-      args: [this.uuid],
+      args: [this.uuid, this.volume],
     });
   }
 }

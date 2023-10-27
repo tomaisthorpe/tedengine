@@ -11,12 +11,23 @@ class Actor extends TActor {
     super();
 
     const clip = engine.resources.get<TSound>(sound);
+    clip.volume = 0.7;
 
     const section = engine.debugPanel.addSection('Audio', true);
     section.addButtons('Play Audio', {
       label: 'Play Once',
       onClick: () => clip.play(),
     });
+
+    section.addInput(
+      'Volume',
+      'number',
+      '0.7',
+      (value: string) => {
+        clip.volume = parseFloat(value);
+      },
+      { max: 1, min: 0, step: 0.1 }
+    );
   }
 }
 
