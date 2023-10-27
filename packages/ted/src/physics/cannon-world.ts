@@ -168,12 +168,17 @@ export default class TCannonWorld implements TPhysicsWorld {
       colliderFilter.collisionFilterMask = defaultClass.mask;
     }
 
+    const quaternion = options?.quaternion
+      ? new CANNON.Quaternion(...options.quaternion)
+      : undefined;
+
     const body = new CANNON.Body({
       mass,
       shape,
       ...colliderFilter,
       fixedRotation: options?.fixedRotation,
       type: mapBodyType(options?.type),
+      quaternion,
     });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
@@ -213,6 +218,11 @@ export default class TCannonWorld implements TPhysicsWorld {
     const mappedType = mapBodyType(options.type);
     if (mappedType) {
       body.type = mappedType;
+    }
+
+    if (options.quaternion !== undefined) {
+      const q = options.quaternion;
+      body.quaternion = new CANNON.Quaternion(...q);
     }
 
     // Needs to be called after changing options

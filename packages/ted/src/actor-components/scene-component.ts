@@ -1,4 +1,4 @@
-import type { vec3 } from 'gl-matrix';
+import type { quat, vec3 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import TTransform from '../math/transform';
 import type { ICollider } from '../physics/colliders';
@@ -112,5 +112,9 @@ export default class TSceneComponent extends TActorComponent {
     this.physicsBodyOptions.type = type;
 
     this.actor?.world?.updateBodyOptions(this, this.bodyOptions);
+  }
+
+  public setQuaternion(quaternion: quat) {
+    this.actor?.world?.updateBodyOptions(this, { quaternion });
   }
 }

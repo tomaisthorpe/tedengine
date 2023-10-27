@@ -1,4 +1,4 @@
-import type { vec3 } from 'gl-matrix';
+import type { quat, vec3 } from 'gl-matrix';
 import type { TColliderConfig } from './colliders';
 import type { TWorldConfig } from '../core/world';
 
@@ -29,6 +29,7 @@ export enum TPhysicsBodyType {
 export interface TPhysicsBodyOptions {
   fixedRotation?: boolean;
   type?: TPhysicsBodyType;
+  quaternion?: quat;
 }
 
 export interface TPhysicsBody {
