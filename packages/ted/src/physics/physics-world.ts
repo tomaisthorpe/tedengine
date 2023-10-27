@@ -39,6 +39,7 @@ export interface TPhysicsBodyOptions {
   linearVelocity?: vec3;
   angularVelocity?: vec3;
   friction?: number;
+  isTrigger?: boolean;
 }
 
 export interface TPhysicsBody {

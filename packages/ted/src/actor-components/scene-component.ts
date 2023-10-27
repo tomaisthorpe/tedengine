@@ -135,6 +135,14 @@ export default class TSceneComponent extends TActorComponent {
   }
 
   /**
+   * Triggers don't collide with other objects, but they still trigger collision events
+   * @param isTrigger
+   */
+  public setIsTrigger(isTrigger: boolean) {
+    this.actor?.world?.updateBodyOptions(this, { isTrigger });
+  }
+
+  /**
    * Apply transforms ensure transform updates get propagated to the physics world
    */
   public applyTransform() {

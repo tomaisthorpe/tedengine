@@ -178,6 +178,7 @@ export default class TCannonWorld implements TPhysicsWorld {
       linearDamping: options?.linearDamping,
       angularVelocity: convertVec3(options?.angularVelocity),
       velocity: convertVec3(options?.linearVelocity),
+      isTrigger: options?.isTrigger,
     });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
@@ -245,6 +246,10 @@ export default class TCannonWorld implements TPhysicsWorld {
       } else {
         body.material = new CANNON.Material({ friction: options.friction });
       }
+    }
+
+    if (options.isTrigger !== undefined) {
+      body.isTrigger = options.isTrigger;
     }
 
     // Needs to be called after changing options
