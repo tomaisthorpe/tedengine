@@ -125,4 +125,12 @@ export default class TSceneComponent extends TActorComponent {
   public setAngularDampning(damping: number) {
     this.actor?.world?.updateBodyOptions(this, { angularDamping: damping });
   }
+
+  public setLinearVelocity(velocity: vec3) {
+    this.actor?.world?.updateBodyOptions(this, { linearVelocity: velocity });
+  }
+
+  public setAngularVelocity(velocity: vec3) {
+    this.actor?.world?.updateBodyOptions(this, { angularVelocity: velocity });
+  }
 }

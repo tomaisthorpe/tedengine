@@ -32,6 +32,8 @@ export interface TPhysicsBodyOptions {
   quaternion?: quat;
   linearDamping?: number;
   angularDamping?: number;
+  linearVelocity?: vec3;
+  angularVelocity?: vec3;
 }
 
 export interface TPhysicsBody {

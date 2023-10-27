@@ -181,6 +181,8 @@ export default class TCannonWorld implements TPhysicsWorld {
       quaternion,
       angularDamping: options?.angularDamping,
       linearDamping: options?.linearDamping,
+      angularVelocity: convertVec3(options?.angularVelocity),
+      velocity: convertVec3(options?.linearVelocity),
     });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
@@ -235,6 +237,14 @@ export default class TCannonWorld implements TPhysicsWorld {
       body.linearDamping = options.linearDamping;
     }
 
+    if (options.angularVelocity !== undefined) {
+      body.angularVelocity = new CANNON.Vec3(...options.angularVelocity);
+    }
+
+    if (options.linearVelocity !== undefined) {
+      body.velocity = new CANNON.Vec3(...options.linearVelocity);
+    }
+
     // Needs to be called after changing options
     body.updateMassProperties();
   }
@@ -253,4 +263,12 @@ function mapBodyType(
     case TPhysicsBodyType.STATIC:
       return CANNON.BODY_TYPES.STATIC;
   }
+}
+
+function convertVec3(vector?: vec3): CANNON.Vec3 | undefined {
+  if (!vector) {
+    return undefined;
+  }
+
+  return new CANNON.Vec3(...vector);
 }
