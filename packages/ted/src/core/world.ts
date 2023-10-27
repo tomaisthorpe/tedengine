@@ -358,6 +358,9 @@ export default class TWorld {
     component: TSceneComponent,
     options: TPhysicsBodyOptions
   ) {
+    // If there is no collider, it definitely won't be in the physics world
+    if (!component.collider) return;
+
     // @todo check if this body is registered yet, if not, we can just wait until it's registered
     const sc: TPhysicsUpdateBodyOptions = {
       type: TPhysicsStateChangeType.UPDATE_BODY_OPTIONS,
@@ -368,6 +371,9 @@ export default class TWorld {
   }
 
   public updateTransform(component: TSceneComponent) {
+    // If there is no collider, it definitely won't be in the physics world
+    if (!component.collider) return;
+
     const transform = component.getWorldTransform();
 
     const sc: TPhysicsUpdateTransform = {
