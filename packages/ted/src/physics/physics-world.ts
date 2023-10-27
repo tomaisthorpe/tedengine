@@ -1,4 +1,4 @@
-import type { quat, vec3 } from 'gl-matrix';
+import type { vec3 } from 'gl-matrix';
 import type { TColliderConfig } from './colliders';
 import type { TWorldConfig } from '../core/world';
 
@@ -38,6 +38,7 @@ export interface TPhysicsBodyOptions {
   angularDamping?: number;
   linearVelocity?: vec3;
   angularVelocity?: vec3;
+  friction?: number;
 }
 
 export interface TPhysicsBody {

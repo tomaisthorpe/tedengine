@@ -182,6 +182,10 @@ export default class TCannonWorld implements TPhysicsWorld {
     body.position.set(...translation);
     body.quaternion.set(...rotation);
 
+    if (options?.friction) {
+      body.material = new CANNON.Material({ friction: options.friction });
+    }
+
     this.world.addBody(body);
     this.objects.push({ uuid, body });
   }
@@ -233,6 +237,14 @@ export default class TCannonWorld implements TPhysicsWorld {
 
     if (options.linearVelocity !== undefined) {
       body.velocity = new CANNON.Vec3(...options.linearVelocity);
+    }
+
+    if (options.friction !== undefined) {
+      if (body.material) {
+        body.material.friction = options.friction;
+      } else {
+        body.material = new CANNON.Material({ friction: options.friction });
+      }
     }
 
     // Needs to be called after changing options

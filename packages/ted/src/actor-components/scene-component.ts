@@ -130,6 +130,10 @@ export default class TSceneComponent extends TActorComponent {
     this.actor?.world?.updateBodyOptions(this, { angularVelocity: velocity });
   }
 
+  public setFriction(friction: number) {
+    this.actor?.world?.updateBodyOptions(this, { friction });
+  }
+
   /**
    * Apply transforms ensure transform updates get propagated to the physics world
    */
