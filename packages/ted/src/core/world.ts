@@ -8,10 +8,10 @@ import type {
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';
 import type {
-  TPhysicsInMessageRegisterBody,
   TPhysicsInMessageSimulateStep,
   TPhysicsOutMessageSimulateDone,
   TPhysicsInMessageWorldSetup,
+  TPhysicsRegisterBody,
 } from '../physics/messages';
 import { TPhysicsMessageTypes } from '../physics/messages';
 import type TSceneComponent from '../actor-components/scene-component';
@@ -73,8 +73,9 @@ export default class TWorld {
   // @todo should we store the class in the actor, or get it from the collider instead?
   private collisionClassLookup: { [key: string]: string } = {};
 
-  // List of state changes to send to physics worker on next step
+  // List of state changes and bodies to send to physics worker on next step
   private queuedStateChanges: TPhysicsStateChange[] = [];
+  private queuedNewBodies: TPhysicsRegisterBody[] = [];
 
   private updateResolve?: (stats: TWorldUpdateStats) => void;
   private lastDelta = 0;
@@ -119,11 +120,9 @@ export default class TWorld {
     if (!component.collider) return;
 
     const transform = component.getWorldTransform();
-
     const colliderConfig = component.collider.getConfig();
 
-    const message: TPhysicsInMessageRegisterBody = {
-      type: TPhysicsMessageTypes.REGISTER_BODY,
+    this.queuedNewBodies.push({
       uuid: component.uuid,
       collider: colliderConfig,
       translation: [
@@ -139,10 +138,7 @@ export default class TWorld {
       ],
       mass: component.mass,
       options: component.bodyOptions,
-    };
-
-    // @todo this shouldn't be optional
-    this.workerPort?.postMessage(message);
+    });
 
     this.collisionClassLookup[component.uuid] =
       colliderConfig.collisionClass || this.config.defaultCollisionClass;
@@ -215,12 +211,14 @@ export default class TWorld {
       const message: TPhysicsInMessageSimulateStep = {
         type: TPhysicsMessageTypes.SIMULATE_STEP,
         delta,
+        newBodies: this.queuedNewBodies,
         stateChanges: this.queuedStateChanges,
       };
 
       // This will trigger a message that will eventually result in updateResolve being triggered
       this.workerPort?.postMessage(message);
 
+      this.queuedNewBodies = [];
       this.queuedStateChanges = [];
     });
   }

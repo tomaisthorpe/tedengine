@@ -1,7 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import TCannonWorld from './cannon-world';
 import type {
-  TPhysicsInMessageRegisterBody,
   TPhysicsInMessageWorldSetup,
   TPhysicsOutMessageInit,
   TPhysicsOutMessageWorldCreated,
@@ -34,6 +33,17 @@ enginePort.onmessage = async (event: MessageEvent) => {
       const now = performance.now();
       const stepMessage = data as TPhysicsInMessageSimulateStep;
 
+      for (const body of stepMessage.newBodies) {
+        world.addBody(
+          body.uuid,
+          body.collider,
+          body.translation,
+          body.rotation,
+          body.mass,
+          body.options
+        );
+      }
+
       // Apply the state changes
       applyStateChanges(world, stepMessage.stateChanges);
 
@@ -45,18 +55,6 @@ enginePort.onmessage = async (event: MessageEvent) => {
         stepElapsedTime: performance.now() - now,
       };
       enginePort.postMessage(message);
-      break;
-    }
-    case TPhysicsMessageTypes.REGISTER_BODY: {
-      const registerMessage = data as TPhysicsInMessageRegisterBody;
-      world.addBody(
-        registerMessage.uuid,
-        registerMessage.collider,
-        registerMessage.translation,
-        registerMessage.rotation,
-        registerMessage.mass,
-        registerMessage.options
-      );
       break;
     }
   }

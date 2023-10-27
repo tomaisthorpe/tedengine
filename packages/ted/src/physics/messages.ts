@@ -13,7 +13,6 @@ export enum TPhysicsMessageTypes {
   WORLD_CREATED = 'world_created',
   SIMULATE_STEP = 'simulate_step',
   SIMULATE_DONE = 'simulate_done',
-  REGISTER_BODY = 'body_register',
 }
 
 export interface TPhysicsOutMessageInit {
@@ -32,7 +31,17 @@ export interface TPhysicsOutMessageWorldCreated {
 export interface TPhysicsInMessageSimulateStep {
   type: TPhysicsMessageTypes.SIMULATE_STEP;
   delta: number;
+  newBodies: TPhysicsRegisterBody[];
   stateChanges: TPhysicsStateChange[];
+}
+
+export interface TPhysicsRegisterBody {
+  uuid: string;
+  collider: TColliderConfig;
+  translation: [number, number, number];
+  rotation: [number, number, number, number];
+  mass: number;
+  options?: TPhysicsBodyOptions;
 }
 
 export interface TPhysicsOutMessageSimulateDone {
@@ -40,14 +49,4 @@ export interface TPhysicsOutMessageSimulateDone {
   bodies: TPhysicsBody[];
   collisions: TPhysicsCollision[];
   stepElapsedTime: number;
-}
-
-export interface TPhysicsInMessageRegisterBody {
-  type: TPhysicsMessageTypes.REGISTER_BODY;
-  uuid: string;
-  collider: TColliderConfig;
-  translation: [number, number, number];
-  rotation: [number, number, number, number];
-  mass: number;
-  options?: TPhysicsBodyOptions;
 }
