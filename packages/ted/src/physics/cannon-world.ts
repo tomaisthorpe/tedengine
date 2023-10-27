@@ -168,17 +168,12 @@ export default class TCannonWorld implements TPhysicsWorld {
       colliderFilter.collisionFilterMask = defaultClass.mask;
     }
 
-    const quaternion = options?.quaternion
-      ? new CANNON.Quaternion(...options.quaternion)
-      : undefined;
-
     const body = new CANNON.Body({
       mass,
       shape,
       ...colliderFilter,
       fixedRotation: options?.fixedRotation,
       type: mapBodyType(options?.type),
-      quaternion,
       angularDamping: options?.angularDamping,
       linearDamping: options?.linearDamping,
       angularVelocity: convertVec3(options?.angularVelocity),
@@ -224,11 +219,6 @@ export default class TCannonWorld implements TPhysicsWorld {
       body.type = mappedType;
     }
 
-    if (options.quaternion !== undefined) {
-      const q = options.quaternion;
-      body.quaternion = new CANNON.Quaternion(...q);
-    }
-
     if (options.angularDamping !== undefined) {
       body.angularDamping = options.angularDamping;
     }
@@ -247,6 +237,18 @@ export default class TCannonWorld implements TPhysicsWorld {
 
     // Needs to be called after changing options
     body.updateMassProperties();
+  }
+
+  public updateTransform(
+    uuid: string,
+    translation: [number, number, number],
+    rotation: [number, number, number, number]
+  ) {
+    const body = this.findBody(uuid);
+    if (!body) return;
+
+    body.position.set(...translation);
+    body.quaternion.set(...rotation);
   }
 }
 

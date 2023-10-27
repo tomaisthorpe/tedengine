@@ -77,6 +77,13 @@ function applyStateChanges(
       case TPhysicsStateChangeType.UPDATE_BODY_OPTIONS:
         world.updateBodyOptions(stateChange.uuid, stateChange.options);
         break;
+      case TPhysicsStateChangeType.UPDATE_TRANSFORM:
+        world.updateTransform(
+          stateChange.uuid,
+          stateChange.translation,
+          stateChange.rotation
+        );
+        break;
     }
   }
 }

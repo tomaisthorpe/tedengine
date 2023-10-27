@@ -21,6 +21,7 @@ import type {
   TPhysicsStateChange,
   TPhysicsApplyCentralImpulse,
   TPhysicsUpdateBodyOptions,
+  TPhysicsUpdateTransform,
 } from '../physics/state-changes';
 import { TPhysicsStateChangeType } from '../physics/state-changes';
 
@@ -362,6 +363,27 @@ export default class TWorld {
       type: TPhysicsStateChangeType.UPDATE_BODY_OPTIONS,
       uuid: component.uuid,
       options,
+    };
+    this.queuePhysicsStateChange(sc);
+  }
+
+  public updateTransform(component: TSceneComponent) {
+    const transform = component.getWorldTransform();
+
+    const sc: TPhysicsUpdateTransform = {
+      type: TPhysicsStateChangeType.UPDATE_TRANSFORM,
+      uuid: component.uuid,
+      translation: [
+        transform.translation[0],
+        transform.translation[1],
+        transform.translation[2],
+      ],
+      rotation: [
+        transform.rotation[0],
+        transform.rotation[1],
+        transform.rotation[2],
+        transform.rotation[3],
+      ],
     };
     this.queuePhysicsStateChange(sc);
   }

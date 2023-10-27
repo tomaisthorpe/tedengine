@@ -19,6 +19,11 @@ export interface TPhysicsWorld {
   applyCentralForce(uuid: string, force: vec3): void;
   applyCentralImpulse(uuid: string, impulse: vec3): void;
   updateBodyOptions(uuid: string, options: TPhysicsBodyOptions): void;
+  updateTransform(
+    uuid: string,
+    translation: [number, number, number],
+    rotation: [number, number, number, number]
+  ): void;
 }
 
 export enum TPhysicsBodyType {
@@ -29,7 +34,6 @@ export enum TPhysicsBodyType {
 export interface TPhysicsBodyOptions {
   fixedRotation?: boolean;
   type?: TPhysicsBodyType;
-  quaternion?: quat;
   linearDamping?: number;
   angularDamping?: number;
   linearVelocity?: vec3;

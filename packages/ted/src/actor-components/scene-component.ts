@@ -1,4 +1,4 @@
-import type { quat, vec3 } from 'gl-matrix';
+import type { vec3 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import TTransform from '../math/transform';
 import type { ICollider } from '../physics/colliders';
@@ -114,15 +114,11 @@ export default class TSceneComponent extends TActorComponent {
     this.actor?.world?.updateBodyOptions(this, this.bodyOptions);
   }
 
-  public setQuaternion(quaternion: quat) {
-    this.actor?.world?.updateBodyOptions(this, { quaternion });
-  }
-
-  public setLinearDampning(damping: number) {
+  public setLinearDamping(damping: number) {
     this.actor?.world?.updateBodyOptions(this, { linearDamping: damping });
   }
 
-  public setAngularDampning(damping: number) {
+  public setAngularDamping(damping: number) {
     this.actor?.world?.updateBodyOptions(this, { angularDamping: damping });
   }
 
@@ -132,5 +128,12 @@ export default class TSceneComponent extends TActorComponent {
 
   public setAngularVelocity(velocity: vec3) {
     this.actor?.world?.updateBodyOptions(this, { angularVelocity: velocity });
+  }
+
+  /**
+   * Apply transforms ensure transform updates get propagated to the physics world
+   */
+  public applyTransform() {
+    this.actor?.world?.updateTransform(this);
   }
 }

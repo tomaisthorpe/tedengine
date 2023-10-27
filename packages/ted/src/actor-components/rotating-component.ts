@@ -15,5 +15,6 @@ export default class TRotatingComponent extends TMeshComponent {
 
     this.transform.rotateY(delta * 0.5);
     this.transform.rotateZ(delta * 0.5 * 0.7);
+    this.applyTransform();
   }
 }
