@@ -30,6 +30,8 @@ export interface TPhysicsBodyOptions {
   fixedRotation?: boolean;
   type?: TPhysicsBodyType;
   quaternion?: quat;
+  linearDamping?: number;
+  angularDamping?: number;
 }
 
 export interface TPhysicsBody {

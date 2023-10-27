@@ -179,6 +179,8 @@ export default class TCannonWorld implements TPhysicsWorld {
       fixedRotation: options?.fixedRotation,
       type: mapBodyType(options?.type),
       quaternion,
+      angularDamping: options?.angularDamping,
+      linearDamping: options?.linearDamping,
     });
     body.position.set(...translation);
     body.quaternion.set(...rotation);
@@ -223,6 +225,14 @@ export default class TCannonWorld implements TPhysicsWorld {
     if (options.quaternion !== undefined) {
       const q = options.quaternion;
       body.quaternion = new CANNON.Quaternion(...q);
+    }
+
+    if (options.angularDamping !== undefined) {
+      body.angularDamping = options.angularDamping;
+    }
+
+    if (options.linearDamping !== undefined) {
+      body.linearDamping = options.linearDamping;
     }
 
     // Needs to be called after changing options

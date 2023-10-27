@@ -117,4 +117,12 @@ export default class TSceneComponent extends TActorComponent {
   public setQuaternion(quaternion: quat) {
     this.actor?.world?.updateBodyOptions(this, { quaternion });
   }
+
+  public setLinearDampning(damping: number) {
+    this.actor?.world?.updateBodyOptions(this, { linearDamping: damping });
+  }
+
+  public setAngularDampning(damping: number) {
+    this.actor?.world?.updateBodyOptions(this, { angularDamping: damping });
+  }
 }
