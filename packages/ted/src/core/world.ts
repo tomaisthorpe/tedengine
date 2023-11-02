@@ -24,6 +24,7 @@ import type {
   TPhysicsUpdateTransform,
 } from '../physics/state-changes';
 import { TPhysicsStateChangeType } from '../physics/state-changes';
+import { createPhysicsWorker } from '../physics/create-worker';
 
 const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
   (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
@@ -90,9 +91,7 @@ export default class TWorld {
   public async create(): Promise<void> {
     return new Promise<void>((resolve) => {
       this.onCreatedResolve = resolve;
-      this.worker = new Worker(
-        new URL('../physics/worker.ts', import.meta.url)
-      );
+      this.worker = createPhysicsWorker();
       this.worker.onmessage = this.onMessage.bind(this);
     });
   }

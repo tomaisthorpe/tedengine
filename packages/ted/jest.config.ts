@@ -8,4 +8,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/ted',
+  collectCoverageFrom: ['./src/**/*', '!./src/physics/create-worker.ts'],
 };

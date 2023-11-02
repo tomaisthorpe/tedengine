@@ -28,6 +28,7 @@ module.exports = {
         'gamestate',
         'release',
         'perf',
+        'math',
       ],
     ],
   },
