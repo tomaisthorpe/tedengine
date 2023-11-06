@@ -23,6 +23,11 @@ jobs:
           fetch-depth: 0
       - run: npm ci
       - run: npx nx test ted --coverage
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: coverage/packages/ted/
   build:
     runs-on: ubuntu-latest
     steps:
