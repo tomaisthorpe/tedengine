@@ -24,6 +24,7 @@ export interface TPhysicsWorld {
     translation: [number, number, number],
     rotation: [number, number, number, number]
   ): void;
+  queryLine(from: vec3, to: vec3): TPhysicsRaycastResult[];
 }
 
 export enum TPhysicsBodyType {
@@ -50,4 +51,9 @@ export interface TPhysicsBody {
 
 export interface TPhysicsCollision {
   bodies: [string, string];
+}
+
+export interface TPhysicsRaycastResult {
+  uuid: string;
+  distance: number;
 }

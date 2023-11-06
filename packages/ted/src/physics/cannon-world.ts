@@ -11,6 +11,7 @@ import {
   type TPhysicsBodyOptions,
   type TPhysicsCollision,
   type TPhysicsWorld,
+  type TPhysicsRaycastResult,
 } from './physics-world';
 import * as CANNON from 'cannon-es';
 
@@ -266,6 +267,40 @@ export default class TCannonWorld implements TPhysicsWorld {
 
     body.position.set(...translation);
     body.quaternion.set(...rotation);
+  }
+
+  public queryLine(from: vec3, to: vec3): TPhysicsRaycastResult[] {
+    const hits: { [key: string]: number[] } = {};
+
+    this.world.raycastAll(
+      new CANNON.Vec3(...from),
+      new CANNON.Vec3(...to),
+      {
+        // @todo removing this makes things, and I'm not sure why
+        // That's why we have all this deduplication logic
+        skipBackfaces: false,
+      },
+      (hit) => {
+        if (!hit.body) return;
+
+        const uuid = this.findUUID(hit.body.id);
+        if (!uuid) return;
+
+        if (hits[uuid]) {
+          hits[uuid].push(hit.distance);
+        } else {
+          hits[uuid] = [hit.distance];
+        }
+      }
+    );
+
+    return Object.entries(hits).reduce(
+      (acc: TPhysicsRaycastResult[], [uuid, distances]) => {
+        acc.push({ uuid, distance: Math.min(...distances) });
+        return acc;
+      },
+      []
+    );
   }
 }
 
