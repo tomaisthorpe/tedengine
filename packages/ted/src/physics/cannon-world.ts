@@ -284,7 +284,7 @@ export default class TCannonWorld implements TPhysicsWorld {
         if (mask === undefined) {
           mask = id.groupNumber;
         } else {
-          mask &= id.groupNumber;
+          mask |= id.groupNumber;
         }
       }
     }

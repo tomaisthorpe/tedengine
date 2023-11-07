@@ -1,4 +1,8 @@
 /* eslint-disable no-restricted-globals */
+import { TJobContextTypes } from '../jobs/context-types';
+import TJobManager from '../jobs/job-manager';
+import type { TJobsMessageRelay } from '../jobs/messages';
+import { TMessageTypesJobs } from '../jobs/messages';
 import TCannonWorld from './cannon-world';
 import type {
   TPhysicsInMessageWorldSetup,
@@ -17,6 +21,10 @@ const world = new TCannonWorld() as TPhysicsWorld;
 
 const channel = new MessageChannel();
 const enginePort = channel.port1;
+const jobs = new TJobManager([TJobContextTypes.Physics]);
+jobs.additionalContext = {
+  world,
+};
 
 enginePort.onmessage = async (event: MessageEvent) => {
   const { data } = event;
@@ -55,6 +63,12 @@ enginePort.onmessage = async (event: MessageEvent) => {
         stepElapsedTime: performance.now() - now,
       };
       enginePort.postMessage(message);
+      break;
+    }
+    case TMessageTypesJobs.RELAY: {
+      const relayMessage = data as TJobsMessageRelay;
+
+      jobs.doRelayedJob(relayMessage.wrappedJob, enginePort);
       break;
     }
   }

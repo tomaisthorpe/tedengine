@@ -4,6 +4,8 @@ import type {
   TPhysicsBody,
   TPhysicsBodyOptions,
   TPhysicsCollision,
+  TPhysicsQueryOptions,
+  TPhysicsQueryResult,
 } from '../physics/physics-world';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';
@@ -25,6 +27,10 @@ import type {
 } from '../physics/state-changes';
 import { TPhysicsStateChangeType } from '../physics/state-changes';
 import { createPhysicsWorker } from '../physics/create-worker';
+import { TJobContextTypes } from '../jobs/context-types';
+import type TJobManager from '../jobs/job-manager';
+import type { TJobsMessageRelayResult } from '../jobs/messages';
+import { TMessageTypesJobs } from '../jobs/messages';
 
 const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
   (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
@@ -86,7 +92,10 @@ export default class TWorld {
 
   private collisionListeners: { [key: string]: TCollisionListener } = {};
 
-  constructor(private engine: TEngine) {}
+  private jobs: TJobManager;
+  constructor(private engine: TEngine) {
+    this.jobs = engine.jobs;
+  }
 
   public async create(): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -144,7 +153,10 @@ export default class TWorld {
   }
 
   private onMessage(event: MessageEvent) {
-    if (event.data.type !== TPhysicsMessageTypes.SIMULATE_DONE) {
+    if (
+      event.data.type !== TPhysicsMessageTypes.SIMULATE_DONE &&
+      event.data.type !== TMessageTypesJobs.RELAY_RESULT
+    ) {
       console.log('game world received', event.data);
     }
 
@@ -153,6 +165,10 @@ export default class TWorld {
       case TPhysicsMessageTypes.INIT:
         this.workerPort = event.ports[0];
         this.workerPort.onmessage = this.onMessage.bind(this);
+
+        // @todo this should replace the relay
+        this.jobs.addRelay([TJobContextTypes.Physics], this.workerPort);
+
         this.setupWorld();
         break;
       case TPhysicsMessageTypes.WORLD_CREATED:
@@ -167,6 +183,11 @@ export default class TWorld {
           message.collisions,
           message.stepElapsedTime
         );
+        break;
+      }
+      case TMessageTypesJobs.RELAY_RESULT: {
+        const relayResultMessage = data as TJobsMessageRelayResult;
+        this.jobs.onRelayedResult(relayResultMessage.wrappedResult);
         break;
       }
     }
@@ -390,4 +411,35 @@ export default class TWorld {
     };
     this.queuePhysicsStateChange(sc);
   }
+
+  public async queryLine(from: vec3, to: vec3, options?: TPhysicsQueryOptions) {
+    const hits = (await this.jobs.do({
+      type: 'query_line',
+      args: [from, to, options],
+    })) as TPhysicsQueryResult[];
+
+    const result: TWorldQueryResult[] = [];
+
+    for (const hit of hits) {
+      const actor = this.actors.find(
+        (actor) => actor.rootComponent.uuid === hit.uuid
+      );
+      if (!actor) continue;
+
+      result.push({
+        distance: hit.distance,
+        actor,
+        // @todo this will need to be updated once root components are no longer used with the physics
+        component: actor.rootComponent,
+      });
+    }
+
+    return result;
+  }
+}
+
+export interface TWorldQueryResult {
+  actor: TActor;
+  component: TSceneComponent;
+  distance: number;
 }

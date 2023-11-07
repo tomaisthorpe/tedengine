@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { TJobContextTypes } from './context-types';
-import type { TAudioJobContext, TJobContext, TRenderJobContext } from './jobs';
+import type {
+  TAudioJobContext,
+  TJobContext,
+  TPhysicsJobContext,
+  TRenderJobContext,
+} from './jobs';
 import { AllJobs } from './jobs';
 import type { TJobsMessageRelay, TJobsMessageRelayResult } from './messages';
 import { TMessageTypesJobs } from './messages';
@@ -29,7 +34,11 @@ export default class TJobManager {
 
   private relayedJobs: { [key: string]: (_: any) => void } = {};
 
-  public additionalContext!: TJobContext | TRenderJobContext | TAudioJobContext;
+  public additionalContext!:
+    | TJobContext
+    | TRenderJobContext
+    | TAudioJobContext
+    | TPhysicsJobContext;
 
   constructor(contexts: TJobContextTypes[]) {
     for (const context of contexts) {

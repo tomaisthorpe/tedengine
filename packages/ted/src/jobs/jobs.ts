@@ -1,6 +1,8 @@
 import type TAudio from '../audio/audio';
 import { AudioJobs } from '../audio/jobs';
 import type TResourceManager from '../core/resource-manager';
+import { PhysicsJobs } from '../physics/jobs';
+import type { TPhysicsWorld } from '../physics/physics-world';
 import { RendererJobs } from '../renderer/jobs';
 import type TRenderer from '../renderer/renderer';
 import type { TJobContextTypes } from './context-types';
@@ -17,12 +19,17 @@ export type TAudioJobContext = TJobContext & {
   audio: TAudio;
 };
 
+export type TPhysicsJobContext = {
+  world: TPhysicsWorld;
+};
+
 export interface TJobConfig {
   requiredContext?: TJobContextTypes;
   func:
     | ((ctx: TJobContext, ...args: any) => Promise<any>)
     | ((ctx: TRenderJobContext, ...args: any) => Promise<any>)
-    | ((ctx: TAudioJobContext, ...args: any) => Promise<any>);
+    | ((ctx: TAudioJobContext, ...args: any) => Promise<any>)
+    | ((ctx: TPhysicsJobContext, ...args: any) => Promise<any>);
 }
 
 export interface TJobConfigs {
@@ -40,4 +47,5 @@ export const GeneralJobs: { [key: string]: TJobConfig } = {
 export const AllJobs: TJobConfigs = {
   ...RendererJobs,
   ...AudioJobs,
+  ...PhysicsJobs,
 };
