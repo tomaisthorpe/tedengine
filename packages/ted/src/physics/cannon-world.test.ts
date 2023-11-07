@@ -6,7 +6,7 @@ import TBoxCollider from './colliders/box-collider';
 const worldConfig: TWorldConfig = {
   enableGravity: true,
   defaultCollisionClass: 'Solid',
-  collisionClasses: [{ name: 'Solid' }],
+  collisionClasses: [{ name: 'Solid' }, { name: 'Other' }],
 };
 
 describe('create', () => {
@@ -25,20 +25,41 @@ describe('queryLine', () => {
     world = new TCannonWorld();
     await world.create(worldConfig);
 
-    const collider = new TBoxCollider(1, 1, 1);
-    world.addBody(bodyA, collider.getConfig(), [10, 0, 0], [0, 0, 0, 1], 1);
-    world.addBody(bodyB, collider.getConfig(), [20, 0, 0], [0, 0, 0, 1], 1);
+    const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
+    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1], 1);
+
+    const colliderB = new TBoxCollider(1, 1, 1, 'Other');
+    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1], 1);
   });
 
-  test('queryLine should return a single result', () => {
+  test('should return a single result', () => {
     const result = world.queryLine([0, 0.5, 0], [15, 0.5, 0]);
 
     expect(result).toHaveLength(1);
     expect(result).toContainEqual({ uuid: bodyA, distance: 9.5 });
   });
 
-  test('queryLine should return two results', () => {
+  test('should return two results', () => {
     const result = world.queryLine([0, 0.5, 0], [25, 0.5, 0]);
+
+    expect(result).toHaveLength(2);
+    expect(result).toContainEqual({ uuid: bodyA, distance: 9.5 });
+    expect(result).toContainEqual({ uuid: bodyB, distance: 19.5 });
+  });
+
+  test('should ignore collision class correctly', () => {
+    const result = world.queryLine([0, 0.5, 0], [25, 0.5, 0], {
+      collisionClasses: ['Other'],
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result).toContainEqual({ uuid: bodyB, distance: 19.5 });
+  });
+
+  test('should handle multiple collision classes correctly', () => {
+    const result = world.queryLine([0, 0.5, 0], [25, 0.5, 0], {
+      collisionClasses: ['Solid', 'Other'],
+    });
 
     expect(result).toHaveLength(2);
     expect(result).toContainEqual({ uuid: bodyA, distance: 9.5 });
