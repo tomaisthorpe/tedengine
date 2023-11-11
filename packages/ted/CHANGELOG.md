@@ -1,5 +1,46 @@
 # @tedengine/ted
 
+## 0.3.0
+
+### Minor Changes
+
+- 5b7cf76: Add query line method to physics world
+- 4e02ef4: Add actor on world add callback
+- 983f717: New physics bodies are now sent with simulate step
+- 8d99d50: Add ability to set volume on sound
+- de146de: Add ability to set physics body options, starting with fixed rotation
+- 12311cc: Fix 'leave' triggered on game state push
+- 97feac7: Add indent level for debug value rows
+- b876e12: Remove use of null from engine
+- 917fdd6: Add on collider callbacks for collision classes
+- d6410ae: Add query area to physics world
+- 2608530: Add trigger option to components
+- 1230808: Introduce transform updates to physics
+- d594f63: Refactor engine to accept worker scope instead of post message func
+- e511f54: Add set linear and angular velocity
+- 40accc3: Add setQuaterion to scene component
+- 4fcd0c6: Add query options to physics world to allow for querying for specific collision classes
+- 59debd9: Measure world and physics update times
+- 19f7eb1: Physics state changes are now queued and sent with physics simulate step
+- 64272c0: Merge world and level together
+- afcf542: Add ability to set physics body type
+- db17f08: Add to set friction on components
+- f42a9bd: Add error message when context is lost
+- 2b234c8: Add ability to add custom collision classes
+- 171912a: Add set linear and angular damping
+- e167989: Add query line method to world
+
+### Patch Changes
+
+- 39292c1: Fix engine starting next frame before previous is finished
+- eba962e: Moved physics worker to physics folder
+- 48bf8e5: Fix non-strict comparisons
+- 0693330: Fix loading and error messages not matching canvas size
+- fcd2d72: Bump dependies with npm audit
+- eef7611: Ensure game and physics workers stop on page change
+- 5076773: Bump vunerable dependencies with npm audit
+- ec7f01c: Prevent state changes being sent to physics worker when no collider set
+
 ## 0.2.0
 
 ### Minor Changes
