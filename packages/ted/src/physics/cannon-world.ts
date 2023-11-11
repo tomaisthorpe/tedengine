@@ -11,8 +11,9 @@ import {
   type TPhysicsBodyOptions,
   type TPhysicsCollision,
   type TPhysicsWorld,
-  type TPhysicsQueryResult,
+  type TPhysicsQueryLineResult,
   type TPhysicsQueryOptions,
+  type TPhysicsQueryAreaResult,
 } from './physics-world';
 import * as CANNON from 'cannon-es';
 
@@ -274,7 +275,7 @@ export default class TCannonWorld implements TPhysicsWorld {
     from: vec3,
     to: vec3,
     options?: TPhysicsQueryOptions
-  ): TPhysicsQueryResult[] {
+  ): TPhysicsQueryLineResult[] {
     const hits: { [key: string]: number[] } = {};
 
     let mask: number | undefined = undefined;
@@ -314,12 +315,50 @@ export default class TCannonWorld implements TPhysicsWorld {
     );
 
     return Object.entries(hits).reduce(
-      (acc: TPhysicsQueryResult[], [uuid, distances]) => {
+      (acc: TPhysicsQueryLineResult[], [uuid, distances]) => {
         acc.push({ uuid, distance: Math.min(...distances) });
         return acc;
       },
       []
     );
+  }
+
+  public queryArea(
+    from: vec3,
+    to: vec3,
+    options?: TPhysicsQueryOptions | undefined
+  ): TPhysicsQueryAreaResult[] {
+    const query = new CANNON.AABB({
+      lowerBound: new CANNON.Vec3(...from),
+      upperBound: new CANNON.Vec3(...to),
+    });
+    const bodies = this.world.broadphase.aabbQuery(this.world, query, []);
+
+    let mask: number | undefined = undefined;
+    if (options?.collisionClasses) {
+      for (const cl of options.collisionClasses) {
+        const id = this.collisionClasses[cl];
+        if (mask === undefined) {
+          mask = id.groupNumber;
+        } else {
+          mask |= id.groupNumber;
+        }
+      }
+    }
+    const result: TPhysicsQueryAreaResult[] = [];
+    for (const body of bodies) {
+      // Filter any bodies not part of the provided collision groups
+      if (mask && !(body.collisionFilterGroup & mask)) {
+        continue;
+      }
+
+      const uuid = this.findUUID(body.id);
+      if (!uuid) continue;
+
+      result.push({ uuid });
+    }
+
+    return result;
   }
 }
 

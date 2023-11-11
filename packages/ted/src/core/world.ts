@@ -5,7 +5,8 @@ import type {
   TPhysicsBodyOptions,
   TPhysicsCollision,
   TPhysicsQueryOptions,
-  TPhysicsQueryResult,
+  TPhysicsQueryLineResult,
+  TPhysicsQueryAreaResult,
 } from '../physics/physics-world';
 import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TActor from './actor';
@@ -412,13 +413,17 @@ export default class TWorld {
     this.queuePhysicsStateChange(sc);
   }
 
-  public async queryLine(from: vec3, to: vec3, options?: TPhysicsQueryOptions) {
+  public async queryLine(
+    from: vec3,
+    to: vec3,
+    options?: TPhysicsQueryOptions
+  ): Promise<TWorldQueryLineResult[]> {
     const hits = (await this.jobs.do({
       type: 'query_line',
       args: [from, to, options],
-    })) as TPhysicsQueryResult[];
+    })) as TPhysicsQueryLineResult[];
 
-    const result: TWorldQueryResult[] = [];
+    const result: TWorldQueryLineResult[] = [];
 
     for (const hit of hits) {
       const actor = this.actors.find(
@@ -436,10 +441,43 @@ export default class TWorld {
 
     return result;
   }
+
+  public async queryArea(
+    from: vec3,
+    to: vec3,
+    options?: TPhysicsQueryOptions
+  ): Promise<TWorldQueryAreaResult[]> {
+    const hits = (await this.jobs.do({
+      type: 'query_area',
+      args: [from, to, options],
+    })) as TPhysicsQueryAreaResult[];
+
+    const result: TWorldQueryAreaResult[] = [];
+
+    for (const hit of hits) {
+      const actor = this.actors.find(
+        (actor) => actor.rootComponent.uuid === hit.uuid
+      );
+      if (!actor) continue;
+
+      result.push({
+        actor,
+        // @todo this will need to be updated once root components are no longer used with the physics
+        component: actor.rootComponent,
+      });
+    }
+
+    return result;
+  }
 }
 
-export interface TWorldQueryResult {
+export interface TWorldQueryLineResult {
   actor: TActor;
   component: TSceneComponent;
   distance: number;
+}
+
+export interface TWorldQueryAreaResult {
+  actor: TActor;
+  component: TSceneComponent;
 }

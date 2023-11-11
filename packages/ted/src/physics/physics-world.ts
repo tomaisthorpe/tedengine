@@ -28,7 +28,12 @@ export interface TPhysicsWorld {
     from: vec3,
     to: vec3,
     options?: TPhysicsQueryOptions
-  ): TPhysicsQueryResult[];
+  ): TPhysicsQueryLineResult[];
+  queryArea(
+    from: vec3,
+    to: vec3,
+    options?: TPhysicsQueryOptions
+  ): TPhysicsQueryAreaResult[];
 }
 
 export enum TPhysicsBodyType {
@@ -57,9 +62,13 @@ export interface TPhysicsCollision {
   bodies: [string, string];
 }
 
-export interface TPhysicsQueryResult {
+export interface TPhysicsQueryLineResult {
   uuid: string;
   distance: number;
+}
+
+export interface TPhysicsQueryAreaResult {
+  uuid: string;
 }
 
 export interface TPhysicsQueryOptions {
