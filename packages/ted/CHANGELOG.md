@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.3.1
+
+### Patch Changes
+
+- Bump to fix published version
+
 ## 0.3.0
 
 ### Minor Changes
