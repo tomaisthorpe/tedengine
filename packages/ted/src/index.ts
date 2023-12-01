@@ -24,6 +24,7 @@ export * from './cameras/camera-view';
 export { default as TOrbitCamera } from './cameras/orbit-camera';
 export { default as TOrthographicCamera } from './cameras/orthographic-camera';
 export { default as TPerspectiveCamera } from './cameras/perspective-camera';
+export { default as TTopDownCameraController } from './cameras/top-down-camera-controller';
 
 export { default as TActor } from './core/actor';
 export * from './core/actor';
