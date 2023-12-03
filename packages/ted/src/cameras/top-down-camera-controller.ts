@@ -1,4 +1,4 @@
-import { vec3 } from 'gl-matrix';
+import { vec3, quat } from 'gl-matrix';
 import type TSceneComponent from '../actor-components/scene-component';
 import type TEngine from '../engine/engine';
 import type TBaseCamera from './base-camera';
@@ -29,6 +29,13 @@ export default class TTopDownCameraController implements TCameraController {
       target.translation[0],
       target.translation[1],
       target.translation[2] - this.distance
+    );
+
+    camera.cameraComponent.transform.rotation = quat.fromEuler(
+      quat.create(),
+      0,
+      180,
+      0
     );
 
     camera.moveTo(translation[0], translation[1], translation[2]);
