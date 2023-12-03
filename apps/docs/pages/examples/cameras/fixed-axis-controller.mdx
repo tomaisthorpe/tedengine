@@ -1,6 +1,6 @@
-# Top Down Controller
+# Fixed Axis Camera Controller
 
-Use WASD to move the box.
+Use WASD to move the box. This example is fixed on the Z axis.
 
 import useBrowserOnly from '@hooks/useBrowserOnly';
 import { TGame } from '@tedengine/ted';
@@ -12,7 +12,7 @@ export const Game = () => {
   }
   return (
     <TGame
-      game={new Worker(new URL('@examples/cameras/top-down-controller.ts', import.meta.url))}
+      game={new Worker(new URL('@examples/cameras/fixed-axis-controller.ts', import.meta.url))}
     />
   );
 };

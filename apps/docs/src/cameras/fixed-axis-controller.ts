@@ -10,7 +10,7 @@ import {
   TPawn,
   TSimpleController,
   TPerspectiveCamera,
-  TTopDownCameraController,
+  TFixedAxisCameraController,
   TOrbitCamera,
 } from '@tedengine/ted';
 import type { TController, TActorWithOnUpdate } from '@tedengine/ted';
@@ -122,7 +122,7 @@ class ColliderState extends TGameState {
     this.addActor(orbitCamera);
     this.activeCamera = orbitCamera;
 
-    const controller = new TTopDownCameraController({ distance: 5 });
+    const controller = new TFixedAxisCameraController({ distance: 5 });
     controller.attachTo(box.rootComponent);
     camera.controller = controller;
 

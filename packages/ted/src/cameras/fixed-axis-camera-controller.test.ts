@@ -3,14 +3,14 @@ import {
   TSceneComponent,
   TPerspectiveCamera,
   TActor,
-  TTopDownCameraController,
+  TFixedAxisCameraController,
 } from '../index';
 
 test('should follow given scene component', () => {
   const actor = new TActor();
   const comp = new TSceneComponent(actor);
 
-  const controller = new TTopDownCameraController({ distance: 5 });
+  const controller = new TFixedAxisCameraController({ distance: 5 });
   controller.attachTo(comp);
 
   const camera = new TPerspectiveCamera();
@@ -32,7 +32,7 @@ test('should correctly follow a nested scene component', () => {
   comp.transform.translation = vec3.fromValues(-1, -1, -1);
   comp.attachTo(root);
 
-  const controller = new TTopDownCameraController({ distance: 5 });
+  const controller = new TFixedAxisCameraController({ distance: 5 });
   controller.attachTo(comp);
 
   const camera = new TPerspectiveCamera();
