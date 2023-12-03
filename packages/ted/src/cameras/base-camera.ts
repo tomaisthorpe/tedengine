@@ -22,7 +22,7 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
   /**
    * Move the camera by a specified amount
    */
-  public move(x: number, y: number, z = 0) {
+  public moveBy(x: number, y: number, z = 0) {
     this.cameraComponent.transform.translation = vec3.add(
       vec3.create(),
       this.cameraComponent.transform.translation,
@@ -33,7 +33,7 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
   /**
    * Set the camera to a given position
    */
-  public lookAt(x: number, y: number, z = 0) {
+  public moveTo(x: number, y: number, z = 0) {
     this.cameraComponent.transform.translation = vec3.fromValues(x, y, z);
   }
 }

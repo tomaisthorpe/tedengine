@@ -31,6 +31,6 @@ export default class TTopDownCameraController implements TCameraController {
       target.translation[2] - this.distance
     );
 
-    camera.lookAt(translation[0], translation[1], translation[2]);
+    camera.moveTo(translation[0], translation[1], translation[2]);
   }
 }
