@@ -8,11 +8,17 @@ export default class TTopDownCameraController implements TCameraController {
   private component?: TSceneComponent;
 
   // Distance from the attached component on the z axis.
-  private distance = 0;
+  public distance = 0;
 
-  constructor(config?: { distance?: number }) {
+  public axis = 'z';
+
+  constructor(config?: { distance?: number; axis?: string }) {
     if (config?.distance !== undefined) {
       this.distance = config.distance;
+    }
+
+    if (config?.axis !== undefined) {
+      this.axis = config.axis;
     }
   }
 
@@ -28,15 +34,41 @@ export default class TTopDownCameraController implements TCameraController {
     const translation = vec3.fromValues(
       target.translation[0],
       target.translation[1],
-      target.translation[2] - this.distance
+      target.translation[2]
     );
 
-    camera.cameraComponent.transform.rotation = quat.fromEuler(
-      quat.create(),
-      0,
-      180,
-      0
-    );
+    switch (this.axis) {
+      case 'x':
+        translation[0] += this.distance;
+
+        camera.cameraComponent.transform.rotation = quat.fromEuler(
+          quat.create(),
+          0,
+          90,
+          0
+        );
+        break;
+      case 'y':
+        translation[1] += this.distance;
+
+        camera.cameraComponent.transform.rotation = quat.fromEuler(
+          quat.create(),
+          -90,
+          0,
+          0
+        );
+        break;
+      case 'z':
+        translation[2] += this.distance;
+
+        camera.cameraComponent.transform.rotation = quat.fromEuler(
+          quat.create(),
+          0,
+          0,
+          0
+        );
+        break;
+    }
 
     camera.moveTo(translation[0], translation[1], translation[2]);
   }

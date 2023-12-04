@@ -38,19 +38,19 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     const force = vec3.fromValues(0, 0, 0);
 
     if (this.isDown['left']) {
-      force[0] += this.speed;
-    }
-
-    if (this.isDown['right']) {
       force[0] -= this.speed;
     }
 
+    if (this.isDown['right']) {
+      force[0] += this.speed;
+    }
+
     if (this.isDown['up']) {
-      force[2] += this.speed;
+      force[2] -= this.speed;
     }
 
     if (this.isDown['down']) {
-      force[2] -= this.speed;
+      force[2] += this.speed;
     }
 
     this.rootComponent.applyCentralForce(force);
@@ -122,11 +122,42 @@ class ColliderState extends TGameState {
     this.addActor(orbitCamera);
     this.activeCamera = orbitCamera;
 
-    const controller = new TFixedAxisCameraController({ distance: 5 });
+    const controller = new TFixedAxisCameraController({
+      distance: 5,
+      axis: 'z',
+    });
     controller.attachTo(box.rootComponent);
     camera.controller = controller;
 
     this.activeCamera = camera;
+
+    const section = engine.debugPanel.addSection('Fixed Axis Controller', true);
+    section.addSelect(
+      'Axis',
+      [
+        { label: 'X', value: 'x' },
+        { label: 'Y', value: 'y' },
+        { label: 'Z', value: 'z' },
+      ],
+      'z',
+      (axis: string) => {
+        controller.axis = axis;
+      }
+    );
+    section.addInput(
+      'Distance',
+      'range',
+      '5',
+      (value) => {
+        controller.distance = parseFloat(value);
+      },
+      {
+        min: 2,
+        max: 30,
+        step: 0.1,
+        showValueBubble: true,
+      }
+    );
   }
 }
 
@@ -135,6 +166,7 @@ const config = {
     game: ColliderState,
   },
   defaultState: 'game',
+  debugPanelOpen: true,
 };
 
 new TEngine(config, self as DedicatedWorkerGlobalScope);

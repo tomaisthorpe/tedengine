@@ -6,37 +6,66 @@ import {
   TFixedAxisCameraController,
 } from '../index';
 
-test('should follow given scene component', () => {
-  const actor = new TActor();
-  const comp = new TSceneComponent(actor);
+describe.each([
+  ['x', vec3.fromValues(5, 0, 0)],
+  ['y', vec3.fromValues(0, 5, 0)],
+  ['z', vec3.fromValues(0, 0, 5)],
+])('fixed %s axis', (axis, offset) => {
+  test('should follow given scene component', () => {
+    const actor = new TActor();
+    const comp = new TSceneComponent(actor);
 
-  const controller = new TFixedAxisCameraController({ distance: 5 });
-  controller.attachTo(comp);
+    const controller = new TFixedAxisCameraController({ axis, distance: 5 });
+    controller.attachTo(comp);
 
-  const camera = new TPerspectiveCamera();
-  controller.onUpdate(camera, {} as any, 0);
+    const camera = new TPerspectiveCamera();
+    controller.onUpdate(camera, {} as any, 0);
 
-  expect([...camera.cameraComponent.transform.translation]).toEqual([0, 0, -5]);
+    const expected = vec3.add(
+      vec3.create(),
+      comp.transform.translation,
+      offset
+    );
 
-  comp.transform.translation = vec3.fromValues(1, 2, 5);
-  controller.onUpdate(camera, {} as any, 0);
+    expect([...camera.cameraComponent.transform.translation]).toEqual([
+      ...expected,
+    ]);
 
-  expect([...camera.cameraComponent.transform.translation]).toEqual([1, 2, 0]);
-});
+    comp.transform.translation = vec3.fromValues(1, 2, 5);
+    controller.onUpdate(camera, {} as any, 0);
 
-test('should correctly follow a nested scene component', () => {
-  const actor = new TActor();
-  const root = new TSceneComponent(actor);
-  root.transform.translation = vec3.fromValues(1, 2, 3);
-  const comp = new TSceneComponent(actor);
-  comp.transform.translation = vec3.fromValues(-1, -1, -1);
-  comp.attachTo(root);
+    const expectedAfterMove = vec3.add(
+      vec3.create(),
+      comp.transform.translation,
+      offset
+    );
 
-  const controller = new TFixedAxisCameraController({ distance: 5 });
-  controller.attachTo(comp);
+    expect([...camera.cameraComponent.transform.translation]).toEqual([
+      ...expectedAfterMove,
+    ]);
+  });
 
-  const camera = new TPerspectiveCamera();
-  controller.onUpdate(camera, {} as any, 0);
+  test('should correctly follow a nested scene component', () => {
+    const actor = new TActor();
+    const root = new TSceneComponent(actor);
+    root.transform.translation = vec3.fromValues(1, 2, 3);
+    const comp = new TSceneComponent(actor);
+    comp.transform.translation = vec3.fromValues(-1, -1, -1);
+    comp.attachTo(root);
 
-  expect([...camera.cameraComponent.transform.translation]).toEqual([0, 1, -3]);
+    const controller = new TFixedAxisCameraController({ axis, distance: 5 });
+    controller.attachTo(comp);
+
+    const camera = new TPerspectiveCamera();
+    controller.onUpdate(camera, {} as any, 0);
+
+    const expected = vec3.add(
+      vec3.create(),
+      comp.getWorldTransform().translation,
+      offset
+    );
+    expect([...camera.cameraComponent.transform.translation]).toEqual([
+      ...expected,
+    ]);
+  });
 });
