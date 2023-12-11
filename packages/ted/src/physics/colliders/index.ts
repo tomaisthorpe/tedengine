@@ -8,6 +8,7 @@ export interface ICollider {
 
 export enum TColliderType {
   BOX = 'box',
+
   PLANE = 'plane',
   SPHERE = 'sphere',
 }

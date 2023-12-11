@@ -4,7 +4,7 @@ import type TEngine from '../engine/engine';
 import type TBaseCamera from './base-camera';
 import type TCameraController from './camera-controller';
 
-export default class TTopDownCameraController implements TCameraController {
+export default class TFollowAxisCameraController implements TCameraController {
   private component?: TSceneComponent;
 
   // Distance from the attached component on the z axis.

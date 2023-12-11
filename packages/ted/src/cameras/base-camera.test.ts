@@ -1,3 +1,4 @@
+import { quat } from 'gl-matrix';
 import { TBaseCamera } from '../index';
 
 test('moveBy should move by given amount', () => {
@@ -31,4 +32,15 @@ test('onUpdate should call update on controller', async () => {
   await camera.onUpdate({} as any, 0);
 
   expect(controller.onUpdate).toHaveBeenCalledTimes(1);
+});
+
+test('lookAt should set the rotation correctly', () => {
+  const camera = new TBaseCamera();
+
+  camera.lookAt(1, 2, 3);
+  expect([...camera.cameraComponent.transform.rotation]).toMatchSnapshot();
+
+  // Run again with different values
+  camera.lookAt(-1, -2, -3);
+  expect([...camera.cameraComponent.transform.rotation]).toMatchSnapshot();
 });

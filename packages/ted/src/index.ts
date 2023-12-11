@@ -1,5 +1,6 @@
 export { default as TActorComponent } from './actor-components/actor-component';
 export * from './actor-components/actor-component';
+
 export { default as TBoxComponent } from './actor-components/box-component';
 export { default as TMeshComponent } from './actor-components/mesh-component';
 export { default as TPlaneComponent } from './actor-components/plane-component';
@@ -25,6 +26,7 @@ export { default as TOrbitCamera } from './cameras/orbit-camera';
 export { default as TOrthographicCamera } from './cameras/orthographic-camera';
 export { default as TPerspectiveCamera } from './cameras/perspective-camera';
 export { default as TFixedAxisCameraController } from './cameras/fixed-axis-camera-controller';
+export { default as TFollowComponentCameraController } from './cameras/follow-component-camera-controller';
 
 export { default as TActor } from './core/actor';
 export * from './core/actor';
