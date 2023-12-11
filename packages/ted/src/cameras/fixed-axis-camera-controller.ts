@@ -11,6 +11,16 @@ export default class TFollowAxisCameraController implements TCameraController {
   public distance = 0;
 
   public axis = 'z';
+  private axisConfig: {
+    [key: string]: {
+      distance: [number, number, number];
+      rotation: [number, number, number];
+    };
+  } = {
+    x: { distance: [1, 0, 0], rotation: [0, 90, 0] },
+    y: { distance: [0, 1, 0], rotation: [-90, 0, 0] },
+    z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
+  };
 
   constructor(config?: { distance?: number; axis?: string }) {
     if (config?.distance !== undefined) {
@@ -27,49 +37,23 @@ export default class TFollowAxisCameraController implements TCameraController {
   }
 
   async onUpdate(camera: TBaseCamera, _: TEngine, __: number): Promise<void> {
-    if (!this.component) return;
+    if (!this.component || !this.axisConfig[this.axis]) return;
 
-    const target = this.component.getWorldTransform();
-
-    const translation = vec3.fromValues(
-      target.translation[0],
-      target.translation[1],
-      target.translation[2]
+    const distance = vec3.multiply(
+      vec3.create(),
+      this.axisConfig[this.axis].distance,
+      vec3.fromValues(this.distance, this.distance, this.distance)
     );
 
-    switch (this.axis) {
-      case 'x':
-        translation[0] += this.distance;
+    const target = this.component.getWorldTransform();
+    const translation = vec3.add(vec3.create(), target.translation, distance);
 
-        camera.cameraComponent.transform.rotation = quat.fromEuler(
-          quat.create(),
-          0,
-          90,
-          0
-        );
-        break;
-      case 'y':
-        translation[1] += this.distance;
+    const rotation = quat.fromEuler(
+      quat.create(),
+      ...this.axisConfig[this.axis].rotation
+    );
 
-        camera.cameraComponent.transform.rotation = quat.fromEuler(
-          quat.create(),
-          -90,
-          0,
-          0
-        );
-        break;
-      case 'z':
-        translation[2] += this.distance;
-
-        camera.cameraComponent.transform.rotation = quat.fromEuler(
-          quat.create(),
-          0,
-          0,
-          0
-        );
-        break;
-    }
-
-    camera.moveTo(translation);
+    camera.cameraComponent.transform.translation = translation;
+    camera.cameraComponent.transform.rotation = rotation;
   }
 }

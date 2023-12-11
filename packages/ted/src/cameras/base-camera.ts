@@ -1,4 +1,4 @@
-import { quat, vec3 } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 import TActor, { type TActorWithOnUpdate } from '../core/actor';
 import TCameraComponent from './camera-component';
 import type TCameraController from './camera-controller';
