@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`lookAt should set the rotation correctly 1`] = `
+exports[`TBaseCamera lookAt should set the rotation correctly 1`] = `
 [
   -0.04457065090537071,
   0.9481061697006226,
@@ -9,7 +9,7 @@ exports[`lookAt should set the rotation correctly 1`] = `
 ]
 `;
 
-exports[`lookAt should set the rotation correctly 2`] = `
+exports[`TBaseCamera lookAt should set the rotation correctly 2`] = `
 [
   -0.274656742811203,
   0.15385644137859344,

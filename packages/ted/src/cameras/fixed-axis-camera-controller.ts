@@ -53,7 +53,7 @@ export default class TFollowAxisCameraController implements TCameraController {
       ...this.axisConfig[this.axis].rotation
     );
 
-    camera.cameraComponent.transform.translation = translation;
+    camera.moveTo(translation);
     camera.cameraComponent.transform.rotation = rotation;
   }
 }
