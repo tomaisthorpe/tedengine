@@ -15,3 +15,13 @@ test('getMatrix should output expected matrix', () => {
 
   expect(t.getMatrix()).toMatchSnapshot();
 });
+test('lookAt should set the rotation correctly', () => {
+  const t = new TTransform();
+
+  t.lookAt(vec3.fromValues(1, 2, 3));
+  expect(t.getMatrix()).toMatchSnapshot();
+
+  // Run again with different values
+  t.lookAt(vec3.fromValues(-1, -2, -3));
+  expect(t.getMatrix()).toMatchSnapshot();
+});

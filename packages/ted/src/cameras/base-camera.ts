@@ -40,38 +40,9 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
   /**
    * Adjusts the camera's rotation so it is looking towards a given position.
    *
-   * This method calculates the direction from the camera to the target position,
-   * then calculates the right and up vectors for the camera based on this direction.
-   * Finally, it creates a rotation quaternion from these vectors and sets the camera's rotation to this quaternion.
-   *
    * @param target - The target position as a vec3
    */
   public lookAt(target: vec3) {
-    const direction = vec3.subtract(
-      vec3.create(),
-      this.cameraComponent.transform.translation,
-      target
-    );
-    vec3.normalize(direction, direction);
-    const up = vec3.fromValues(0, 1, 0);
-    const right = vec3.cross(vec3.create(), up, direction);
-    vec3.normalize(right, right);
-
-    const newUp = vec3.cross(vec3.create(), direction, right);
-    vec3.normalize(newUp, newUp);
-
-    const rotation = quat.fromMat3(quat.create(), [
-      right[0],
-      right[1],
-      right[2],
-      newUp[0],
-      newUp[1],
-      newUp[2],
-      direction[0],
-      direction[1],
-      direction[2],
-    ]);
-
-    this.cameraComponent.transform.rotation = rotation;
+    this.cameraComponent.transform.lookAt(target);
   }
 }
