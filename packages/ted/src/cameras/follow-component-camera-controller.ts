@@ -1,4 +1,3 @@
-import { vec3 } from 'gl-matrix';
 import type TSceneComponent from '../actor-components/scene-component';
 import type TEngine from '../engine/engine';
 import type TBaseCamera from './base-camera';
@@ -17,12 +16,6 @@ export default class TFollowComponentCameraController
     if (!this.component) return;
 
     const target = this.component.getWorldTransform();
-    const translation = vec3.fromValues(
-      target.translation[0],
-      target.translation[1],
-      target.translation[2]
-    );
-
-    camera.lookAt(translation[0], translation[1], translation[2]);
+    camera.lookAt(target.translation);
   }
 }

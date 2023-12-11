@@ -70,6 +70,6 @@ export default class TFollowAxisCameraController implements TCameraController {
         break;
     }
 
-    camera.moveTo(translation[0], translation[1], translation[2]);
+    camera.moveTo(translation);
   }
 }

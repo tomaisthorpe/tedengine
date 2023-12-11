@@ -1,25 +1,25 @@
-import { quat } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 import { TBaseCamera } from '../index';
 
 test('moveBy should move by given amount', () => {
   const camera = new TBaseCamera();
 
-  camera.moveBy(1, 2, 3);
+  camera.moveBy(vec3.fromValues(1, 2, 3));
   expect([...camera.cameraComponent.transform.translation]).toEqual([1, 2, 3]);
 
   // Run again to ensure isn't setting the values
-  camera.moveBy(2, 4, 6);
+  camera.moveBy(vec3.fromValues(2, 4, 6));
   expect([...camera.cameraComponent.transform.translation]).toEqual([3, 6, 9]);
 });
 
 test('moveTo should set to the given position', () => {
   const camera = new TBaseCamera();
 
-  camera.moveTo(1, 2, 3);
+  camera.moveTo(vec3.fromValues(1, 2, 3));
   expect([...camera.cameraComponent.transform.translation]).toEqual([1, 2, 3]);
 
   // Run again to ensure isn't adding values
-  camera.moveTo(2, 4, 6);
+  camera.moveTo(vec3.fromValues(2, 4, 6));
   expect([...camera.cameraComponent.transform.translation]).toEqual([2, 4, 6]);
 });
 
@@ -37,10 +37,10 @@ test('onUpdate should call update on controller', async () => {
 test('lookAt should set the rotation correctly', () => {
   const camera = new TBaseCamera();
 
-  camera.lookAt(1, 2, 3);
+  camera.lookAt(vec3.fromValues(1, 2, 3));
   expect([...camera.cameraComponent.transform.rotation]).toMatchSnapshot();
 
   // Run again with different values
-  camera.lookAt(-1, -2, -3);
+  camera.lookAt(vec3.fromValues(-1, -2, -3));
   expect([...camera.cameraComponent.transform.rotation]).toMatchSnapshot();
 });

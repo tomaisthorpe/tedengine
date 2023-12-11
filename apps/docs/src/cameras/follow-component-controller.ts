@@ -112,7 +112,7 @@ class ColliderState extends TGameState {
     this.addActor(plane);
 
     const camera = new TPerspectiveCamera();
-    camera.moveTo(5, 5, 5);
+    camera.moveTo(vec3.fromValues(5, 5, 5));
     this.addActor(camera);
     // this.activeCamera = camera;
     camera.cameraComponent.showDebugCamera(engine);

@@ -22,19 +22,19 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
   /**
    * Move the camera by a specified amount
    */
-  public moveBy(x: number, y: number, z = 0) {
+  public moveBy(vec: vec3) {
     this.cameraComponent.transform.translation = vec3.add(
       vec3.create(),
       this.cameraComponent.transform.translation,
-      vec3.fromValues(x, y, z)
+      vec
     );
   }
 
   /**
    * Set the camera to a given position
    */
-  public moveTo(x: number, y: number, z = 0) {
-    this.cameraComponent.transform.translation = vec3.fromValues(x, y, z);
+  public moveTo(position: vec3) {
+    this.cameraComponent.transform.translation = vec3.clone(position);
   }
 
   /**
@@ -44,19 +44,15 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
    * then calculates the right and up vectors for the camera based on this direction.
    * Finally, it creates a rotation quaternion from these vectors and sets the camera's rotation to this quaternion.
    *
-   * @param x - The x-coordinate of the target position
-   * @param y - The y-coordinate of the target position
-   * @param z - The z-coordinate of the target position (default is 0)
+   * @param target - The target position as a vec3
    */
-  public lookAt(x: number, y: number, z = 0) {
-    const target = vec3.fromValues(x, y, z);
+  public lookAt(target: vec3) {
     const direction = vec3.subtract(
       vec3.create(),
       this.cameraComponent.transform.translation,
       target
     );
     vec3.normalize(direction, direction);
-
     const up = vec3.fromValues(0, 1, 0);
     const right = vec3.cross(vec3.create(), up, direction);
     vec3.normalize(right, right);
