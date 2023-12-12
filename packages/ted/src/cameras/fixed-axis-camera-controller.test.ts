@@ -69,3 +69,47 @@ describe.each([
     ]);
   });
 });
+
+describe('onUpdate with deadzone', () => {
+  test('should move camera to target position and rotate camera if linear distance is greater than deadzone', () => {
+    const actor = new TActor();
+    const comp = new TSceneComponent(actor);
+    comp.transform.translation = vec3.fromValues(1, 2, 3);
+
+    const camera = new TPerspectiveCamera();
+    const controller = new TFixedAxisCameraController({
+      axis: 'x',
+      distance: 5,
+      deadzone: 6,
+    });
+    controller.attachTo(comp);
+
+    const translation = vec3.fromValues(6, 2, 3);
+
+    jest.spyOn(camera, 'moveTo');
+
+    controller.onUpdate(camera, {} as any, 0);
+
+    expect(camera.moveTo).toHaveBeenCalledWith(translation);
+  });
+
+  test('should not move camera if linear distance is less than or equal to deadzone', () => {
+    const actor = new TActor();
+    const comp = new TSceneComponent(actor);
+    comp.transform.translation = vec3.fromValues(1, 2, 3);
+
+    const camera = new TPerspectiveCamera();
+    const controller = new TFixedAxisCameraController({
+      axis: 'x',
+      distance: 5,
+      deadzone: 8,
+    });
+    controller.attachTo(comp);
+
+    jest.spyOn(camera, 'moveTo');
+
+    controller.onUpdate(camera, {} as any, 0);
+
+    expect(camera.moveTo).not.toHaveBeenCalled();
+  });
+});

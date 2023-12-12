@@ -10,6 +10,8 @@ export default class TFollowAxisCameraController implements TCameraController {
   // Distance from the attached component on the z axis.
   public distance = 0;
 
+  public deadzone = 0;
+
   public axis = 'z';
   private axisConfig: {
     [key: string]: {
@@ -22,13 +24,21 @@ export default class TFollowAxisCameraController implements TCameraController {
     z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
   };
 
-  constructor(config?: { distance?: number; axis?: string }) {
+  constructor(config?: {
+    distance?: number;
+    axis?: string;
+    deadzone?: number;
+  }) {
     if (config?.distance !== undefined) {
       this.distance = config.distance;
     }
 
     if (config?.axis !== undefined) {
       this.axis = config.axis;
+    }
+
+    if (config?.deadzone !== undefined) {
+      this.deadzone = config.deadzone;
     }
   }
 
@@ -48,12 +58,25 @@ export default class TFollowAxisCameraController implements TCameraController {
     const target = this.component.getWorldTransform();
     const translation = vec3.add(vec3.create(), target.translation, distance);
 
-    const rotation = quat.fromEuler(
-      quat.create(),
-      ...this.axisConfig[this.axis].rotation
+    // Calculate the linear distance between the camera's current position and the target position
+    const normalisedDistance = vec3.sub(
+      vec3.create(),
+      camera.cameraComponent.transform.translation,
+      distance
+    );
+    const linearDistance = vec3.distance(
+      normalisedDistance,
+      target.translation
     );
 
-    camera.moveTo(translation);
-    camera.cameraComponent.transform.rotation = rotation;
+    if (linearDistance > this.deadzone) {
+      const rotation = quat.fromEuler(
+        quat.create(),
+        ...this.axisConfig[this.axis].rotation
+      );
+
+      camera.moveTo(translation);
+      camera.cameraComponent.transform.rotation = rotation;
+    }
   }
 }
