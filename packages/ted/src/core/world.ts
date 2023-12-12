@@ -167,8 +167,7 @@ export default class TWorld {
         this.workerPort = event.ports[0];
         this.workerPort.onmessage = this.onMessage.bind(this);
 
-        // @todo this should replace the relay
-        this.jobs.addRelay([TJobContextTypes.Physics], this.workerPort);
+        this.jobs.setRelay([TJobContextTypes.Physics], this.workerPort);
 
         this.setupWorld();
         break;

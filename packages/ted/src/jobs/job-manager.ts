@@ -46,7 +46,15 @@ export default class TJobManager {
     }
   }
 
-  addRelay(contexts: TJobContextTypes[], port: MessagePort) {
+  /**
+   * Set relay function for the specified job contexts.
+   * The relay function sends a message containing the wrapped job to the specified message port.
+   * If a relay function already exists for a given context, it will be replaced.
+   *
+   * @param contexts - An array of job contexts.
+   * @param port - The message port to which the relay function will send the message.
+   */
+  setRelay(contexts: TJobContextTypes[], port: MessagePort) {
     const func = (wrappedJob: TWrappedJob) => {
       const message: TJobsMessageRelay = {
         type: TMessageTypesJobs.RELAY,

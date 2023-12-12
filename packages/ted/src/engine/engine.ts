@@ -77,7 +77,7 @@ export default class TEngine {
     this.update = this.update.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.jobs = new TJobManager([TJobContextTypes.Engine]);
-    this.jobs.addRelay(
+    this.jobs.setRelay(
       [TJobContextTypes.Renderer, TJobContextTypes.Audio],
       this.fredPort
     );

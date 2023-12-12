@@ -161,7 +161,7 @@ export default class TFred {
       audio: this.audio,
     };
 
-    this.jobs.addRelay([TJobContextTypes.Engine], this.enginePort);
+    this.jobs.setRelay([TJobContextTypes.Engine], this.enginePort);
 
     this.update();
 
