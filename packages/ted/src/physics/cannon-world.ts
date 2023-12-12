@@ -4,7 +4,7 @@ import { TColliderType } from './colliders';
 import type { TBoxColliderConfig } from './colliders/box-collider';
 import type { TPlaneColliderConfig } from './colliders/plane-collider';
 import type { TSphereColliderConfig } from './colliders/sphere-collider';
-import type { TWorldConfig } from '../core/world';
+import type { TCollisionClass, TWorldConfig } from '../core/world';
 import {
   TPhysicsBodyType,
   type TPhysicsBody,
@@ -38,30 +38,40 @@ export default class TCannonWorld implements TPhysicsWorld {
   } = {};
 
   public async create(config: TWorldConfig): Promise<void> {
-    const options: { gravity?: CANNON.Vec3 } = {};
-
+    this.world = new CANNON.World();
     if (config.enableGravity) {
-      options.gravity = new CANNON.Vec3(0, -9.82, 0);
+      this.world.gravity.set(0, -9.82, 0);
     }
 
+    this.setupCollisionClasses(config.collisionClasses);
     this.defaultCollisionClass = config.defaultCollisionClass;
 
-    // Setup collision classes
+    this.world.addEventListener(
+      'beginContact',
+      (e: { bodyA: CANNON.Body; bodyB: CANNON.Body }) => {
+        const bodyAUUID = this.findUUID(e.bodyA.id);
+        const bodyBUUID = this.findUUID(e.bodyB.id);
+
+        if (!bodyAUUID || !bodyBUUID) return;
+
+        // @todo collisions are going to be one frame behind?
+        this.collisions.push({ bodies: [bodyAUUID, bodyBUUID] });
+      }
+    );
+  }
+
+  private setupCollisionClasses(collisionClasses: TCollisionClass[]) {
     let nextGroup = 1;
-    for (const cc of config.collisionClasses) {
-      let mask: number | undefined = undefined;
+    for (const cc of collisionClasses) {
+      let mask: number | undefined;
 
       if (cc.ignores) {
+        mask = 0;
         for (const ig of cc.ignores) {
           // Find the group number
           const id = this.collisionClasses[ig];
           id.ignoredBy.push(nextGroup);
-
-          if (mask === undefined) {
-            mask = ~id;
-          } else {
-            mask &= ~id;
-          }
+          mask &= ~id;
         }
       }
 
@@ -85,21 +95,6 @@ export default class TCannonWorld implements TPhysicsWorld {
         }
       }
     }
-
-    this.world = new CANNON.World(options);
-
-    this.world.addEventListener(
-      'beginContact',
-      (e: { bodyA: CANNON.Body; bodyB: CANNON.Body }) => {
-        const bodyAUUID = this.findUUID(e.bodyA.id);
-        const bodyBUUID = this.findUUID(e.bodyB.id);
-
-        if (!bodyAUUID || !bodyBUUID) return;
-
-        // @todo collisions are going to be one frame behind?
-        this.collisions.push({ bodies: [bodyAUUID, bodyBUUID] });
-      }
-    );
   }
 
   public step(delta: number): {
@@ -277,18 +272,7 @@ export default class TCannonWorld implements TPhysicsWorld {
     options?: TPhysicsQueryOptions
   ): TPhysicsQueryLineResult[] {
     const hits: { [key: string]: number[] } = {};
-
-    let mask: number | undefined = undefined;
-    if (options?.collisionClasses) {
-      for (const cl of options.collisionClasses) {
-        const id = this.collisionClasses[cl];
-        if (mask === undefined) {
-          mask = id.groupNumber;
-        } else {
-          mask |= id.groupNumber;
-        }
-      }
-    }
+    const mask = this.calculateQueryMask(options?.collisionClasses);
 
     this.world.raycastAll(
       new CANNON.Vec3(...from),
@@ -323,6 +307,21 @@ export default class TCannonWorld implements TPhysicsWorld {
     );
   }
 
+  private calculateQueryMask(collisionClasses?: string[]): number | undefined {
+    let mask: number | undefined = undefined;
+    if (collisionClasses) {
+      for (const cl of collisionClasses) {
+        const id = this.collisionClasses[cl];
+        if (mask === undefined) {
+          mask = id.groupNumber;
+        } else {
+          mask |= id.groupNumber;
+        }
+      }
+    }
+    return mask;
+  }
+
   public queryArea(
     from: vec3,
     to: vec3,
@@ -333,18 +332,8 @@ export default class TCannonWorld implements TPhysicsWorld {
       upperBound: new CANNON.Vec3(...to),
     });
     const bodies = this.world.broadphase.aabbQuery(this.world, query, []);
+    const mask = this.calculateQueryMask(options?.collisionClasses);
 
-    let mask: number | undefined = undefined;
-    if (options?.collisionClasses) {
-      for (const cl of options.collisionClasses) {
-        const id = this.collisionClasses[cl];
-        if (mask === undefined) {
-          mask = id.groupNumber;
-        } else {
-          mask |= id.groupNumber;
-        }
-      }
-    }
     const result: TPhysicsQueryAreaResult[] = [];
     for (const body of bodies) {
       // Filter any bodies not part of the provided collision groups
