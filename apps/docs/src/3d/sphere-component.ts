@@ -11,7 +11,7 @@ class Actor extends TActor {
   constructor(engine: TEngine) {
     super();
 
-    const box = new TSphereComponent(engine, this, 0.5, 12, 12);
+    new TSphereComponent(engine, this, 0.5, 12, 12);
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, 0);
   }

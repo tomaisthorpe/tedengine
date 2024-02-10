@@ -6,7 +6,7 @@ class Actor extends TActor {
   constructor(engine: TEngine) {
     super();
 
-    const box = new TBoxComponent(engine, this, 1, 1, 1);
+    new TBoxComponent(engine, this, 1, 1, 1);
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
   }

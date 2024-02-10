@@ -17,8 +17,6 @@ export interface TDebugPanelSerializedData {
   sections: TDebugPanelSectionSerializedData[];
 }
 
-type OnUpdateCallback = (data: TDebugPanelData) => void;
-
 /**
  * The debug panel holds a number of stats to display on the UI.
  * The panel also acts as the default section.
@@ -26,13 +24,16 @@ type OnUpdateCallback = (data: TDebugPanelData) => void;
 export default class TDebugPanel extends TDebugPanelSection {
   private sections: TDebugPanelSection[] = [];
 
-  constructor(events: TEventQueue, private isOpen: boolean = false) {
+  constructor(
+    events: TEventQueue,
+    private isOpen = false,
+  ) {
     super(events, 'Debug', true);
 
     this.createDefaultRows();
 
     events.addListener<TKeyUpEvent>(TEventTypesInput.KeyUp, '`', (e) =>
-      this.toggle()
+      this.toggle(),
     );
   }
 
@@ -78,28 +79,28 @@ export default class TDebugPanel extends TDebugPanelSection {
       (engine: TEngine) => {
         return engine.stats.worldUpdateTime.toFixed(1);
       },
-      1
+      1,
     );
     this.addValue(
       'Physics Total (ms)',
       (engine: TEngine) => {
         return engine.stats.physicsTotalTime.toFixed(1);
       },
-      2
+      2,
     );
     this.addValue(
       'Physics Step (ms)',
       (engine: TEngine) => {
         return engine.stats.physicsStepTime.toFixed(1);
       },
-      3
+      3,
     );
     this.addValue(
       'Actor Update (ms)',
       (engine: TEngine) => {
         return engine.stats.actorUpdateTime.toFixed(1);
       },
-      2
+      2,
     );
 
     this.addFredValue('Render (ms)', 'renderTime');
