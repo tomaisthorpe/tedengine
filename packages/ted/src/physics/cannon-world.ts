@@ -249,6 +249,10 @@ export default class TCannonWorld implements TPhysicsWorld {
       body.isTrigger = options.isTrigger;
     }
 
+    if (options.mass !== undefined) {
+      body.mass = options.mass;
+    }
+
     // Needs to be called after changing options
     body.updateMassProperties();
   }
