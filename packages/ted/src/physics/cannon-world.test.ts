@@ -26,10 +26,10 @@ describe('queryLine', () => {
     await world.create(worldConfig);
 
     const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
-    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1], 1);
+    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1]);
 
     const colliderB = new TBoxCollider(1, 1, 1, 'Other');
-    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1], 1);
+    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1]);
 
     world.step(1);
   });
@@ -79,10 +79,10 @@ describe('queryArea', () => {
     await world.create(worldConfig);
 
     const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
-    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1], 1);
+    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1]);
 
     const colliderB = new TBoxCollider(1, 1, 1, 'Other');
-    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1], 1);
+    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1]);
 
     world.step(1);
   });

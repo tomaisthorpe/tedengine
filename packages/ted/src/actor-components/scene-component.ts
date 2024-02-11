@@ -33,7 +33,6 @@ export default class TSceneComponent extends TActorComponent {
    * Collider for this component.
    */
   public collider?: ICollider;
-  public mass = 1;
 
   /**
    * Parent of this component.
@@ -44,7 +43,7 @@ export default class TSceneComponent extends TActorComponent {
   constructor(actor: TActor, bodyOptions?: TPhysicsBodyOptions) {
     super(actor);
 
-    this.physicsBodyOptions = bodyOptions || {};
+    this.physicsBodyOptions = { mass: 1, ...bodyOptions };
 
     // Always attach to the root component by default, unless this is the root component
     if (actor.rootComponent !== this) {

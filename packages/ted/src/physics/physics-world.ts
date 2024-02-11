@@ -13,8 +13,7 @@ export interface TPhysicsWorld {
     collider: TColliderConfig,
     translation: [number, number, number],
     rotation: [number, number, number, number],
-    mass: number,
-    options?: TPhysicsBodyOptions
+    options?: TPhysicsBodyOptions,
   ): void;
   applyCentralForce(uuid: string, force: vec3): void;
   applyCentralImpulse(uuid: string, impulse: vec3): void;
@@ -22,17 +21,17 @@ export interface TPhysicsWorld {
   updateTransform(
     uuid: string,
     translation: [number, number, number],
-    rotation: [number, number, number, number]
+    rotation: [number, number, number, number],
   ): void;
   queryLine(
     from: vec3,
     to: vec3,
-    options?: TPhysicsQueryOptions
+    options?: TPhysicsQueryOptions,
   ): TPhysicsQueryLineResult[];
   queryArea(
     from: vec3,
     to: vec3,
-    options?: TPhysicsQueryOptions
+    options?: TPhysicsQueryOptions,
   ): TPhysicsQueryAreaResult[];
 }
 
@@ -50,6 +49,7 @@ export interface TPhysicsBodyOptions {
   angularVelocity?: vec3;
   friction?: number;
   isTrigger?: boolean;
+  mass?: number;
 }
 
 export interface TPhysicsBody {

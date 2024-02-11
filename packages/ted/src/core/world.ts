@@ -145,7 +145,6 @@ export default class TWorld {
         transform.rotation[2],
         transform.rotation[3],
       ],
-      mass: component.mass,
       options: component.bodyOptions,
     });
 
@@ -181,7 +180,7 @@ export default class TWorld {
         this.onPhysicsUpdate(
           message.bodies,
           message.collisions,
-          message.stepElapsedTime
+          message.stepElapsedTime,
         );
         break;
       }
@@ -270,17 +269,17 @@ export default class TWorld {
   private onPhysicsUpdate(
     worldState: TPhysicsBody[],
     collisions: TPhysicsCollision[],
-    stepElapsedTime: number
+    stepElapsedTime: number,
   ) {
     for (const obj of worldState) {
       // Find the actor with root component with this uuid
       for (const actor of this.actors) {
         if (actor.rootComponent.uuid === obj.uuid) {
           actor.rootComponent.transform.translation = vec3.fromValues(
-            ...obj.translation
+            ...obj.translation,
           );
           actor.rootComponent.transform.rotation = quat.fromValues(
-            ...obj.rotation
+            ...obj.rotation,
           );
 
           break;
@@ -326,7 +325,7 @@ export default class TWorld {
     }
 
     const actor = this.actors.find(
-      (actor) => actor.rootComponent.uuid === bodyB
+      (actor) => actor.rootComponent.uuid === bodyB,
     );
 
     if (actor) {
@@ -359,7 +358,7 @@ export default class TWorld {
   public onEnterCollisionClass(
     actor: TActor,
     collisionClass: string,
-    handler: TCollisionCallback
+    handler: TCollisionCallback,
   ) {
     this.collisionListeners[actor.rootComponent.uuid] = {
       componentUUID: actor.rootComponent.uuid,
@@ -374,7 +373,7 @@ export default class TWorld {
 
   public updateBodyOptions(
     component: TSceneComponent,
-    options: TPhysicsBodyOptions
+    options: TPhysicsBodyOptions,
   ) {
     // If there is no collider, it definitely won't be in the physics world
     if (!component.collider) return;
@@ -415,7 +414,7 @@ export default class TWorld {
   public async queryLine(
     from: vec3,
     to: vec3,
-    options?: TPhysicsQueryOptions
+    options?: TPhysicsQueryOptions,
   ): Promise<TWorldQueryLineResult[]> {
     const hits = (await this.jobs.do({
       type: 'query_line',
@@ -426,7 +425,7 @@ export default class TWorld {
 
     for (const hit of hits) {
       const actor = this.actors.find(
-        (actor) => actor.rootComponent.uuid === hit.uuid
+        (actor) => actor.rootComponent.uuid === hit.uuid,
       );
       if (!actor) continue;
 
@@ -444,7 +443,7 @@ export default class TWorld {
   public async queryArea(
     from: vec3,
     to: vec3,
-    options?: TPhysicsQueryOptions
+    options?: TPhysicsQueryOptions,
   ): Promise<TWorldQueryAreaResult[]> {
     const hits = (await this.jobs.do({
       type: 'query_area',
@@ -455,7 +454,7 @@ export default class TWorld {
 
     for (const hit of hits) {
       const actor = this.actors.find(
-        (actor) => actor.rootComponent.uuid === hit.uuid
+        (actor) => actor.rootComponent.uuid === hit.uuid,
       );
       if (!actor) continue;
 

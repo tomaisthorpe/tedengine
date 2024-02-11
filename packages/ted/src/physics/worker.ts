@@ -47,8 +47,7 @@ enginePort.onmessage = async (event: MessageEvent) => {
           body.collider,
           body.translation,
           body.rotation,
-          body.mass,
-          body.options
+          body.options,
         );
       }
 
@@ -76,7 +75,7 @@ enginePort.onmessage = async (event: MessageEvent) => {
 
 function applyStateChanges(
   world: TPhysicsWorld,
-  stateChanges: TPhysicsStateChange[]
+  stateChanges: TPhysicsStateChange[],
 ) {
   for (const stateChange of stateChanges) {
     switch (stateChange.type) {
@@ -93,7 +92,7 @@ function applyStateChanges(
         world.updateTransform(
           stateChange.uuid,
           stateChange.translation,
-          stateChange.rotation
+          stateChange.rotation,
         );
         break;
     }

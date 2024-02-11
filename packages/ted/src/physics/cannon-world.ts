@@ -56,7 +56,7 @@ export default class TCannonWorld implements TPhysicsWorld {
 
         // @todo collisions are going to be one frame behind?
         this.collisions.push({ bodies: [bodyAUUID, bodyBUUID] });
-      }
+      },
     );
   }
 
@@ -127,21 +127,20 @@ export default class TCannonWorld implements TPhysicsWorld {
     collider: TColliderConfig,
     translation: [number, number, number],
     rotation: [number, number, number, number],
-    mass: number,
-    options?: TPhysicsBodyOptions
+    options?: TPhysicsBodyOptions,
   ): void {
     let shape: CANNON.Shape;
 
     if (collider.type === TColliderType.BOX) {
       const config = collider as TBoxColliderConfig;
       shape = new CANNON.Box(
-        new CANNON.Vec3(config.width / 2, config.depth / 2, config.height / 2)
+        new CANNON.Vec3(config.width / 2, config.depth / 2, config.height / 2),
       );
     } else if (collider.type === TColliderType.PLANE) {
       // @todo actually make this a plane
       const config = collider as TPlaneColliderConfig;
       shape = new CANNON.Box(
-        new CANNON.Vec3(config.width / 2, 0.000001, config.height / 2)
+        new CANNON.Vec3(config.width / 2, 0.000001, config.height / 2),
       );
     } else if (collider.type === TColliderType.SPHERE) {
       const config = collider as TSphereColliderConfig;
@@ -167,7 +166,7 @@ export default class TCannonWorld implements TPhysicsWorld {
     }
 
     const body = new CANNON.Body({
-      mass,
+      mass: options?.mass ?? 1,
       shape,
       ...colliderFilter,
       fixedRotation: options?.fixedRotation,
@@ -257,7 +256,7 @@ export default class TCannonWorld implements TPhysicsWorld {
   public updateTransform(
     uuid: string,
     translation: [number, number, number],
-    rotation: [number, number, number, number]
+    rotation: [number, number, number, number],
   ) {
     const body = this.findBody(uuid);
     if (!body) return;
@@ -269,7 +268,7 @@ export default class TCannonWorld implements TPhysicsWorld {
   public queryLine(
     from: vec3,
     to: vec3,
-    options?: TPhysicsQueryOptions
+    options?: TPhysicsQueryOptions,
   ): TPhysicsQueryLineResult[] {
     const hits: { [key: string]: number[] } = {};
     const mask = this.calculateQueryMask(options?.collisionClasses);
@@ -295,7 +294,7 @@ export default class TCannonWorld implements TPhysicsWorld {
         } else {
           hits[uuid] = [hit.distance];
         }
-      }
+      },
     );
 
     return Object.entries(hits).reduce(
@@ -303,7 +302,7 @@ export default class TCannonWorld implements TPhysicsWorld {
         acc.push({ uuid, distance: Math.min(...distances) });
         return acc;
       },
-      []
+      [],
     );
   }
 
@@ -325,7 +324,7 @@ export default class TCannonWorld implements TPhysicsWorld {
   public queryArea(
     from: vec3,
     to: vec3,
-    options?: TPhysicsQueryOptions | undefined
+    options?: TPhysicsQueryOptions | undefined,
   ): TPhysicsQueryAreaResult[] {
     const query = new CANNON.AABB({
       lowerBound: new CANNON.Vec3(...from),
@@ -352,7 +351,7 @@ export default class TCannonWorld implements TPhysicsWorld {
 }
 
 function mapBodyType(
-  type: TPhysicsBodyType | undefined
+  type: TPhysicsBodyType | undefined,
 ): CANNON.BodyType | undefined {
   if (type === undefined) {
     return undefined;
