@@ -41,10 +41,9 @@ class Plane extends TActor {
     super();
     const size = 40;
 
-    const box = new TPlaneComponent(engine, this, size, size);
+    const box = new TPlaneComponent(engine, this, size, size, { mass: 0 });
     this.rootComponent = box;
     this.rootComponent.collider = new TPlaneCollider(size, size);
-    this.rootComponent.mass = 0;
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, 0);
   }

@@ -69,7 +69,7 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     controller.bindAction(
       'Right',
       'released',
-      this.released('right').bind(this)
+      this.released('right').bind(this),
     );
   }
 
@@ -90,10 +90,9 @@ class Plane extends TActor {
   constructor(engine: TEngine) {
     super();
 
-    const box = new TPlaneComponent(engine, this, 10, 10);
+    const box = new TPlaneComponent(engine, this, 10, 10, { mass: 0 });
     this.rootComponent = box;
     this.rootComponent.collider = new TPlaneCollider(10, 10);
-    this.rootComponent.mass = 0;
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, 0);
   }
@@ -142,7 +141,7 @@ class ColliderState extends TGameState {
       'z',
       (axis: string) => {
         controller.axis = axis;
-      }
+      },
     );
     section.addInput(
       'Distance',
@@ -156,7 +155,7 @@ class ColliderState extends TGameState {
         max: 30,
         step: 0.1,
         showValueBubble: true,
-      }
+      },
     );
   }
 }
