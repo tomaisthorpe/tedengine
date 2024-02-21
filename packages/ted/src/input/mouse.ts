@@ -4,7 +4,10 @@ import { TEventTypesInput } from './events';
 
 // @todo add remove event listeners
 export default class TMouse {
-  constructor(eventQueue: TEventQueue, private canvas: HTMLCanvasElement) {
+  constructor(
+    eventQueue: TEventQueue,
+    private canvas: HTMLCanvasElement,
+  ) {
     this.addListeners(eventQueue);
   }
 
