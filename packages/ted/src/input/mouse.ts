@@ -12,45 +12,62 @@ export interface IProjectionContext {
   projectionMatrix?: mat4;
 }
 
-// @todo add remove event listeners
 export default class TMouse {
+  private mouseMoveListener: (e: MouseEvent) => void;
+  private mouseUpListener: (e: MouseEvent) => void;
+  private mouseDownListener: (e: MouseEvent) => void;
+
   constructor(
     eventQueue: TEventQueue,
     private canvas: HTMLCanvasElement,
     private projectionContext: IProjectionContext,
   ) {
-    this.addListeners(eventQueue);
+    this.mouseMoveListener = (e) => this.handleMouseMove(e, eventQueue);
+    this.mouseMoveListener = this.mouseMoveListener.bind(this);
+    window.addEventListener('mousemove', this.mouseMoveListener);
+
+    this.mouseUpListener = (e) => this.handleMouseUp(e, eventQueue);
+    this.mouseUpListener = this.mouseUpListener.bind(this);
+    this.canvas.addEventListener('mouseup', this.mouseUpListener);
+
+    this.mouseDownListener = (e) => this.handleMouseDown(e, eventQueue);
+    this.mouseDownListener = this.mouseDownListener.bind(this);
+    this.canvas.addEventListener('mousedown', this.mouseDownListener);
   }
 
-  private addListeners(eventQueue: TEventQueue) {
-    window.addEventListener('mousemove', (e) => {
-      const event: TMouseMoveEvent = {
-        type: TEventTypesInput.MouseMove,
-        ...this.getMouseLocation(e),
-      };
+  public destroy() {
+    window.removeEventListener('mousemove', this.mouseMoveListener);
+    this.canvas.removeEventListener('mouseup', this.mouseUpListener);
+    this.canvas.removeEventListener('mousedown', this.mouseDownListener);
+  }
 
-      eventQueue.broadcast(event);
-    });
+  private handleMouseMove(e: MouseEvent, eventQueue: TEventQueue) {
+    const event: TMouseMoveEvent = {
+      type: TEventTypesInput.MouseMove,
+      ...this.getMouseLocation(e),
+    };
 
-    this.canvas.addEventListener('mouseup', (e) => {
-      const event: TMouseUpEvent = {
-        type: TEventTypesInput.MouseUp,
-        subType: e.button.toString(),
-        ...this.getMouseLocation(e),
-      };
+    eventQueue.broadcast(event);
+  }
 
-      eventQueue.broadcast(event);
-    });
+  private handleMouseUp(e: MouseEvent, eventQueue: TEventQueue) {
+    const event: TMouseUpEvent = {
+      type: TEventTypesInput.MouseUp,
+      subType: e.button.toString(),
+      ...this.getMouseLocation(e),
+    };
 
-    this.canvas.addEventListener('mousedown', (e) => {
-      const event: TMouseDownEvent = {
-        type: TEventTypesInput.MouseDown,
-        subType: e.button.toString(),
-        ...this.getMouseLocation(e),
-      };
+    eventQueue.broadcast(event);
+  }
 
-      eventQueue.broadcast(event);
-    });
+  private handleMouseDown(e: MouseEvent, eventQueue: TEventQueue) {
+    const event: TMouseDownEvent = {
+      type: TEventTypesInput.MouseDown,
+      subType: e.button.toString(),
+      ...this.getMouseLocation(e),
+    };
+
+    eventQueue.broadcast(event);
   }
 
   private getMouseLocation(e: MouseEvent) {

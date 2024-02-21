@@ -11,51 +11,60 @@ const preventDefaultBehaviour = [
   ' ', // Space key
 ];
 
-// @todo add remove event listeners
 export default class TKeyboard {
+  private keyupListener: (e: KeyboardEvent) => void;
+  private keydownListener: (e: KeyboardEvent) => void;
+
   constructor(eventQueue: TEventQueue) {
-    this.addListeners(eventQueue);
+    this.keyupListener = (e) => this.handleKeyUp(e, eventQueue);
+    this.keydownListener = (e) => this.handleKeyDown(e, eventQueue);
+
+    window.addEventListener('keyup', this.keyupListener);
+    window.addEventListener('keydown', this.keydownListener);
   }
 
-  private addListeners(eventQueue: TEventQueue) {
-    window.addEventListener('keyup', (e) => {
-      if (preventDefaultBehaviour.includes(e.key)) {
-        e.preventDefault();
-      }
+  public destroy() {
+    window.removeEventListener('keyup', this.keyupListener);
+    window.removeEventListener('keydown', this.keydownListener);
+  }
 
-      let key = e.key;
-      if (key === ' ') {
-        key = 'Space';
-      }
+  private handleKeyUp(e: KeyboardEvent, eventQueue: TEventQueue) {
+    if (preventDefaultBehaviour.includes(e.key)) {
+      e.preventDefault();
+    }
 
-      const event: TKeyUpEvent = {
-        type: TEventTypesInput.KeyUp,
-        subType: key,
-      };
+    let key = e.key;
+    if (key === ' ') {
+      key = 'Space';
+    }
 
-      eventQueue.broadcast(event);
-    });
+    const event: TKeyUpEvent = {
+      type: TEventTypesInput.KeyUp,
+      subType: key,
+    };
 
-    window.addEventListener('keydown', (e) => {
-      if (preventDefaultBehaviour.includes(e.key)) {
-        e.preventDefault();
-      }
+    eventQueue.broadcast(event);
+  }
 
-      if (e.repeat) {
-        return;
-      }
+  private handleKeyDown(e: KeyboardEvent, eventQueue: TEventQueue) {
+    if (preventDefaultBehaviour.includes(e.key)) {
+      e.preventDefault();
+    }
 
-      let key = e.key;
-      if (key === ' ') {
-        key = 'Space';
-      }
+    if (e.repeat) {
+      return;
+    }
 
-      const event: TKeyDownEvent = {
-        type: TEventTypesInput.KeyDown,
-        subType: key,
-      };
+    let key = e.key;
+    if (key === ' ') {
+      key = 'Space';
+    }
 
-      eventQueue.broadcast(event);
-    });
+    const event: TKeyDownEvent = {
+      type: TEventTypesInput.KeyDown,
+      subType: key,
+    };
+
+    eventQueue.broadcast(event);
   }
 }

@@ -230,7 +230,10 @@ export default class TFred {
       type: TFredMessageTypes.SHUTDOWN,
     };
     this.enginePort.postMessage(message);
-    // @todo do teardown on this thread
+
+    // @todo do full teardown on this thread
+    this.mouse?.destroy();
+    this.keyboard?.destroy();
   }
 }
 
