@@ -18,30 +18,29 @@ export interface TKeyDownEvent {
   subType: string; // Key pressed
 }
 
-export interface TMouseUpEvent {
+export interface TMouseLocation {
+  clientX: number;
+  clientY: number;
+  x: number;
+  y: number;
+  px: number;
+  py: number;
+  worldX?: number;
+  worldY?: number;
+}
+
+export interface TMouseUpEvent extends TMouseLocation {
   type: TEventTypesInput.MouseUp;
   subType: string; // Button released
-  clientX: number;
-  clientY: number;
-  x: number;
-  y: number;
 }
 
-export interface TMouseDownEvent {
+export interface TMouseDownEvent extends TMouseLocation {
   type: TEventTypesInput.MouseDown;
   subType: string; // Button pressed
-  clientX: number;
-  clientY: number;
-  x: number;
-  y: number;
 }
 
-export interface TMouseMoveEvent {
+export interface TMouseMoveEvent extends TMouseLocation {
   type: TEventTypesInput.MouseMove;
-  clientX: number;
-  clientY: number;
-  x: number;
-  y: number;
 }
 
 export interface TActionPressedEvent {

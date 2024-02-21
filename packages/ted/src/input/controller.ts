@@ -1,7 +1,7 @@
 import TEventQueue from '../core/event-queue';
 import type TPawn from '../core/pawn';
 import { TEventTypesInput } from './events';
-import type { TMouseMoveEvent } from './events';
+import type { TMouseLocation, TMouseMoveEvent } from './events';
 import type {
   TKeyDownEvent,
   TKeyUpEvent,
@@ -23,12 +23,7 @@ export default class TController {
   private events: TEventQueue = new TEventQueue();
   private axes: { [key: string]: number } = {};
 
-  public mouseLocation?: {
-    clientX: number;
-    clientY: number;
-    x: number;
-    y: number;
-  };
+  public mouseLocation?: TMouseLocation;
 
   constructor(private engineEventQueue: TEventQueue) {}
 
@@ -45,7 +40,7 @@ export default class TController {
         };
 
         this.events.broadcast(event);
-      }
+      },
     );
 
     this.engineEventQueue.addListener<TMouseUpEvent>(
@@ -58,7 +53,7 @@ export default class TController {
         };
 
         this.events.broadcast(event);
-      }
+      },
     );
   }
 
@@ -74,7 +69,7 @@ export default class TController {
         };
 
         this.events.broadcast(event);
-      }
+      },
     );
 
     this.engineEventQueue.addListener<TKeyUpEvent>(
@@ -87,7 +82,7 @@ export default class TController {
         };
 
         this.events.broadcast(event);
-      }
+      },
     );
   }
 
@@ -101,7 +96,7 @@ export default class TController {
       key,
       (e) => {
         this.axes[axis] += scale;
-      }
+      },
     );
 
     this.engineEventQueue.addListener<TKeyUpEvent>(
@@ -109,7 +104,7 @@ export default class TController {
       key,
       (e) => {
         this.axes[axis] -= scale;
-      }
+      },
     );
   }
 
@@ -122,8 +117,12 @@ export default class TController {
           clientY: e.clientY,
           x: e.x,
           y: e.y,
+          px: e.px,
+          py: e.py,
+          worldX: e.worldX,
+          worldY: e.worldY,
         };
-      }
+      },
     );
   }
 
@@ -151,13 +150,13 @@ export default class TController {
       this.events.addListener<TActionPressedEvent>(
         TEventTypesInput.ActionPressed,
         action,
-        callback
+        callback,
       );
     } else if (state === 'released') {
       this.events.addListener<TActionReleasedEvent>(
         TEventTypesInput.ActionReleased,
         action,
-        callback
+        callback,
       );
     }
   }

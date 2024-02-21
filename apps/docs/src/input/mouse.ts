@@ -6,6 +6,7 @@ import {
   TPawn,
   TSimpleController,
   TEventTypesInput,
+  TOrthographicCamera,
 } from '@tedengine/ted';
 import type {
   TController,
@@ -20,7 +21,7 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     const controller = new TSimpleController(engine);
     controller.possess(this);
 
-    const box = new TBoxComponent(engine, this, 1, 1, 1);
+    const box = new TBoxComponent(engine, this, 100, 100, 2);
     this.rootComponent = box;
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
@@ -29,7 +30,7 @@ class Cube extends TPawn implements TActorWithOnUpdate {
       TEventTypesInput.MouseUp,
       (e: TMouseUpEvent) => {
         console.log(`You clicked on the game at (${e.x},${e.y})!`);
-      }
+      },
     );
   }
 
@@ -41,7 +42,16 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     this.controller.update();
 
     // Get the mouse location
-    console.log(this.controller.mouseLocation);
+    const loc = this.controller.mouseLocation;
+    console.log(loc);
+
+    if (loc?.worldX && loc?.worldY) {
+      this.rootComponent.transform.translation = vec3.fromValues(
+        loc?.worldX,
+        loc?.worldY,
+        -10,
+      );
+    }
   }
 
   public setupController(controller: TController): void {
@@ -55,8 +65,10 @@ class ColliderState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Cube(engine, 0, 0, -10);
+    const box = new Cube(engine, 100, 100, -10);
     this.addActor(box);
+
+    this.activeCamera = new TOrthographicCamera();
   }
 }
 

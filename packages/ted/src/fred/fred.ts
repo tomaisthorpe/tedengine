@@ -62,7 +62,7 @@ export default class TFred {
     private container: HTMLElement,
     private updateEngineContext: (ctx: TEngineContextData) => void,
     private updateGameContext: (ctx: TGameContextData) => void,
-    private setErrorMessage: (message: string) => void
+    private setErrorMessage: (message: string) => void,
   ) {
     engineWorker.onmessage = this.onEngineMessage.bind(this);
 
@@ -137,14 +137,10 @@ export default class TFred {
       (e) => {
         this.setErrorMessage('Context Lost');
       },
-      false
+      false,
     );
 
     this.container.append(this.canvas);
-
-    this.events = new TEventQueue([this.enginePort]);
-    this.keyboard = new TKeyboard(this.events);
-    this.mouse = new TMouse(this.events, this.canvas);
 
     this.jobs = new TJobManager([
       TJobContextTypes.Renderer,
@@ -154,6 +150,10 @@ export default class TFred {
 
     this.renderer = new TRenderer(this.canvas, this.resources);
     await this.renderer.load();
+
+    this.events = new TEventQueue([this.enginePort]);
+    this.keyboard = new TKeyboard(this.events);
+    this.mouse = new TMouse(this.events, this.canvas, this.renderer);
 
     this.jobs.additionalContext = {
       resourceManager: this.resources,
