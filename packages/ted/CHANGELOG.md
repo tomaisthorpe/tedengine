@@ -1,5 +1,31 @@
 # @tedengine/ted
 
+## 0.4.0
+
+### Minor Changes
+
+- 16d0d3c: Add worldX/Y to mouse events
+- deb28bb: Add lerp for camera translation and rotation
+- d85edd0: Renamed top down camera controller to fixed axis
+- d534599: Rename lookAt to moveTo to match implementation
+- 08679b1: Add simple deadzone on fixed axis controller
+- 2425556: Remove mouse/keyboard event listeners on teardown
+- 536d608: Add "look at" method to transform
+- 2014832: Refactor base camera to use vec3 instead of numbers
+- f615bb3: Move component mass to phyiscs options
+- ab0cc4d: Add simple top down camera controller
+- 2e3fefc: Add support for camera controllers
+- 02d27b9: Add follow component camera controller
+- adee6b4: Change top down camera to fixed axis
+- d9e6f3c: Allow updating mass after body register
+
+### Patch Changes
+
+- f77fbd4: Rename addRelay to setRelay to match behaviour
+- a82921c: Fix rotation on top down camera controller
+- d0efc71: Simplify fixed axis camera controller
+- f336756: Bump dependencies
+
 ## 0.3.1
 
 ### Patch Changes
