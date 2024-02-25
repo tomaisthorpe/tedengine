@@ -1,5 +1,12 @@
 # @tedengine/ted
 
+## 0.4.1
+
+### Patch Changes
+
+- 137c67c: Fix destroy causing exception on engine ports
+- 5588c60: Output workers in /workers/ dir
+
 ## 0.4.0
 
 ### Minor Changes
