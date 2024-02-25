@@ -226,10 +226,12 @@ export default class TFred {
    */
   public destroy() {
     // @todo should this be an event? might be nicer when there's more threds
-    const message: TFredMessageShutdown = {
-      type: TFredMessageTypes.SHUTDOWN,
-    };
-    this.enginePort.postMessage(message);
+    if (this.enginePort) {
+      const message: TFredMessageShutdown = {
+        type: TFredMessageTypes.SHUTDOWN,
+      };
+      this.enginePort.postMessage(message);
+    }
 
     // @todo do full teardown on this thread
     this.mouse?.destroy();
