@@ -14,6 +14,13 @@ const Container = styled.div`
   position: relative;
   border: 1px solid #181b1f;
   box-shadow: 0px 1px 2px #161a20;
+  place-self: center;
+  max-width: 100%;
+  max-height: 100%;
+`;
+
+const OuterContainer = styled.div`
+  display: grid;
 `;
 
 const TGame = ({
@@ -21,13 +28,16 @@ const TGame = ({
   children,
   width = '1024px',
   height = '768px',
+  aspectRatio = '4 / 3',
 }: {
   game: Worker;
   children?: React.ReactNode;
   width?: string;
   height?: string;
+  aspectRatio?: string;
 }) => {
   const container = useRef(null);
+  const fullscreenContainer = useRef(null);
   const [fred, setFred] = useState<TFred | null>(null);
   const [engineData, setEngineData] = useState<TEngineContextData>({
     loading: false,
@@ -39,6 +49,7 @@ const TGame = ({
     const fred = new TFred(
       game,
       container.current!,
+      fullscreenContainer.current!,
       setEngineData,
       setGameData,
       setErrorMessage,
@@ -56,27 +67,29 @@ const TGame = ({
     <TEventQueueContext.Provider value={{ events }}>
       <TEngineContext.Provider value={engineData}>
         <TGameContext.Provider value={gameData}>
-          <Container
-            style={{
-              width,
-              height,
-            }}
-            ref={container}
-          >
-            {fred !== null && fred.events && (
-              <>
-                <DebugPanel events={fred.events} stats={fred.stats} />
-                {children}
-              </>
-            )}
-            {fred && (
-              <FullscreenToggle
-                toggleFullscreen={() => fred.toggleFullscreen()}
-              />
-            )}
-            {engineData.loading && <LoadingScreen />}
-            {errorMessage && <ErrorScreen error={errorMessage} />}
-          </Container>
+          <OuterContainer style={{ width, height }} ref={fullscreenContainer}>
+            <Container
+              style={{
+                width: `min(100%, 100vh * ${aspectRatio})`,
+                aspectRatio,
+              }}
+              ref={container}
+            >
+              {fred !== null && fred.events && (
+                <>
+                  <DebugPanel events={fred.events} stats={fred.stats} />
+                  {children}
+                </>
+              )}
+              {fred && (
+                <FullscreenToggle
+                  toggleFullscreen={() => fred.toggleFullscreen()}
+                />
+              )}
+              {engineData.loading && <LoadingScreen />}
+              {errorMessage && <ErrorScreen error={errorMessage} />}
+            </Container>
+          </OuterContainer>
         </TGameContext.Provider>
       </TEngineContext.Provider>
     </TEventQueueContext.Provider>

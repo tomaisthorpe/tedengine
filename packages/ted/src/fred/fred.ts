@@ -60,6 +60,7 @@ export default class TFred {
   constructor(
     engineWorker: Worker,
     private container: HTMLElement,
+    private fullscreenContainer: HTMLElement,
     private updateEngineContext: (ctx: TEngineContextData) => void,
     private updateGameContext: (ctx: TGameContextData) => void,
     private setErrorMessage: (message: string) => void,
@@ -140,6 +141,9 @@ export default class TFred {
       false,
     );
 
+    this.onChangeFullscreen = this.onChangeFullscreen.bind(this);
+    window.addEventListener('fullscreenchange', this.onChangeFullscreen);
+
     this.container.append(this.canvas);
 
     this.jobs = new TJobManager([
@@ -176,8 +180,18 @@ export default class TFred {
   public toggleFullscreen() {
     if (document.fullscreenElement) {
       document.exitFullscreen();
+
+      // Reset the container size to force a resize event
+      this.onResize(0, 0);
     } else {
-      this.container.requestFullscreen();
+      this.fullscreenContainer.requestFullscreen();
+    }
+  }
+
+  private onChangeFullscreen(e: Event) {
+    // Exited full screen
+    if (!document.fullscreenElement) {
+      this.onResize(0, 0);
     }
   }
 
@@ -240,6 +254,8 @@ export default class TFred {
       };
       this.enginePort.postMessage(message);
     }
+
+    window.removeEventListener('fullscreenchange', this.onChangeFullscreen);
 
     // @todo do full teardown on this thread
     this.mouse?.destroy();
