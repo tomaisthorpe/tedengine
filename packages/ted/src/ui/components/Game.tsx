@@ -7,6 +7,7 @@ import type { TGameContextData, TEngineContextData } from '../context';
 import DebugPanel from './DebugPanel';
 import LoadingScreen from './LoadingScreen';
 import ErrorScreen from './ErrorScreen';
+import FullscreenToggle from './FullscreenToggle';
 
 const Container = styled.div`
   display: block;
@@ -40,7 +41,7 @@ const TGame = ({
       container.current!,
       setEngineData,
       setGameData,
-      setErrorMessage
+      setErrorMessage,
     );
     setFred(fred);
 
@@ -67,6 +68,11 @@ const TGame = ({
                 <DebugPanel events={fred.events} stats={fred.stats} />
                 {children}
               </>
+            )}
+            {fred && (
+              <FullscreenToggle
+                toggleFullscreen={() => fred.toggleFullscreen()}
+              />
             )}
             {engineData.loading && <LoadingScreen />}
             {errorMessage && <ErrorScreen error={errorMessage} />}

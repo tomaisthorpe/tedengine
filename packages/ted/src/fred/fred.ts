@@ -173,6 +173,14 @@ export default class TFred {
     this.enginePort.postMessage(message);
   }
 
+  public toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      this.container.requestFullscreen();
+    }
+  }
+
   private update() {
     const start = performance.now();
     this.events.update();
