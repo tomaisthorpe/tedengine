@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
+import type { TFredConfig } from '../../fred/fred';
 import TFred from '../../fred/fred';
 import { TGameContext, TEngineContext, TEventQueueContext } from '../context';
 import type { TGameContextData, TEngineContextData } from '../context';
@@ -29,12 +30,14 @@ const TGame = ({
   width = '1024px',
   height = '768px',
   aspectRatio = '4 / 3',
+  config,
 }: {
   game: Worker;
   children?: React.ReactNode;
   width?: string;
   height?: string;
   aspectRatio?: string;
+  config?: TFredConfig;
 }) => {
   const container = useRef(null);
   const fullscreenContainer = useRef(null);
@@ -53,6 +56,7 @@ const TGame = ({
       setEngineData,
       setGameData,
       setErrorMessage,
+      config,
     );
     setFred(fred);
 

@@ -30,12 +30,17 @@ export interface TFredStats {
   renderTime: string;
 }
 
+export interface TFredConfig {
+  renderWidth?: number;
+  renderHeight?: number;
+  imageRendering: 'auto' | 'pixelated';
+}
+
 /**
  * TFred runs on the main browser thread and handles rendering, input and the UI context
  */
 export default class TFred {
   private canvas?: HTMLCanvasElement;
-
   public events!: TEventQueue;
   private keyboard!: TKeyboard;
   private mouse!: TMouse;
@@ -64,6 +69,7 @@ export default class TFred {
     private updateEngineContext: (ctx: TEngineContextData) => void,
     private updateGameContext: (ctx: TGameContextData) => void,
     private setErrorMessage: (message: string) => void,
+    private config?: TFredConfig,
   ) {
     engineWorker.onmessage = this.onEngineMessage.bind(this);
 
@@ -130,6 +136,8 @@ export default class TFred {
     // Create the canvas
     this.container.classList.add('t-game-container');
     this.canvas = document.createElement('canvas');
+    this.canvas.style.imageRendering = this.config?.imageRendering || 'auto';
+
     this.onResize(this.container.clientWidth, this.container.clientHeight);
     this.setupResizeObserver();
 
@@ -229,9 +237,14 @@ export default class TFred {
     // @todo call this on window resize
     if (this.canvas) {
       // This is the size that WebGL will render at
-      // On High DPI screens, this should be increased, e.g. * 2
-      this.canvas.width = containerWidth;
-      this.canvas.height = containerHeight;
+      // @todo take into account device pixel ratio
+      if (this.config && this.config.renderWidth && this.config.renderHeight) {
+        this.canvas.width = this.config.renderWidth;
+        this.canvas.height = this.config.renderHeight;
+      } else if (containerWidth && containerHeight) {
+        this.canvas.width = containerWidth;
+        this.canvas.height = containerHeight;
+      }
 
       // This is the size that the canvas itself displays as in the browser
       this.canvas.style.width = `${containerWidth}px`;
