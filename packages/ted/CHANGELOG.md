@@ -1,5 +1,15 @@
 # @tedengine/ted
 
+## 0.5.0
+
+### Minor Changes
+
+- e6c4873: Add fullscreen option in the UI
+- ef6d5f4: Add support for auto aspect ratio
+- d08e962: Add remove actor from world
+- fbd8670: Add configurable rendering size
+- 418a865: Add configurable fixed aspect ratio to game
+
 ## 0.4.1
 
 ### Patch Changes
