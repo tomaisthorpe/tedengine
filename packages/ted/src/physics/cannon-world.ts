@@ -188,6 +188,13 @@ export default class TCannonWorld implements TPhysicsWorld {
     this.objects.push({ uuid, body });
   }
 
+  public removeBody(uuid: string): void {
+    const body = this.findBody(uuid);
+    if (body) {
+      this.world.removeBody(body);
+    }
+  }
+
   private findBody(uuid: string): CANNON.Body | undefined {
     // @todo this might not return a body
     return this.objects.find((body) => body.uuid === uuid)?.body;

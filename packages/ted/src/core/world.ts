@@ -122,6 +122,32 @@ export default class TWorld {
     }
   }
 
+  public removeActor(actor: TActor): void {
+    const index = this.actors.indexOf(actor);
+    if (index === -1) return;
+
+    this.actors.splice(index, 1);
+
+    this.removeActorFromPhysicsWorker(actor);
+
+    actor.world = undefined;
+  }
+
+  private removeActorFromPhysicsWorker(actor: TActor) {
+    // Remove the root component
+    const component = actor.rootComponent;
+
+    // If there is no collider, it definitely won't be in the physics world
+    if (!component.collider) return;
+
+    const sc: TPhysicsStateChange = {
+      type: TPhysicsStateChangeType.REMOVE_BODY,
+      uuid: component.uuid,
+    };
+
+    this.queuePhysicsStateChange(sc);
+  }
+
   private registerActorWithPhysicsWorker(actor: TActor) {
     // Register only the root component
     const component = actor.rootComponent;

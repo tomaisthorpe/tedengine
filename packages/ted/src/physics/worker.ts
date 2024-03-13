@@ -95,6 +95,9 @@ function applyStateChanges(
           stateChange.rotation,
         );
         break;
+      case TPhysicsStateChangeType.REMOVE_BODY:
+        world.removeBody(stateChange.uuid);
+        break;
     }
   }
 }

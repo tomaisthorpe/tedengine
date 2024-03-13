@@ -15,6 +15,7 @@ export interface TPhysicsWorld {
     rotation: [number, number, number, number],
     options?: TPhysicsBodyOptions,
   ): void;
+  removeBody(uuid: string): void;
   applyCentralForce(uuid: string, force: vec3): void;
   applyCentralImpulse(uuid: string, impulse: vec3): void;
   updateBodyOptions(uuid: string, options: TPhysicsBodyOptions): void;

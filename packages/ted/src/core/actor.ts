@@ -10,8 +10,15 @@ export interface TActorWithOnUpdate extends TActor {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
 }
 
+export interface TActorWithOnDestroy extends TActor {
+  onDestroy(): void;
+}
+
 const hasOnUpdate = (state: TActor): state is TActorWithOnUpdate =>
   (state as TActorWithOnUpdate).onUpdate !== undefined;
+
+const hasOnDestroy = (state: TActor): state is TActorWithOnDestroy =>
+  (state as TActorWithOnDestroy).onDestroy !== undefined;
 
 export interface TActorWithOnWorldAdd extends TActor {
   onWorldAdd(engine: TEngine, world: TWorld): void;
@@ -20,6 +27,8 @@ export interface TActorWithOnWorldAdd extends TActor {
 export default class TActor {
   public uuid: string = uuidv4();
   public world?: TWorld;
+
+  public dead = false;
 
   /**
    * List of components that belong to this actor
@@ -38,6 +47,8 @@ export default class TActor {
    * @hidden
    */
   public update(engine: TEngine, delta: number): void {
+    if (this.dead) return;
+
     for (const component of this.components) {
       component.update(engine, delta);
     }
@@ -74,12 +85,30 @@ export default class TActor {
 
   public onEnterCollisionClass(
     className: string,
-    callback: TCollisionCallback
+    callback: TCollisionCallback,
   ) {
     if (!this.world) {
       throw new Error('world not initialised');
     }
 
     this.world.onEnterCollisionClass(this, className, callback);
+  }
+
+  public destroy() {
+    if (this.dead) {
+      return;
+    }
+
+    this.dead = true;
+
+    if (hasOnDestroy(this)) {
+      this.onDestroy();
+    }
+
+    if (this.world) {
+      this.world.removeActor(this);
+    }
+
+    // @todo clean up the components
   }
 }

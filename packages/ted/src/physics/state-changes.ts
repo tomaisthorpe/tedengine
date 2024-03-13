@@ -6,13 +6,15 @@ export enum TPhysicsStateChangeType {
   APPLY_CENTRAL_IMPULSE = 'apply_central_impulse',
   UPDATE_BODY_OPTIONS = 'update_body_options',
   UPDATE_TRANSFORM = 'update_transform',
+  REMOVE_BODY = 'remove_body',
 }
 
 export type TPhysicsStateChange =
   | TPhysicsApplyCentralForce
   | TPhysicsApplyCentralImpulse
   | TPhysicsUpdateBodyOptions
-  | TPhysicsUpdateTransform;
+  | TPhysicsUpdateTransform
+  | TPhysicsRemoveBody;
 
 export interface TPhysicsApplyCentralForce {
   type: TPhysicsStateChangeType.APPLY_CENTRAL_FORCE;
@@ -37,4 +39,9 @@ export interface TPhysicsUpdateTransform {
   uuid: string;
   translation: [number, number, number];
   rotation: [number, number, number, number];
+}
+
+export interface TPhysicsRemoveBody {
+  type: TPhysicsStateChangeType.REMOVE_BODY;
+  uuid: string;
 }
