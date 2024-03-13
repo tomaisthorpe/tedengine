@@ -67,6 +67,10 @@ const TGame = ({
 
   const events = fred && fred.events ? fred.events : undefined;
 
+  const containerWidth =
+    aspectRatio === 'auto' ? '100%' : `min(100%, 100vh * ${aspectRatio})`;
+  const containerHeight = aspectRatio === 'auto' ? '100%' : 'auto';
+
   return (
     <TEventQueueContext.Provider value={{ events }}>
       <TEngineContext.Provider value={engineData}>
@@ -74,7 +78,8 @@ const TGame = ({
           <OuterContainer style={{ width, height }} ref={fullscreenContainer}>
             <Container
               style={{
-                width: `min(100%, 100vh * ${aspectRatio})`,
+                width: containerWidth,
+                height: containerHeight,
                 aspectRatio,
               }}
               ref={container}
