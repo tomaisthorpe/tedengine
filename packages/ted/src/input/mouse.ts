@@ -78,8 +78,8 @@ export default class TMouse {
       clientY: e.clientY,
       x: e.clientX - offset.left,
       y: e.clientY - offset.top,
-      px: ((e.clientX - offset.left) / this.canvas.width) * 2 - 1,
-      py: ((e.clientY - offset.top) / this.canvas.height) * -2 + 1,
+      px: ((e.clientX - offset.left) / this.canvas.clientWidth) * 2 - 1,
+      py: ((e.clientY - offset.top) / this.canvas.clientHeight) * -2 + 1,
     };
 
     if (this.projectionContext.projectionMatrix) {

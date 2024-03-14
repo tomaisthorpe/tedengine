@@ -6,8 +6,8 @@ describe('TMouse', () => {
   const eventQueue = new TEventQueue();
   const canvas = document.createElement('canvas');
 
-  jest.spyOn(canvas, 'width', 'get').mockReturnValue(500);
-  jest.spyOn(canvas, 'height', 'get').mockReturnValue(500);
+  jest.spyOn(canvas, 'clientWidth', 'get').mockReturnValue(500);
+  jest.spyOn(canvas, 'clientHeight', 'get').mockReturnValue(500);
 
   jest.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
     left: 100,
@@ -18,7 +18,7 @@ describe('TMouse', () => {
     y: 250,
     bottom: 600,
     right: 800,
-    toJSON: function () {
+    toJSON: function() {
       throw new Error('Function not implemented.');
     },
   });
@@ -102,8 +102,8 @@ describe('TMouse with projection matrix', () => {
   const eventQueue = new TEventQueue();
   const canvas = document.createElement('canvas');
 
-  jest.spyOn(canvas, 'width', 'get').mockReturnValue(500);
-  jest.spyOn(canvas, 'height', 'get').mockReturnValue(500);
+  jest.spyOn(canvas, 'clientWidth', 'get').mockReturnValue(500);
+  jest.spyOn(canvas, 'clientHeight', 'get').mockReturnValue(500);
 
   jest.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
     left: 100,
@@ -114,7 +114,7 @@ describe('TMouse with projection matrix', () => {
     y: 250,
     bottom: 600,
     right: 800,
-    toJSON: function () {
+    toJSON: function() {
       throw new Error('Function not implemented.');
     },
   });
