@@ -30,13 +30,13 @@ export default class TRenderer {
   private settingsBufferOffsets: {
     vpMatrix: number;
   } = {
-    vpMatrix: 0,
-  };
+      vpMatrix: 0,
+    };
 
   constructor(
     private canvas: HTMLCanvasElement,
-    private resourceManager: TResourceManager
-  ) {}
+    private resourceManager: TResourceManager,
+  ) { }
 
   public async load(): Promise<void> {
     // Setup the WebGL context
@@ -62,13 +62,13 @@ export default class TRenderer {
 
     const blockIndex = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
-      'Settings'
+      'Settings',
     );
 
     const blockSize = gl.getActiveUniformBlockParameter(
       this.colorProgram.program!.program!,
       blockIndex,
-      gl.UNIFORM_BLOCK_DATA_SIZE
+      gl.UNIFORM_BLOCK_DATA_SIZE,
     );
 
     this.settingsBuffer = gl.createBuffer()!;
@@ -83,25 +83,25 @@ export default class TRenderer {
     // Get location of the uniforms
     const uboVariableIndices = gl.getUniformIndices(
       this.colorProgram.program!.program!,
-      ['uVPMatrix']
+      ['uVPMatrix'],
     )!;
     const uboVariableOffsets = gl.getActiveUniforms(
       this.colorProgram.program!.program!,
       uboVariableIndices,
-      gl.UNIFORM_OFFSET
+      gl.UNIFORM_OFFSET,
     );
 
     this.settingsBufferOffsets.vpMatrix = uboVariableOffsets[0];
 
     const index = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
-      'Settings'
+      'Settings',
     );
     gl.uniformBlockBinding(this.colorProgram.program!.program!, index, 0);
 
     const tIndex = gl.getUniformBlockIndex(
       this.texturedProgram.program!.program!,
-      'Settings'
+      'Settings',
     );
     gl.uniformBlockBinding(this.texturedProgram.program!.program!, tIndex, 0);
   }
@@ -116,7 +116,7 @@ export default class TRenderer {
     // Clear the scene
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    this.generateProjectionMatrix(gl, frameParams.cameraView!);
+    this.generateProjectionMatrix(frameParams.cameraView!);
 
     gl.bindBuffer(gl.UNIFORM_BUFFER, this.settingsBuffer!);
 
@@ -124,7 +124,7 @@ export default class TRenderer {
       gl.UNIFORM_BUFFER,
       this.settingsBufferOffsets.vpMatrix,
       new Float32Array(this.projectionMatrix!),
-      0
+      0,
     );
 
     gl.bindBuffer(gl.UNIFORM_BUFFER, null);
@@ -145,7 +145,7 @@ export default class TRenderer {
           gl,
           this.colorProgram!,
           task.material.options['palette'] as TPalette,
-          task.transform
+          task.transform,
         );
       } else if (task.material.type === 'textured') {
         gl.useProgram(this.texturedProgram!.program!.program!);
@@ -180,16 +180,12 @@ export default class TRenderer {
   public onResize() {
     const gl = this.context();
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    console.log('hi', this.canvas.width, this.canvas.height, this.canvas);
   }
 
-  private generateProjectionMatrix(
-    gl: WebGL2RenderingContext,
-    cameraView: TCameraView
-  ): void {
-    const canvas = gl.canvas as HTMLElement;
-
+  private generateProjectionMatrix(cameraView: TCameraView): void {
     const fieldOfView = (cameraView!.fov! * Math.PI) / 180;
-    const aspect = canvas.clientWidth / canvas.clientHeight;
+    const aspect = this.canvas.width / this.canvas.height;
     const zNear = 0.1;
     const zFar = 100.0;
     const projection = mat4.create();
@@ -199,12 +195,12 @@ export default class TRenderer {
     } else {
       mat4.ortho(
         projection,
-        -canvas.clientWidth / 2,
-        canvas.clientWidth / 2,
-        -canvas.clientHeight / 2,
-        canvas.clientHeight / 2,
+        -this.canvas.width / 2,
+        this.canvas.width / 2,
+        -this.canvas.height / 2,
+        this.canvas.height / 2,
         zNear,
-        zFar
+        zFar,
       );
     }
 
