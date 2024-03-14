@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.5.1
+
+### Patch Changes
+
+- 48aff65: Fix infinitely resizing container due to `display:grid`
+
 ## 0.5.0
 
 ### Minor Changes
