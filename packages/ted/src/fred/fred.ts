@@ -137,6 +137,7 @@ export default class TFred {
     this.container.classList.add('t-game-container');
     this.canvas = document.createElement('canvas');
     this.canvas.style.imageRendering = this.config?.imageRendering || 'auto';
+    this.canvas.style.display = 'block';
 
     this.onResize(this.container.clientWidth, this.container.clientHeight);
     this.setupResizeObserver();

@@ -15,13 +15,13 @@ const Container = styled.div`
   position: relative;
   border: 1px solid #181b1f;
   box-shadow: 0px 1px 2px #161a20;
-  place-self: center;
   max-width: 100%;
   max-height: 100%;
+  margin: auto;
 `;
 
 const OuterContainer = styled.div`
-  display: grid;
+  display: flex;
 `;
 
 const TGame = ({
