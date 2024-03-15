@@ -7,7 +7,8 @@ import type { TCameraView } from '../cameras/camera-view';
 export interface TFrameParams {
   frameNumber: number;
   renderTasks: TSerializedRenderTask[];
-  cameraView?: TCameraView;
+  cameraView: TCameraView;
+  projectionMatrix: mat4;
 }
 
 export interface TSerializedShader {

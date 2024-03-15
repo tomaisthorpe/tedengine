@@ -1,4 +1,4 @@
-import { vec3 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 import TSceneComponent from '../actor-components/scene-component';
 import TPawn from '../core/pawn';
 import type TEngine from '../engine/engine';
@@ -19,7 +19,12 @@ export default class TOrbitCamera extends TPawn implements ICamera {
   private lastMouseX = 0;
   private lastMouseY = 0;
 
-  constructor(private engine: TEngine, public distance: number) {
+  private fov = 45;
+
+  constructor(
+    private engine: TEngine,
+    public distance: number,
+  ) {
     super();
 
     const controller = new TOrbitController(engine);
@@ -32,7 +37,7 @@ export default class TOrbitCamera extends TPawn implements ICamera {
     this.cameraComponent.transform.translation = vec3.fromValues(
       0,
       0,
-      distance
+      distance,
     );
 
     this.cameraComponent.attachTo(this.container);
@@ -42,8 +47,24 @@ export default class TOrbitCamera extends TPawn implements ICamera {
     return {
       projectionType: TProjectionType.Perspective,
       transform: this.cameraComponent.getWorldTransform().getMatrix(),
-      fov: 45,
+      fov: this.fov,
     };
+  }
+
+  public getProjectionMatrix(width: number, height: number): mat4 {
+    const fieldOfView = (this.fov * Math.PI) / 180;
+    const aspect = width / height;
+    const zNear = 0.1;
+    const zFar = 100.0;
+    const projection = mat4.create();
+
+    mat4.perspective(projection, fieldOfView, aspect, zNear, zFar);
+
+    const cameraSpace = mat4.invert(
+      mat4.create(),
+      this.cameraComponent.getWorldTransform().getMatrix(),
+    );
+    return mat4.multiply(mat4.create(), projection, cameraSpace);
   }
 
   public setupController(controller: TController): void {

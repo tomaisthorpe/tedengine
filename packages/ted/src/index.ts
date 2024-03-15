@@ -90,6 +90,7 @@ export * from './physics/colliders/plane-collider';
 export { default as TSphereCollider } from './physics/colliders/sphere-collider';
 export * from './physics/colliders/sphere-collider';
 
+export * from './renderer/events';
 export { default as TProgram } from './renderer/program';
 
 export { default as TGame } from './ui/components/Game';

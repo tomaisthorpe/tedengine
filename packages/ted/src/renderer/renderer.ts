@@ -1,9 +1,7 @@
 // @todo has limited error handling
-import { mat4, vec3 } from 'gl-matrix';
+import type { mat4 } from 'gl-matrix';
 import { TSpriteLayer } from '../actor-components/sprite-component';
-import type { TCameraView } from '../cameras/camera-view';
 import type TResourceManager from '../core/resource-manager';
-import { TProjectionType } from '../graphics';
 import type { TPalette } from '../graphics/color-material';
 import TColorProgram from './color-program';
 import type { TFrameParams, TSerializedSpriteInstance } from './frame-params';
@@ -13,6 +11,9 @@ import type TRenderableMesh from './renderable-mesh';
 import type TRenderableTexture from './renderable-texture';
 import type TRenderableTexturedMesh from './renderable-textured-mesh';
 import TTexturedProgram from './textured-program';
+import type TEventQueue from '../core/event-queue';
+import type { TRenderingSizeChangedEvent } from './events';
+import { TEventTypesRenderer } from './events';
 
 export default class TRenderer {
   private registeredPrograms: { [key: string]: TProgram } = {};
@@ -23,20 +24,21 @@ export default class TRenderer {
   private colorProgram?: TColorProgram;
   private texturedProgram?: TTexturedProgram;
 
+  // @todo remove, needed for input atm
   public projectionMatrix?: mat4;
-  public projectionScaling?: vec3;
 
   private settingsBuffer?: WebGLBuffer;
   private settingsBufferOffsets: {
     vpMatrix: number;
   } = {
-      vpMatrix: 0,
-    };
+    vpMatrix: 0,
+  };
 
   constructor(
     private canvas: HTMLCanvasElement,
     private resourceManager: TResourceManager,
-  ) { }
+    private eventQueue: TEventQueue,
+  ) {}
 
   public async load(): Promise<void> {
     // Setup the WebGL context
@@ -116,14 +118,13 @@ export default class TRenderer {
     // Clear the scene
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    this.generateProjectionMatrix(frameParams.cameraView!);
-
+    this.projectionMatrix = frameParams.projectionMatrix;
     gl.bindBuffer(gl.UNIFORM_BUFFER, this.settingsBuffer!);
 
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
       this.settingsBufferOffsets.vpMatrix,
-      new Float32Array(this.projectionMatrix!),
+      new Float32Array(frameParams.projectionMatrix),
       0,
     );
 
@@ -180,38 +181,14 @@ export default class TRenderer {
   public onResize() {
     const gl = this.context();
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    console.log('hi', this.canvas.width, this.canvas.height, this.canvas);
-  }
 
-  private generateProjectionMatrix(cameraView: TCameraView): void {
-    const fieldOfView = (cameraView!.fov! * Math.PI) / 180;
-    const aspect = this.canvas.width / this.canvas.height;
-    const zNear = 0.1;
-    const zFar = 100.0;
-    const projection = mat4.create();
+    const event: TRenderingSizeChangedEvent = {
+      type: TEventTypesRenderer.RenderingSizeChanged,
+      width: this.canvas.width,
+      height: this.canvas.height,
+    };
 
-    if (cameraView.projectionType === TProjectionType.Perspective) {
-      mat4.perspective(projection, fieldOfView, aspect, zNear, zFar);
-    } else {
-      mat4.ortho(
-        projection,
-        -this.canvas.width / 2,
-        this.canvas.width / 2,
-        -this.canvas.height / 2,
-        this.canvas.height / 2,
-        zNear,
-        zFar,
-      );
-    }
-
-    this.projectionScaling = vec3.create();
-
-    this.projectionMatrix = projection;
-    mat4.getScaling(this.projectionScaling, this.projectionMatrix);
-
-    const cameraSpace = mat4.invert(mat4.create(), cameraView.transform);
-
-    mat4.multiply(this.projectionMatrix, projection, cameraSpace);
+    this.eventQueue.broadcast(event);
   }
 
   public hasProgram(uuid: string): boolean {

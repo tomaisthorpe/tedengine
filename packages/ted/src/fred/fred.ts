@@ -161,10 +161,11 @@ export default class TFred {
     ]);
     this.resources = new TResourceManager(this.jobs);
 
-    this.renderer = new TRenderer(this.canvas, this.resources);
+    this.events = new TEventQueue([this.enginePort]);
+
+    this.renderer = new TRenderer(this.canvas, this.resources, this.events);
     await this.renderer.load();
 
-    this.events = new TEventQueue([this.enginePort]);
     this.keyboard = new TKeyboard(this.events);
     this.mouse = new TMouse(this.events, this.canvas, this.renderer);
 

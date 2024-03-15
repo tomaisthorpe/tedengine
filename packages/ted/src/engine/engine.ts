@@ -1,4 +1,4 @@
-import { getDefaultCameraView } from '../cameras/camera-view';
+import { getDefaultCamera } from '../cameras/camera';
 import TEventQueue from '../core/event-queue';
 import type { TEvent } from '../core/event-queue';
 import TGameStateManager from '../core/game-state-manager';
@@ -17,6 +17,8 @@ import type {
   TJobsMessageRelayResult,
 } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
+import type { TRenderingSizeChangedEvent } from '../renderer/events';
+import { TEventTypesRenderer } from '../renderer/events';
 import type { TFrameParams } from '../renderer/frame-params';
 import type { TGameContextData, TEngineContextData } from '../ui/context';
 import type {
@@ -38,6 +40,11 @@ export default class TEngine {
   public resources: TResourceManager;
   public gameState: TGameStateManager = new TGameStateManager(this);
   public debugPanel: TDebugPanel;
+
+  public renderingSize: { width: number; height: number } = {
+    width: 1,
+    height: 1,
+  };
 
   public jobs: TJobManager;
   private frameNumber = 1;
@@ -63,7 +70,7 @@ export default class TEngine {
 
   constructor(
     private config: TConfig,
-    private workerScope: DedicatedWorkerGlobalScope
+    private workerScope: DedicatedWorkerGlobalScope,
   ) {
     // Create channel for Fred
     const channel = new MessageChannel();
@@ -79,7 +86,7 @@ export default class TEngine {
     this.jobs = new TJobManager([TJobContextTypes.Engine]);
     this.jobs.setRelay(
       [TJobContextTypes.Renderer, TJobContextTypes.Audio],
-      this.fredPort
+      this.fredPort,
     );
     this.resources = new TResourceManager(this.jobs);
 
@@ -138,7 +145,14 @@ export default class TEngine {
       (e) => {
         this.mouse.x = e.clientX;
         this.mouse.y = e.clientY;
-      }
+      },
+    );
+
+    this.events.addListener<TRenderingSizeChangedEvent>(
+      TEventTypesRenderer.RenderingSizeChanged,
+      (e) => {
+        this.renderingSize = { width: e.width, height: e.height };
+      },
     );
 
     await this.gameState.switch(this.config.defaultState);
@@ -163,11 +177,16 @@ export default class TEngine {
 
     const stats = await this.gameState.update(delta);
 
+    const camera = this.gameState.getActiveCamera() || getDefaultCamera();
+
     const params: TFrameParams = {
       frameNumber: this.frameNumber,
       renderTasks: this.gameState.getRenderTasks(),
-      cameraView:
-        this.gameState.getActiveCamera()?.getView() || getDefaultCameraView(),
+      cameraView: camera.getView(),
+      projectionMatrix: camera.getProjectionMatrix(
+        this.renderingSize.width,
+        this.renderingSize.height,
+      ),
     };
 
     const message: TEngineMessageFrameReady = {
@@ -202,7 +221,7 @@ export default class TEngine {
    */
   private triggerBootstrap(
     postMessage: TPostMessageFunc,
-    channel: MessageChannel
+    channel: MessageChannel,
   ) {
     const message: TEngineMessageBootstrap = {
       type: TMessageTypesEngine.BOOTSTRAP,
