@@ -1,3 +1,5 @@
+import type { vec2 } from 'gl-matrix';
+
 export enum TEventTypesInput {
   KeyUp = 'keyup',
   KeyDown = 'keydown',
@@ -19,14 +21,9 @@ export interface TKeyDownEvent {
 }
 
 export interface TMouseLocation {
-  clientX: number;
-  clientY: number;
-  x: number;
-  y: number;
-  px: number;
-  py: number;
-  worldX?: number;
-  worldY?: number;
+  client: vec2;
+  screen: vec2;
+  clip: vec2;
 }
 
 export interface TMouseUpEvent extends TMouseLocation {

@@ -29,7 +29,9 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     engine.events.addListener<TMouseUpEvent>(
       TEventTypesInput.MouseUp,
       (e: TMouseUpEvent) => {
-        console.log(`You clicked on the game at (${e.x},${e.y})!`);
+        console.log(
+          `You clicked on the game at (${e.screen[0]},${e.screen[1]})!`,
+        );
       },
     );
   }
@@ -42,16 +44,15 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     this.controller.update();
 
     // Get the mouse location
-    const loc = this.controller.mouseLocation;
-    console.log(loc);
+    // const loc = this.controller.mouseLocation;
 
-    if (loc?.worldX && loc?.worldY) {
-      this.rootComponent.transform.translation = vec3.fromValues(
-        loc?.worldX,
-        loc?.worldY,
-        -10,
-      );
-    }
+    // if (loc?.worldX && loc?.worldY) {
+    //   this.rootComponent.transform.translation = vec3.fromValues(
+    //     loc?.worldX,
+    //     loc?.worldY,
+    //     -10,
+    //   );
+    // }
   }
 
   public setupController(controller: TController): void {

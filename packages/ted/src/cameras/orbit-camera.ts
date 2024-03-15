@@ -75,12 +75,12 @@ export default class TOrbitCamera extends TPawn implements ICamera {
   }
 
   private startDrag() {
-    if (!this.enableDrag) return;
+    if (!this.enableDrag || !this.engine.mouse) return;
 
     this.paused = true;
 
-    this.lastMouseX = this.engine.mouse.x;
-    this.lastMouseY = this.engine.mouse.y;
+    this.lastMouseX = this.engine.mouse.screen[0];
+    this.lastMouseY = this.engine.mouse.screen[1];
   }
 
   private stopDrag() {
@@ -90,15 +90,15 @@ export default class TOrbitCamera extends TPawn implements ICamera {
   protected onUpdate(_: TEngine, delta: number): void {
     this.controller?.update();
 
-    if (this.paused) {
-      const diffX = this.lastMouseX - this.engine.mouse.x;
-      const diffY = this.lastMouseY - this.engine.mouse.y;
+    if (this.paused && this.engine.mouse) {
+      const diffX = this.lastMouseX - this.engine.mouse.screen[0];
+      const diffY = this.lastMouseY - this.engine.mouse.screen[1];
 
       this.rootComponent.transform.rotateY(0.01 * diffX);
       this.container.transform.rotateX(0.01 * diffY);
 
-      this.lastMouseX = this.engine.mouse.x;
-      this.lastMouseY = this.engine.mouse.y;
+      this.lastMouseX = this.engine.mouse.screen[0];
+      this.lastMouseY = this.engine.mouse.screen[1];
       return;
     }
     this.rootComponent.transform.rotateY(this.speed * delta);

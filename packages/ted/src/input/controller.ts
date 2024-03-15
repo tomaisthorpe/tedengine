@@ -112,15 +112,11 @@ export default class TController {
     this.engineEventQueue.addListener<TMouseMoveEvent>(
       TEventTypesInput.MouseMove,
       (e) => {
+        const { client, screen, clip } = e;
         this.mouseLocation = {
-          clientX: e.clientX,
-          clientY: e.clientY,
-          x: e.x,
-          y: e.y,
-          px: e.px,
-          py: e.py,
-          worldX: e.worldX,
-          worldY: e.worldY,
+          client,
+          screen,
+          clip,
         };
       },
     );

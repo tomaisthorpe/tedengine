@@ -1,4 +1,5 @@
-import { mat4, vec3 } from 'gl-matrix';
+import type { mat4 } from 'gl-matrix';
+import { vec2 } from 'gl-matrix';
 import type TEventQueue from '../core/event-queue';
 import type {
   TMouseMoveEvent,
@@ -20,7 +21,6 @@ export default class TMouse {
   constructor(
     eventQueue: TEventQueue,
     private canvas: HTMLCanvasElement,
-    private projectionContext: IProjectionContext,
   ) {
     this.mouseMoveListener = (e) => this.handleMouseMove(e, eventQueue);
     this.mouseMoveListener = this.mouseMoveListener.bind(this);
@@ -74,29 +74,13 @@ export default class TMouse {
     const offset = this.canvas.getBoundingClientRect();
 
     const result: TMouseLocation = {
-      clientX: e.clientX,
-      clientY: e.clientY,
-      x: e.clientX - offset.left,
-      y: e.clientY - offset.top,
-      px: ((e.clientX - offset.left) / this.canvas.clientWidth) * 2 - 1,
-      py: ((e.clientY - offset.top) / this.canvas.clientHeight) * -2 + 1,
+      client: vec2.fromValues(e.clientX, e.clientY),
+      screen: vec2.fromValues(e.clientX - offset.left, e.clientY - offset.top),
+      clip: vec2.fromValues(
+        ((e.clientX - offset.left) / this.canvas.clientWidth) * 2 - 1,
+        ((e.clientY - offset.top) / this.canvas.clientHeight) * -2 + 1,
+      ),
     };
-
-    if (this.projectionContext.projectionMatrix) {
-      const projectionMatrix = this.projectionContext.projectionMatrix;
-      const invertProj = mat4.invert(mat4.create(), projectionMatrix);
-
-      if (invertProj) {
-        const worldspace = vec3.transformMat4(
-          vec3.create(),
-          [result.px, result.py, 0],
-          invertProj,
-        );
-
-        result.worldX = worldspace[0];
-        result.worldY = worldspace[1];
-      }
-    }
 
     return result;
   }

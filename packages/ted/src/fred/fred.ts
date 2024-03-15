@@ -167,7 +167,7 @@ export default class TFred {
     await this.renderer.load();
 
     this.keyboard = new TKeyboard(this.events);
-    this.mouse = new TMouse(this.events, this.canvas, this.renderer);
+    this.mouse = new TMouse(this.events, this.canvas);
 
     this.jobs.additionalContext = {
       resourceManager: this.resources,

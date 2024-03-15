@@ -8,7 +8,7 @@ import type { TWorldUpdateStats } from '../core/world';
 import TDebugPanel from '../debug/debug-panel';
 import type { TConfig } from '../engine/config';
 import { TFredMessageTypes } from '../fred/messages';
-import type { TMouseMoveEvent } from '../input/events';
+import type { TMouseLocation, TMouseMoveEvent } from '../input/events';
 import { TEventTypesInput } from '../input/events';
 import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
@@ -53,7 +53,7 @@ export default class TEngine {
   private processing = false;
 
   // todo: temporary
-  public mouse = { x: 0, y: 0 };
+  public mouse?: TMouseLocation;
 
   // @todo move this somewhere more relevant
   public stats: {
@@ -143,8 +143,7 @@ export default class TEngine {
     this.events.addListener<TMouseMoveEvent>(
       TEventTypesInput.MouseMove,
       (e) => {
-        this.mouse.x = e.clientX;
-        this.mouse.y = e.clientY;
+        this.mouse = e;
       },
     );
 
