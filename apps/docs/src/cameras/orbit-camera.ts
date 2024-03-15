@@ -41,7 +41,7 @@ class OrbitState extends TGameState {
     const aub = new ship(engine);
     this.addActor(aub);
 
-    const debugCamera = new TPerspectiveCamera();
+    const debugCamera = new TPerspectiveCamera(engine);
     this.addActor(debugCamera);
     debugCamera.rootComponent.transform.translation = vec3.fromValues(0, 0, 40);
 
@@ -70,7 +70,7 @@ class OrbitState extends TGameState {
         } else {
           this.activeCamera = debugCamera;
         }
-      }
+      },
     );
 
     section.addInput(
@@ -85,7 +85,7 @@ class OrbitState extends TGameState {
         max: 10,
         step: 0.1,
         showValueBubble: true,
-      }
+      },
     );
 
     section.addCheckbox('Mouse Controls', true, (value: boolean) => {

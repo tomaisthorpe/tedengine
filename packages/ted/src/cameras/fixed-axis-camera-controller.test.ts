@@ -18,13 +18,13 @@ describe.each([
     const controller = new TFixedAxisCameraController({ axis, distance: 5 });
     controller.attachTo(comp);
 
-    const camera = new TPerspectiveCamera();
+    const camera = new TPerspectiveCamera({} as any);
     controller.onUpdate(camera, {} as any, 0);
 
     const expected = vec3.add(
       vec3.create(),
       comp.transform.translation,
-      offset
+      offset,
     );
 
     expect([...camera.cameraComponent.transform.translation]).toEqual([
@@ -37,7 +37,7 @@ describe.each([
     const expectedAfterMove = vec3.add(
       vec3.create(),
       comp.transform.translation,
-      offset
+      offset,
     );
 
     expect([...camera.cameraComponent.transform.translation]).toEqual([
@@ -56,13 +56,13 @@ describe.each([
     const controller = new TFixedAxisCameraController({ axis, distance: 5 });
     controller.attachTo(comp);
 
-    const camera = new TPerspectiveCamera();
+    const camera = new TPerspectiveCamera({} as any);
     controller.onUpdate(camera, {} as any, 0);
 
     const expected = vec3.add(
       vec3.create(),
       comp.getWorldTransform().translation,
-      offset
+      offset,
     );
     expect([...camera.cameraComponent.transform.translation]).toEqual([
       ...expected,
@@ -76,7 +76,7 @@ describe('onUpdate with deadzone', () => {
     const comp = new TSceneComponent(actor);
     comp.transform.translation = vec3.fromValues(1, 2, 3);
 
-    const camera = new TPerspectiveCamera();
+    const camera = new TPerspectiveCamera({} as any);
     const controller = new TFixedAxisCameraController({
       axis: 'x',
       distance: 5,
@@ -98,7 +98,7 @@ describe('onUpdate with deadzone', () => {
     const comp = new TSceneComponent(actor);
     comp.transform.translation = vec3.fromValues(1, 2, 3);
 
-    const camera = new TPerspectiveCamera();
+    const camera = new TPerspectiveCamera({} as any);
     const controller = new TFixedAxisCameraController({
       axis: 'x',
       distance: 5,

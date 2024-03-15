@@ -32,6 +32,7 @@ import { TJobContextTypes } from '../jobs/context-types';
 import type TJobManager from '../jobs/job-manager';
 import type { TJobsMessageRelayResult } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
+import type TGameState from './game-state';
 
 const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
   (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
@@ -94,7 +95,10 @@ export default class TWorld {
   private collisionListeners: { [key: string]: TCollisionListener } = {};
 
   private jobs: TJobManager;
-  constructor(private engine: TEngine) {
+  constructor(
+    private engine: TEngine,
+    public gameState: TGameState,
+  ) {
     this.jobs = engine.jobs;
   }
 

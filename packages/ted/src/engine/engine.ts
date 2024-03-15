@@ -176,7 +176,7 @@ export default class TEngine {
 
     const stats = await this.gameState.update(delta);
 
-    const camera = this.gameState.getActiveCamera() || getDefaultCamera();
+    const camera = this.gameState.getActiveCamera() || getDefaultCamera(this);
 
     const params: TFrameParams = {
       frameNumber: this.frameNumber,

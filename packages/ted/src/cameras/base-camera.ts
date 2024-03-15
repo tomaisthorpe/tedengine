@@ -1,4 +1,5 @@
-import { quat, vec3 } from 'gl-matrix';
+import type { vec2 } from 'gl-matrix';
+import { mat4, quat, vec3 } from 'gl-matrix';
 import TActor, { type TActorWithOnUpdate } from '../core/actor';
 import TCameraComponent from './camera-component';
 import type TCameraController from './camera-controller';
@@ -23,7 +24,7 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
   private targetRotation?: quat;
   private rotationDelta = 0;
 
-  constructor() {
+  constructor(private engine: TEngine) {
     super();
 
     this.cameraComponent = new TCameraComponent(this);
@@ -33,14 +34,14 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
     if (this.targetTranslation) {
       this.translationDelta = Math.min(
         1,
-        this.translationDelta + delta * this.lerp
+        this.translationDelta + delta * this.lerp,
       );
 
       this.cameraComponent.transform.translation = vec3.lerp(
         vec3.create(),
         this.cameraComponent.transform.translation,
         this.targetTranslation,
-        this.translationDelta
+        this.translationDelta,
       );
 
       if (this.translationDelta >= 1) {
@@ -56,7 +57,7 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
         quat.create(),
         this.cameraComponent.transform.rotation,
         this.targetRotation,
-        this.rotationDelta
+        this.rotationDelta,
       );
 
       if (this.rotationDelta >= 1) {
@@ -97,7 +98,7 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
     // Create a temporary transform with the same position as the camera
     const tempTransform = new TTransform();
     tempTransform.translation = vec3.clone(
-      this.cameraComponent.transform.translation
+      this.cameraComponent.transform.translation,
     );
 
     // Use the lookAt method to calculate the target rotation
@@ -107,13 +108,37 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
     this.targetRotation = quat.clone(tempTransform.rotation);
   }
 
+  /**
+   * This method is used to convert a screen space location to a world space location.
+   *
+   * @param location clip space location
+   * @returns world space location
+   */
+  public clipToWorldSpace(location: vec2): vec3 {
+    const projectionMatrix = this.getProjectionMatrix(
+      this.engine.renderingSize.width,
+      this.engine.renderingSize.height,
+    );
+
+    return clipToWorldSpace(projectionMatrix, location);
+  }
+
+  /**
+   * This should be overridden by the camera implementation
+   *
+   * @returns returns identity matrix
+   */
+  public getProjectionMatrix(width: number, height: number): mat4 {
+    return mat4.identity(mat4.create());
+  }
+
   private setTranslation(vec: vec3, isRelative: boolean, useLerp = true) {
     if (this.lerp === 1 || !useLerp) {
       this.cameraComponent.transform.translation = isRelative
         ? vec3.add(
             vec3.create(),
             this.cameraComponent.transform.translation,
-            vec
+            vec,
           )
         : vec3.clone(vec);
       this.targetTranslation = undefined;
@@ -123,9 +148,21 @@ export default class TBaseCamera extends TActor implements TActorWithOnUpdate {
         ? vec3.add(
             vec3.create(),
             this.cameraComponent.transform.translation,
-            vec
+            vec,
           )
         : vec3.clone(vec);
     }
   }
+}
+
+export function clipToWorldSpace(projectionMatrix: mat4, location: vec2): vec3 {
+  const invertProj = mat4.invert(mat4.create(), projectionMatrix);
+
+  const worldspace = vec3.transformMat4(
+    vec3.create(),
+    [location[0], location[1], 0],
+    invertProj,
+  );
+
+  return vec3.fromValues(worldspace[0], worldspace[1], 0);
 }

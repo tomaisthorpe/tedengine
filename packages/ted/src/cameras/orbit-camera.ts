@@ -1,3 +1,4 @@
+import type { vec2 } from 'gl-matrix';
 import { mat4, vec3 } from 'gl-matrix';
 import TSceneComponent from '../actor-components/scene-component';
 import TPawn from '../core/pawn';
@@ -7,6 +8,7 @@ import TController from '../input/controller';
 import type { ICamera } from './camera';
 import TCameraComponent from './camera-component';
 import type { TCameraView } from './camera-view';
+import { clipToWorldSpace } from './base-camera';
 
 export default class TOrbitCamera extends TPawn implements ICamera {
   private container: TSceneComponent;
@@ -65,6 +67,15 @@ export default class TOrbitCamera extends TPawn implements ICamera {
       this.cameraComponent.getWorldTransform().getMatrix(),
     );
     return mat4.multiply(mat4.create(), projection, cameraSpace);
+  }
+
+  public clipToWorldSpace(location: vec2): vec3 {
+    const projectionMatrix = this.getProjectionMatrix(
+      this.engine.renderingSize.width,
+      this.engine.renderingSize.height,
+    );
+
+    return clipToWorldSpace(projectionMatrix, location);
   }
 
   public setupController(controller: TController): void {

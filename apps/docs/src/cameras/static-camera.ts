@@ -64,10 +64,10 @@ class AubState extends TGameState {
     const aub = new ship(engine);
     this.addActor(aub);
 
-    const orthoCamera = new TOrthographicCamera();
+    const orthoCamera = new TOrthographicCamera(engine);
     this.addActor(orthoCamera);
 
-    const perspectiveCamera = new TPerspectiveCamera();
+    const perspectiveCamera = new TPerspectiveCamera(engine);
     this.addActor(perspectiveCamera);
 
     this.activeCamera = perspectiveCamera;

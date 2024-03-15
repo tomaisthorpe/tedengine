@@ -5,7 +5,7 @@ describe('TBaseCamera', () => {
   let camera: TBaseCamera;
 
   beforeEach(() => {
-    camera = new TBaseCamera();
+    camera = new TBaseCamera({} as any);
   });
 
   test('moveBy should move by given amount', () => {
@@ -60,7 +60,7 @@ describe('TBaseCamera', () => {
     await camera.onUpdate({} as any, 1);
 
     expect(camera.cameraComponent.transform.translation).toEqual(
-      vec3.fromValues(10, 10, 10)
+      vec3.fromValues(10, 10, 10),
     );
   });
 
@@ -71,7 +71,7 @@ describe('TBaseCamera', () => {
     await camera.onUpdate({} as any, 1);
 
     expect(camera.cameraComponent.transform.translation).toEqual(
-      vec3.fromValues(0, 0, 0)
+      vec3.fromValues(0, 0, 0),
     );
   });
 
@@ -82,7 +82,7 @@ describe('TBaseCamera', () => {
     await camera.onUpdate({} as any, 1);
 
     expect(camera.cameraComponent.transform.translation).toEqual(
-      vec3.fromValues(5, 5, 5)
+      vec3.fromValues(5, 5, 5),
     );
   });
 });

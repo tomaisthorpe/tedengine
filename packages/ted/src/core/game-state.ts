@@ -44,7 +44,7 @@ export interface TGameStateWithBeforeWorldCreate extends TGameState {
 }
 
 const hasBeforeWorldCreate = (
-  state: TGameState
+  state: TGameState,
 ): state is TGameStateWithBeforeWorldCreate =>
   (state as TGameStateWithBeforeWorldCreate).beforeWorldCreate !== undefined;
 
@@ -75,7 +75,7 @@ export default class TGameState {
    */
   public async update(
     engine: TEngine,
-    delta: number
+    delta: number,
   ): Promise<TWorldUpdateStats | undefined> {
     if (!this.world) return;
 
@@ -99,7 +99,7 @@ export default class TGameState {
    * @hidden
    */
   public async create(engine: TEngine) {
-    this.world = new TWorld(engine);
+    this.world = new TWorld(engine, this);
 
     if (hasBeforeWorldCreate(this)) {
       await this.beforeWorldCreate(engine);

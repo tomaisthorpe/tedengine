@@ -36,23 +36,27 @@ class Cube extends TPawn implements TActorWithOnUpdate {
     );
   }
 
-  async onUpdate(): Promise<void> {
+  async onUpdate(engine: TEngine): Promise<void> {
     if (!this.controller) {
       return;
     }
 
     this.controller.update();
 
+    // @todo this feels messy
     // Get the mouse location
-    // const loc = this.controller.mouseLocation;
+    const loc = this.controller.mouseLocation;
+    const camera = this.world?.gameState.activeCamera;
 
-    // if (loc?.worldX && loc?.worldY) {
-    //   this.rootComponent.transform.translation = vec3.fromValues(
-    //     loc?.worldX,
-    //     loc?.worldY,
-    //     -10,
-    //   );
-    // }
+    if (loc && camera) {
+      // Convert from clip to world space
+      const world = camera.clipToWorldSpace(loc.clip);
+      this.rootComponent.transform.translation = vec3.fromValues(
+        world[0],
+        world[1],
+        -10,
+      );
+    }
   }
 
   public setupController(controller: TController): void {
@@ -69,7 +73,7 @@ class ColliderState extends TGameState {
     const box = new Cube(engine, 100, 100, -10);
     this.addActor(box);
 
-    this.activeCamera = new TOrthographicCamera();
+    this.activeCamera = new TOrthographicCamera(engine);
   }
 }
 

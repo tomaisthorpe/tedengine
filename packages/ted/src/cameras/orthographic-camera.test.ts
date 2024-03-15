@@ -2,7 +2,7 @@ import { TOrthographicCamera, TProjectionType } from '../index';
 
 describe('TOrthographicCamera', () => {
   test('should return the correct camera view', () => {
-    const camera = new TOrthographicCamera();
+    const camera = new TOrthographicCamera({} as any);
     const expected = {
       projectionType: TProjectionType.Orthographic,
       transform: camera.cameraComponent.getWorldTransform().getMatrix(),
