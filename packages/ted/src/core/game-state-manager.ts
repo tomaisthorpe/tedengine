@@ -4,12 +4,12 @@ import type { TSerializedRenderTask } from '../renderer/frame-params';
 import type TGameState from './game-state';
 import type { TWorldUpdateStats } from './world';
 
-interface GameStateType {
-  new (): TGameState;
+export interface TGameStateType {
+  new (engine: TEngine): TGameState;
 }
 
 export default class TGameStateManager {
-  private stateFactories: { [key: string]: GameStateType } = {};
+  private stateFactories: { [key: string]: TGameStateType } = {};
   private states: { [key: string]: TGameState } = {};
   private stack: TGameState[] = [];
   private loading = false;
@@ -20,7 +20,7 @@ export default class TGameStateManager {
    * Register new state type with the manager.
    * Usually done as game init.
    */
-  public register(name: string, state: GameStateType) {
+  public register(name: string, state: TGameStateType) {
     this.stateFactories[name] = state;
   }
 
@@ -139,7 +139,7 @@ export default class TGameStateManager {
   }
 
   private async createState(name: string) {
-    const state = new this.stateFactories[name]();
+    const state = new this.stateFactories[name](this.engine);
     await state.create(this.engine);
 
     this.states[name] = state;

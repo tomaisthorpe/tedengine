@@ -54,6 +54,8 @@ export default class TGameState {
 
   public activeCamera?: ICamera;
 
+  constructor(protected engine: TEngine) {}
+
   /**
    * Adds actor to the world in this game state.
    * This is here for convience.
