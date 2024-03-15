@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import TBoxCollider from './colliders/box-collider';
 
 const worldConfig: TWorldConfig = {
-  enableGravity: false,
+  gravity: [0, 0, 0],
   defaultCollisionClass: 'Solid',
   collisionClasses: [{ name: 'Solid' }, { name: 'Other' }],
 };

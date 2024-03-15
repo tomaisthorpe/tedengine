@@ -39,9 +39,11 @@ export default class TCannonWorld implements TPhysicsWorld {
 
   public async create(config: TWorldConfig): Promise<void> {
     this.world = new CANNON.World();
-    if (config.enableGravity) {
-      this.world.gravity.set(0, -9.82, 0);
-    }
+    this.world.gravity.set(
+      config.gravity[0],
+      config.gravity[1],
+      config.gravity[2],
+    );
 
     this.setupCollisionClasses(config.collisionClasses);
     this.defaultCollisionClass = config.defaultCollisionClass;

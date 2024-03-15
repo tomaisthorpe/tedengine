@@ -46,7 +46,7 @@ export interface TCollisionListener {
 }
 
 export interface TWorldConfig {
-  enableGravity: boolean;
+  gravity: vec3;
   defaultCollisionClass: string;
   collisionClasses: TCollisionClass[];
 }
@@ -68,7 +68,7 @@ export default class TWorld {
 
   private worker?: Worker;
   public config: TWorldConfig = {
-    enableGravity: true,
+    gravity: vec3.fromValues(0, -9.82, 0),
     defaultCollisionClass: 'Solid',
     collisionClasses: [
       { name: 'Solid' },

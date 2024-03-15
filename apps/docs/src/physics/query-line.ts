@@ -15,7 +15,7 @@ class Cube extends TActor {
     x: number,
     y: number,
     z: number,
-    collisionClass: string
+    collisionClass: string,
   ) {
     super();
 
@@ -34,7 +34,7 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
 
   public async beforeWorldCreate(engine: TEngine) {
     // Hook into before world create so that world config can be modified before it is created
-    this.world!.config.enableGravity = false;
+    this.world!.config.gravity = vec3.fromValues(0, 0, 0);
   }
 
   public onReady(engine: TEngine) {
@@ -58,7 +58,7 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
     const hits = await this.world?.queryLine(
       vec3.fromValues(0, 0.5, 0),
       vec3.fromValues(15, 0.5, 0),
-      { collisionClasses: ['Solid'] }
+      { collisionClasses: ['Solid'] },
     );
 
     console.log(hits);
