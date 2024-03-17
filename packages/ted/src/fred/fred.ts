@@ -33,7 +33,7 @@ export interface TFredStats {
 export interface TFredConfig {
   renderWidth?: number;
   renderHeight?: number;
-  imageRendering: 'auto' | 'pixelated';
+  imageRendering: 'auto' | 'pixelated' | 'crisp-edges';
 }
 
 /**
