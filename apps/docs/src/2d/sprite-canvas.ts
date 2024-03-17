@@ -32,8 +32,7 @@ class CanvasState extends TGameState {
     ctx.fillStyle = 'green';
     ctx.fillRect(10, 10, 80, 80);
 
-    this.texture = await canvas.getTexture();
-    this.texture.filter = TTextureFilter.Nearest;
+    this.texture = await canvas.getTexture({ filter: TTextureFilter.Nearest });
 
     this.onReady(engine);
   }

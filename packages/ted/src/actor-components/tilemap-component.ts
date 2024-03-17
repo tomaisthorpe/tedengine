@@ -2,7 +2,6 @@ import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import TCanvas from '../graphics/canvas';
 import TImage from '../graphics/image';
-import { TTextureFilter } from '../graphics/texture';
 import TTilemap from '../graphics/tilemap';
 import type { TPhysicsBodyOptions } from '../physics/physics-world';
 import TSpriteComponent from './sprite-component';
@@ -27,7 +26,7 @@ export default class TTilemapComponent extends TSpriteComponent {
     actor: TActor,
     tilemapPath: string | TTilemap,
     tilesets: TTilesetConfig[],
-    bodyOptions?: TPhysicsBodyOptions
+    bodyOptions?: TPhysicsBodyOptions,
   ) {
     super(engine, actor, 1, 1);
 
@@ -38,7 +37,7 @@ export default class TTilemapComponent extends TSpriteComponent {
         Object.assign({}, result, {
           [tileset.id]: this.getTileset(engine, tileset),
         }),
-      {}
+      {},
     );
 
     this.width = this.tilemap.displayWidth;
@@ -107,13 +106,12 @@ export default class TTilemapComponent extends TSpriteComponent {
           gridTile.px[0],
           gridTile.px[1],
           tileset.tileSize,
-          tileset.tileSize
+          tileset.tileSize,
         );
       }
     }
 
     this.texture = await canvas.getTexture();
-    this.texture.filter = TTextureFilter.Linear;
 
     this.generateMesh();
 

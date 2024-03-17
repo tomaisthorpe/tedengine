@@ -8,6 +8,10 @@ export enum TTextureFilter {
   Linear = 0x2601,
 }
 
+export interface TTextureOptions {
+  filter?: TTextureFilter;
+}
+
 export default class TRenderableTexture {
   public uuid: string = uuidv4();
   public texture?: WebGLTexture;
@@ -19,8 +23,16 @@ export default class TRenderableTexture {
    * @param {TGraphics} graphics
    * @returns WebGLTexture
    */
-  public load(gl: WebGL2RenderingContext, image: ImageBitmap) {
+  public load(
+    gl: WebGL2RenderingContext,
+    image: ImageBitmap,
+    options?: TTextureOptions,
+  ) {
     this.texture = gl.createTexture()!;
+
+    if (options?.filter !== undefined) {
+      this.filter = options.filter;
+    }
 
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.filter);

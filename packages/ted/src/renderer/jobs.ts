@@ -3,6 +3,7 @@ import type { TJobConfigs, TRenderJobContext } from '../jobs/jobs';
 import TProgram from './program';
 import type { TPaletteIndex } from './renderable-mesh';
 import TRenderableMesh from './renderable-mesh';
+import type { TTextureOptions } from './renderable-texture';
 import TRenderableTexture from './renderable-texture';
 import TRenderableTexturedMesh from './renderable-textured-mesh';
 
@@ -12,7 +13,7 @@ export const RendererJobs: TJobConfigs = {
     func: async (ctx: TRenderJobContext, shaderLocation: string) => {
       const program = await ctx.resourceManager.load<TProgram>(
         TProgram,
-        shaderLocation
+        shaderLocation,
       );
 
       if (!ctx.renderer.hasProgram(program.uuid!)) {
@@ -28,7 +29,7 @@ export const RendererJobs: TJobConfigs = {
     func: async (ctx: TRenderJobContext, meshLocation: string) => {
       const mesh = await ctx.resourceManager.load<TRenderableMesh>(
         TRenderableMesh,
-        meshLocation
+        meshLocation,
       );
 
       if (!ctx.renderer.hasMesh(mesh.uuid)) {
@@ -46,7 +47,7 @@ export const RendererJobs: TJobConfigs = {
       normals: number[],
       indexes: number[],
       colors: number[],
-      paletteIndex: TPaletteIndex
+      paletteIndex: TPaletteIndex,
     ) => {
       // todo: ensure resource manager knows this mesh is loaded?
       const mesh = new TRenderableMesh();
@@ -68,7 +69,7 @@ export const RendererJobs: TJobConfigs = {
       positions: number[],
       normals: number[],
       indexes: number[],
-      uvs: number[]
+      uvs: number[],
     ) => {
       // todo: ensure resource manager knows this mesh is loaded?
       const mesh = new TRenderableTexturedMesh();
@@ -84,9 +85,13 @@ export const RendererJobs: TJobConfigs = {
   },
   load_texture_from_imagebitmap: {
     requiredContext: TJobContextTypes.Renderer,
-    func: async (ctx: TRenderJobContext, image: ImageBitmap) => {
+    func: async (
+      ctx: TRenderJobContext,
+      image: ImageBitmap,
+      config?: TTextureOptions,
+    ) => {
       const texture = new TRenderableTexture();
-      texture.load(ctx.renderer.context(), image);
+      texture.load(ctx.renderer.context(), image, config);
 
       ctx.renderer.registerTexture(texture);
 
