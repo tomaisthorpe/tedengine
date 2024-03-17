@@ -24,10 +24,13 @@ export default class TFollowAxisCameraController implements TCameraController {
     z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
   };
 
+  public bounds?: { min: vec3; max: vec3 };
+
   constructor(config?: {
     distance?: number;
     axis?: string;
     deadzone?: number;
+    bounds?: { min: vec3; max: vec3 };
   }) {
     if (config?.distance !== undefined) {
       this.distance = config.distance;
@@ -39,6 +42,20 @@ export default class TFollowAxisCameraController implements TCameraController {
 
     if (config?.deadzone !== undefined) {
       this.deadzone = config.deadzone;
+    }
+
+    if (config?.bounds !== undefined) {
+      if (config.bounds.min[0] > config.bounds.max[0]) {
+        throw new Error('min x must be less than max x');
+      }
+      if (config.bounds.min[1] > config.bounds.max[1]) {
+        throw new Error('min y must be less than max y');
+      }
+      if (config.bounds.min[2] > config.bounds.max[2]) {
+        throw new Error('min z must be less than max z');
+      }
+
+      this.bounds = config.bounds;
     }
   }
 
@@ -52,7 +69,7 @@ export default class TFollowAxisCameraController implements TCameraController {
     const distance = vec3.multiply(
       vec3.create(),
       this.axisConfig[this.axis].distance,
-      vec3.fromValues(this.distance, this.distance, this.distance)
+      vec3.fromValues(this.distance, this.distance, this.distance),
     );
 
     const target = this.component.getWorldTransform();
@@ -62,17 +79,32 @@ export default class TFollowAxisCameraController implements TCameraController {
     const normalisedDistance = vec3.sub(
       vec3.create(),
       camera.cameraComponent.transform.translation,
-      distance
+      distance,
     );
     const linearDistance = vec3.distance(
       normalisedDistance,
-      target.translation
+      target.translation,
     );
+
+    if (this.bounds) {
+      translation[0] = Math.max(
+        this.bounds.min[0],
+        Math.min(this.bounds.max[0], translation[0]),
+      );
+      translation[1] = Math.max(
+        this.bounds.min[1],
+        Math.min(this.bounds.max[1], translation[1]),
+      );
+      translation[2] = Math.max(
+        this.bounds.min[2],
+        Math.min(this.bounds.max[2], translation[2]),
+      );
+    }
 
     if (linearDistance > this.deadzone) {
       const rotation = quat.fromEuler(
         quat.create(),
-        ...this.axisConfig[this.axis].rotation
+        ...this.axisConfig[this.axis].rotation,
       );
 
       camera.moveTo(translation);
