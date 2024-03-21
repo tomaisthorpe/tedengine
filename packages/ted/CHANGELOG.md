@@ -1,5 +1,24 @@
 # @tedengine/ted
 
+## 0.6.0
+
+### Minor Changes
+
+- 3f350bc: Remove world space from mouse events
+- a136ff6: Add bounds to fixed axis camera controller
+- d1567e5: Add `crisp-edges` image rendering mode
+- 4aa22f5: Add configurable gravity
+- f09fe41: Add configuable filter on canvases
+- 1279900: Add engine to game state constructor
+- 05a2472: Move projection matrix to camera
+- 32cedee: Add clipToWorldSpace in cameras
+
+### Patch Changes
+
+- 42372cd: Fix projection matrix not using rendering size
+- c60a5ea: Fix box collider height/depth mixed up
+- 3edf75f: Fix mouse px/py using incorrect canvas size
+
 ## 0.5.1
 
 ### Patch Changes
