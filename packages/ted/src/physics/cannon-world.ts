@@ -136,7 +136,7 @@ export default class TCannonWorld implements TPhysicsWorld {
     if (collider.type === TColliderType.BOX) {
       const config = collider as TBoxColliderConfig;
       shape = new CANNON.Box(
-        new CANNON.Vec3(config.width / 2, config.depth / 2, config.height / 2),
+        new CANNON.Vec3(config.width / 2, config.height / 2, config.depth / 2),
       );
     } else if (collider.type === TColliderType.PLANE) {
       // @todo actually make this a plane
