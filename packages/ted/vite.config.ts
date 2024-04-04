@@ -24,6 +24,7 @@ export default defineConfig({
 
   // Uncomment this if you are using workers.
   worker: {
+    format: 'es',
     plugins: () => [
       viteTsConfigPaths({
         root: '../../',

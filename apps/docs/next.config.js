@@ -38,7 +38,7 @@ const nextConfig = {
     // Ensure the default loader doesn't break assets
     const rule = config.module.rules.find(
       (/** @type {{ loader: string; }} */ item) =>
-        item.loader === 'next-image-loader'
+        item.loader === 'next-image-loader',
     );
     rule.exclude = assetTest;
 
@@ -46,6 +46,8 @@ const nextConfig = {
       path: false,
       fs: false,
     };
+
+    config.experiments.asyncWebAssembly = true;
 
     return config;
   },

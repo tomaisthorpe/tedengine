@@ -3,7 +3,6 @@ import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
 import type { TJobsMessageRelay } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
-import TCannonWorld from './cannon-world';
 import type {
   TPhysicsInMessageWorldSetup,
   TPhysicsOutMessageInit,
@@ -13,11 +12,12 @@ import type {
 } from './messages';
 import { TPhysicsMessageTypes } from './messages';
 import type { TPhysicsWorld } from './physics-world';
+import TRapier3DWorld from './rapier3d-world';
 import { TPhysicsStateChangeType } from './state-changes';
 import type { TPhysicsStateChange } from './state-changes';
 
 // const world = new TAmmoWorld() as TPhysicsWorld;
-const world = new TCannonWorld() as TPhysicsWorld;
+const world = new TRapier3DWorld();
 
 const channel = new MessageChannel();
 const enginePort = channel.port1;

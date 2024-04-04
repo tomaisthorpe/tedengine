@@ -1,5 +1,5 @@
 import type { TWorldConfig } from '../core/world';
-import TCannonWorld from './cannon-world';
+import TRapier3DWorld from './rapier3d-world';
 import { v4 as uuidv4 } from 'uuid';
 import TBoxCollider from './colliders/box-collider';
 
@@ -11,18 +11,18 @@ const worldConfig: TWorldConfig = {
 
 describe('create', () => {
   test('promise should resolve', async () => {
-    const world = new TCannonWorld();
+    const world = new TRapier3DWorld();
     await expect(world.create(worldConfig)).resolves.toBeUndefined();
   });
 });
 
 describe('queryLine', () => {
-  let world: TCannonWorld;
+  let world: TRapier3DWorld;
   const bodyA = uuidv4();
   const bodyB = uuidv4();
 
   beforeEach(async () => {
-    world = new TCannonWorld();
+    world = new TRapier3DWorld();
     await world.create(worldConfig);
 
     const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
@@ -70,12 +70,12 @@ describe('queryLine', () => {
 });
 
 describe('queryArea', () => {
-  let world: TCannonWorld;
+  let world: TRapier3DWorld;
   const bodyA = uuidv4();
   const bodyB = uuidv4();
 
   beforeEach(async () => {
-    world = new TCannonWorld();
+    world = new TRapier3DWorld();
     await world.create(worldConfig);
 
     const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
