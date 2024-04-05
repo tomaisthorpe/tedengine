@@ -3,6 +3,7 @@ import { TJobContextTypes } from './context-types';
 import type {
   TAudioJobContext,
   TJobContext,
+  TJobFunc,
   TPhysicsJobContext,
   TRenderJobContext,
 } from './jobs';
@@ -12,7 +13,7 @@ import { TMessageTypesJobs } from './messages';
 
 export interface TJob {
   type: string;
-  args?: any[];
+  args?: unknown[];
 }
 
 export interface TWrappedJob {
@@ -23,7 +24,7 @@ export interface TWrappedJob {
 
 export interface TWrappedJobResult {
   uuid: string;
-  result: any;
+  result: unknown;
 }
 
 export type TJobRelay = (job: TWrappedJob) => void;
@@ -69,7 +70,7 @@ export default class TJobManager {
   }
 
   // @todo jobs don't currently ever reject
-  public do(job: TJob, transferList: Transferable[] = []): Promise<any> {
+  public do<T>(job: TJob, transferList: Transferable[] = []): Promise<T> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       // Check if we can process this job
@@ -79,9 +80,9 @@ export default class TJobManager {
 
       if (this.canProcess[config.requiredContext || TJobContextTypes.Engine]) {
         // TODO sort this typing using generics instead
-        const func = config.func as any;
+        const func = config.func as TJobFunc<typeof this.additionalContext>;
         const result = await func.call(this, this.additionalContext, ...args);
-        resolve(result);
+        resolve(result as T);
         return;
       }
 
@@ -101,7 +102,7 @@ export default class TJobManager {
     wrappedJob: TWrappedJob,
     port: {
       postMessage: (result: TJobsMessageRelayResult) => void;
-    }
+    },
   ) {
     const result = await this.do(wrappedJob.job, []);
 

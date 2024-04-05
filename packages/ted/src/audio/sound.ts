@@ -12,7 +12,7 @@ export default class TSound implements IJobAsset {
 
   // @todo look at AudioBuffers
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {
-    const result = await jobs.do({
+    const result = await jobs.do<string>({
       type: 'load_sound_from_url',
       args: [url],
     });

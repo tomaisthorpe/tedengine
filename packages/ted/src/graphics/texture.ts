@@ -44,12 +44,16 @@ export default class TTexture implements IJobAsset {
       url,
     );
 
-    const result = await jobs.do(
+    if (!image.image) {
+      throw new Error('image not loaded');
+    }
+
+    const result = await jobs.do<string>(
       {
         type: 'load_texture_from_imagebitmap',
         args: [image.image, { filter: this.filter }],
       },
-      [image.image!],
+      [image.image],
     );
 
     this.uuid = result;
@@ -64,7 +68,7 @@ export default class TTexture implements IJobAsset {
       this._filter = options.filter;
     }
 
-    const result = await jobs.do(
+    const result = await jobs.do<string>(
       {
         type: 'load_texture_from_imagebitmap',
         args: [image, options],

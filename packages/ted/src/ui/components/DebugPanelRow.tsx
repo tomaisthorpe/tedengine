@@ -155,7 +155,12 @@ const InputRow = ({
     const per = (val - min) / (max - min);
 
     updateLeft(per * width + 18);
-  }, [row.data.value]);
+  }, [
+    row.data.value,
+    row.data.inputType,
+    row.data.inputProps.min,
+    row.data.inputProps.max,
+  ]);
 
   return (
     <RowInputContainer>

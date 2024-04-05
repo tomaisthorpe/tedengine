@@ -8,9 +8,9 @@ export default class TTexturedMesh {
     positions: number[],
     normals: number[],
     indexes: number[],
-    uvs: number[]
+    uvs: number[],
   ): Promise<void> {
-    const result = await engine.jobs.do({
+    const result = await engine.jobs.do<string>({
       type: 'load_textured_mesh',
       args: [positions, normals, indexes, uvs],
     });

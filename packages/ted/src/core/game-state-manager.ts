@@ -5,7 +5,7 @@ import type TGameState from './game-state';
 import type { TWorldUpdateStats } from './world';
 
 export interface TGameStateType {
-  new (engine: TEngine): TGameState;
+  new(engine: TEngine): TGameState;
 }
 
 export default class TGameStateManager {
@@ -14,7 +14,7 @@ export default class TGameStateManager {
   private stack: TGameState[] = [];
   private loading = false;
 
-  public constructor(private engine: TEngine) {}
+  public constructor(private engine: TEngine) { }
 
   /**
    * Register new state type with the manager.
@@ -33,7 +33,7 @@ export default class TGameStateManager {
    * @param name state name
    * @param args args to pass to the resumed state
    */
-  public async push(name: string, ...args: any[]) {
+  public async push(name: string, ...args: unknown[]) {
     this.startLoading();
 
     if (!this.isValidState(name)) {
@@ -62,7 +62,7 @@ export default class TGameStateManager {
    * @param name state name
    * @param args args to pass to the resumed state
    */
-  public async pop(...args: any[]) {
+  public async pop(...args: unknown[]) {
     this.startLoading();
 
     if (this.stack.length === 0) {
@@ -84,7 +84,7 @@ export default class TGameStateManager {
    * @param name state name
    * @param args args to pass to the new state
    */
-  public async switch(name: string, ...args: any[]) {
+  public async switch(name: string, ...args: unknown[]) {
     this.startLoading();
 
     if (!this.isValidState(name)) {

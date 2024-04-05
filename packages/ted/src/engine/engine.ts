@@ -32,8 +32,8 @@ import { TMessageTypesEngine } from './messages';
 const TIME_PER_ENGINE_TIME_UPDATE = 1000;
 
 export type TPostMessageFunc =
-  | ((message: any, transfer?: Transferable[]) => void)
-  | ((message: any) => void);
+  | ((message: unknown, transfer?: Transferable[]) => void)
+  | ((message: unknown) => void);
 
 export default class TEngine {
   public events: TEventQueue;
@@ -59,12 +59,12 @@ export default class TEngine {
   public stats: {
     engineTime: number;
   } & TWorldUpdateStats = {
-    engineTime: 0,
-    physicsTotalTime: 0,
-    physicsStepTime: 0,
-    actorUpdateTime: 0,
-    worldUpdateTime: 0,
-  };
+      engineTime: 0,
+      physicsTotalTime: 0,
+      physicsStepTime: 0,
+      actorUpdateTime: 0,
+      worldUpdateTime: 0,
+    };
   private lastEngineTimeUpdate = 0;
   private fredPort!: MessagePort;
 

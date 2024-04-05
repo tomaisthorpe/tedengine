@@ -8,7 +8,7 @@ export default class TMesh implements IJobAsset {
 
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {
     // Load the mesh on the renderer thread
-    const result = await jobs.do({
+    const result = await jobs.do<string>({
       type: 'load_mesh_from_url',
       args: [url],
     });
@@ -22,9 +22,9 @@ export default class TMesh implements IJobAsset {
     normals: number[],
     indexes: number[],
     colors: number[],
-    palette: TPaletteIndex
+    palette: TPaletteIndex,
   ): Promise<void> {
-    const result = await engine.jobs.do({
+    const result = await engine.jobs.do<string>({
       type: 'load_mesh',
       args: [positions, normals, indexes, colors, palette],
     });

@@ -11,7 +11,7 @@ export interface IJobAsset {
 export default class TResourceManager {
   private resources: { [key: string]: any } = {};
 
-  constructor(private jobs: TJobManager) {}
+  constructor(private jobs: TJobManager) { }
 
   /**
    * Checks if a resource is already loaded into the cache
@@ -32,8 +32,8 @@ export default class TResourceManager {
   }
 
   public async load<T extends IAsset | IJobAsset>(
-    type: { new (): T },
-    key: string
+    type: { new(): T },
+    key: string,
   ): Promise<T> {
     // If already loaded, then just resolve
     if (this.isResourcedLoaded(key)) {
@@ -54,6 +54,6 @@ export default class TResourceManager {
   }
 }
 
-function isJobAsset(object: any): object is IJobAsset {
+function isJobAsset(object: object): object is IJobAsset {
   return 'loadWithJob' in object;
 }

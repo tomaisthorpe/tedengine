@@ -23,13 +23,15 @@ export type TPhysicsJobContext = {
   world: TPhysicsWorld;
 };
 
+export type TJobFunc<T> = (ctx: T, ...args: any[]) => Promise<unknown>;
+
 export interface TJobConfig {
   requiredContext?: TJobContextTypes;
   func:
-    | ((ctx: TJobContext, ...args: any) => Promise<any>)
-    | ((ctx: TRenderJobContext, ...args: any) => Promise<any>)
-    | ((ctx: TAudioJobContext, ...args: any) => Promise<any>)
-    | ((ctx: TPhysicsJobContext, ...args: any) => Promise<any>);
+  | TJobFunc<TJobContext>
+  | TJobFunc<TRenderJobContext>
+  | TJobFunc<TAudioJobContext>
+  | TJobFunc<TPhysicsJobContext>;
 }
 
 export interface TJobConfigs {
@@ -38,7 +40,7 @@ export interface TJobConfigs {
 
 export const GeneralJobs: { [key: string]: TJobConfig } = {
   load_text: {
-    func: async (ctx: TJobContext, text: string) => {
+    func: async (_: TJobContext, text: string) => {
       console.log('text', text);
     },
   },

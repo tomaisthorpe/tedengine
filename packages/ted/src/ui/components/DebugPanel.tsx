@@ -27,7 +27,7 @@ interface Props {
 
 export default function DebugPanel({ events, stats }: Props) {
   const [data, setData] = useState<TDebugPanelSerializedData | undefined>(
-    undefined
+    undefined,
   );
 
   useEffect(() => {
@@ -35,9 +35,9 @@ export default function DebugPanel({ events, stats }: Props) {
       TEventTypesDebug.Update,
       (e: TDebugUpdateEvent) => {
         setData(e.data);
-      }
+      },
     );
-  }, []);
+  }, [events]);
 
   if (!data || !data.isOpen) {
     return null;

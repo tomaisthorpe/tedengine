@@ -19,14 +19,14 @@ const hasOnCreate = (state: TGameState): state is TGameStateWithOnCreate =>
   (state as TGameStateWithOnCreate).onCreate !== undefined;
 
 export interface TGameStateWithOnEnter extends TGameState {
-  onEnter(engine: TEngine, ...args: any[]): Promise<void>;
+  onEnter(engine: TEngine, ...args: unknown[]): Promise<void>;
 }
 
 const hasOnEnter = (state: TGameState): state is TGameStateWithOnEnter =>
   (state as TGameStateWithOnEnter).onEnter !== undefined;
 
 export interface TGameStateWithOnResume extends TGameState {
-  onResume(engine: TEngine, ...args: any[]): Promise<void>;
+  onResume(engine: TEngine, ...args: unknown[]): Promise<void>;
 }
 
 const hasOnResume = (state: TGameState): state is TGameStateWithOnResume =>
@@ -54,7 +54,7 @@ export default class TGameState {
 
   public activeCamera?: ICamera;
 
-  constructor(protected engine: TEngine) {}
+  constructor(protected engine: TEngine) { }
 
   /**
    * Adds actor to the world in this game state.
@@ -120,7 +120,7 @@ export default class TGameState {
    * **DO NOT OVERRIDE!** Add [[`onEnter`]] instead.
    * @hidden
    */
-  public async enter(engine: TEngine, ...args: any[]) {
+  public async enter(engine: TEngine, ...args: unknown[]) {
     this.world?.start();
 
     if (hasOnEnter(this)) {
@@ -148,7 +148,7 @@ export default class TGameState {
    * **DO NOT OVERRIDE!** Add [[`onLeave`]] instead.
    * @hidden
    */
-  public async resume(engine: TEngine, ...args: any[]) {
+  public async resume(engine: TEngine, ...args: unknown[]) {
     if (hasOnResume(this)) {
       await this.onResume(engine, ...args);
     }

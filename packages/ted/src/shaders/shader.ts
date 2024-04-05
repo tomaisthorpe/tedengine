@@ -9,7 +9,7 @@ export default class TShader implements IJobAsset {
     // We need to trigger a job to load a program
     // This program will then need to run on the renderer thread
 
-    const result = await jobs.do({
+    const result = await jobs.do<string>({
       type: 'load_program',
       args: [url],
     });
