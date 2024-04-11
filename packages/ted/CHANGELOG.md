@@ -1,5 +1,15 @@
 # @tedengine/ted
 
+## 0.7.0
+
+### Minor Changes
+
+- 1ce84c7: Replace Cannon physics with Rapier
+
+### Patch Changes
+
+- 1a49dcf: Fix various type issues
+
 ## 0.6.0
 
 ### Minor Changes
