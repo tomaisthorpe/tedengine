@@ -39,6 +39,7 @@ export * from './core/game-state';
 
 export { default as TGameStateManager } from './core/game-state-manager';
 
+export * from './core/world';
 export { default as TWorld } from './core/world';
 export * from './core/messages';
 

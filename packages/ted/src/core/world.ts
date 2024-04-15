@@ -46,10 +46,13 @@ export interface TCollisionListener {
 }
 
 export interface TWorldConfig {
+  mode?: TPhysicsMode;
   gravity: vec3;
   defaultCollisionClass: string;
   collisionClasses: TCollisionClass[];
 }
+
+export type TPhysicsMode = '2d' | '3d';
 
 export interface TCollisionClass {
   name: string;

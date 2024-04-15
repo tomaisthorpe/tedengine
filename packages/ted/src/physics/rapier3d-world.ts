@@ -1,5 +1,9 @@
 import { vec3 } from 'gl-matrix';
-import type { TCollisionClass, TWorldConfig } from '../core/world';
+import type {
+  TCollisionClass,
+  TWorldConfig,
+  TPhysicsMode,
+} from '../core/world';
 import type { TColliderConfig } from './colliders';
 import { TColliderType } from './colliders';
 import {
@@ -46,6 +50,8 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     };
   } = {};
 
+  private physicsMode: TPhysicsMode = '3d';
+
   private objects: TRapierObject[] = [];
 
   public async create(config: TWorldConfig): Promise<void> {
@@ -62,6 +68,10 @@ export default class TRapier3DWorld implements TPhysicsWorld {
 
     this.setupCollisionClasses(config.collisionClasses);
     this.defaultCollisionClass = config.defaultCollisionClass;
+
+    if (config.mode) {
+      this.physicsMode = config.mode;
+    }
   }
 
   private setupCollisionClasses(collisionClasses: TCollisionClass[]) {
@@ -149,6 +159,15 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     return { bodies, collisions };
   }
 
+  /**
+   * Adds a physics body to the world.
+   *
+   * @param uuid - The unique identifier for the body.
+   * @param collider - The configuration for the collider shape.
+   * @param translation - The initial translation of the body.
+   * @param rotation - The initial rotation of the body.
+   * @param options - Additional options for the body (optional).
+   */
   addBody(
     uuid: string,
     collider: TColliderConfig,
@@ -203,6 +222,12 @@ export default class TRapier3DWorld implements TPhysicsWorld {
 
     if (options?.fixedRotation) {
       bodyDesc.lockRotations();
+    }
+
+    // If we are in 2D mode, disable the Z axis, and only allow rotations around Z
+    if (this.physicsMode === '2d') {
+      bodyDesc.enabledTranslations(true, true, false);
+      bodyDesc.enabledRotations(false, false, true);
     }
 
     bodyDesc.setTranslation(...translation);
