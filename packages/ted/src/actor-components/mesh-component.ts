@@ -15,7 +15,7 @@ export default class TMeshComponent extends TSceneComponent {
   constructor(
     protected engine: TEngine,
     actor: TActor,
-    bodyOptions?: TPhysicsBodyOptions
+    bodyOptions?: TPhysicsBodyOptions,
   ) {
     super(actor, bodyOptions);
 
@@ -50,7 +50,12 @@ export default class TMeshComponent extends TSceneComponent {
    * @param {TMaterials | string } materials or path
    */
   public async applyMesh(engine: TEngine, path: string) {
-    this.mesh = engine.resources.get<TMesh>(path);
+    const mesh = engine.resources.get<TMesh>(path);
+
+    // @todo handle error if mesh is not found
+    if (mesh) {
+      this.mesh = mesh;
+    }
   }
 
   public async applyMaterial(engine: TEngine, path: string) {
@@ -63,7 +68,7 @@ export default class TMeshComponent extends TSceneComponent {
     normals: number[],
     indexes: number[],
     colors: number[],
-    paletteIndex: TPaletteIndex
+    paletteIndex: TPaletteIndex,
   ) {
     const mesh = new TMesh();
 
@@ -74,7 +79,7 @@ export default class TMeshComponent extends TSceneComponent {
       normals,
       indexes,
       colors,
-      paletteIndex
+      paletteIndex,
     );
 
     this.mesh = mesh;

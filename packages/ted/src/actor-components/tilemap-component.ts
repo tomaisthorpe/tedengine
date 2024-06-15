@@ -53,11 +53,15 @@ export default class TTilemapComponent extends TSpriteComponent {
    * @param {string} tileset path
    */
   private getTileset(engine: TEngine, tileset: TTilesetConfig): TTileset {
-    let image: TImage;
+    let image: TImage | undefined;
     if (tileset.image instanceof TImage) {
       image = tileset.image as TImage;
     } else {
       image = engine.resources.get<TImage>(tileset.image as string);
+    }
+
+    if (!image) {
+      throw new Error(`Tileset image not found: ${tileset.image}`);
     }
 
     // Get the tileset from the tilemap defs
@@ -80,7 +84,12 @@ export default class TTilemapComponent extends TSpriteComponent {
     if (tilemapPath instanceof TTilemap) {
       this.tilemap = tilemapPath as TTilemap;
     } else {
-      this.tilemap = engine.resources.get<TTilemap>(tilemapPath as string);
+      const tilemap = engine.resources.get<TTilemap>(tilemapPath as string);
+
+      // @todo handle error if tilemap is not found
+      if (tilemap) {
+        this.tilemap = tilemap;
+      }
     }
   }
 

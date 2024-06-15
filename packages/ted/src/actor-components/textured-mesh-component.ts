@@ -48,7 +48,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
     positions: number[],
     normals: number[],
     indexes: number[],
-    uvs: number[]
+    uvs: number[],
   ) {
     const mesh = new TTexturedMesh();
 
@@ -65,7 +65,12 @@ export default class TTexturedMeshComponent extends TSceneComponent {
    * @param {string} texture path
    */
   public async applyTexture(engine: TEngine, texturePath: string | TTexture) {
-    this.texture = engine.resources.get<TTexture>(texturePath as string);
+    const texture = engine.resources.get<TTexture>(texturePath as string);
+
+    // @todo handle error if texture is not found
+    if (texture) {
+      this.texture = texture;
+    }
   }
 
   public setTexture(texture: TTexture) {

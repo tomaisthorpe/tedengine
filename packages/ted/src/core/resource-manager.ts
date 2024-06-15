@@ -9,9 +9,9 @@ export interface IJobAsset {
 }
 
 export default class TResourceManager {
-  private resources: { [key: string]: any } = {};
+  private resources = new Map<string, IAsset | IJobAsset>();
 
-  constructor(private jobs: TJobManager) { }
+  constructor(private jobs: TJobManager) {}
 
   /**
    * Checks if a resource is already loaded into the cache
@@ -19,7 +19,7 @@ export default class TResourceManager {
    * @param key resource key
    */
   public isResourcedLoaded(key: string): boolean {
-    return this.resources[key] !== undefined;
+    return this.resources.has(key);
   }
 
   /**
@@ -27,17 +27,26 @@ export default class TResourceManager {
    *
    * Must be loaded, otherwise undefined will be returned.
    */
-  public get<T extends IAsset | IJobAsset>(key: string): T {
-    return this.resources[key] as T;
+  public get<T extends IAsset | IJobAsset>(key: string): T | undefined {
+    return this.resources.get(key) as T;
   }
 
+  /**
+   * Loads a resource of type T with the specified key.
+   * If the resource is already loaded, it returns the cached resource.
+   * Otherwise, it fetches the resource, caches the loaded resource, and returns it.
+   *
+   * @param type The constructor function of the resource type T.
+   * @param key The key or URL of the resource to load.
+   * @returns A promise that resolves to the loaded resource of type T.
+   */
   public async load<T extends IAsset | IJobAsset>(
-    type: { new(): T },
+    type: { new (): T },
     key: string,
   ): Promise<T> {
     // If already loaded, then just resolve
     if (this.isResourcedLoaded(key)) {
-      return this.resources[key];
+      return this.resources.get(key) as T;
     }
 
     const response = await fetch(key);
@@ -49,7 +58,7 @@ export default class TResourceManager {
       await resource.load(response);
     }
 
-    this.resources[key] = resource;
+    this.resources.set(key, resource);
     return resource;
   }
 }
