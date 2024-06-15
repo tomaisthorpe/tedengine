@@ -59,23 +59,13 @@ export default class TActor {
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {
-    // const sprites: TSpriteComponent[] = [];
     const tasks: TSerializedRenderTask[] = [];
 
     for (const component of this.components) {
-      // if (component instanceof TSpriteComponent) {
-      //   if (component.shouldRender) {
-      //     sprites.push(component);
-      //   }
-      //   continue;
-      // }
-
-      if (component instanceof TSceneComponent) {
-        if (component.shouldRender) {
-          const task = component.getRenderTask();
-          if (task) {
-            tasks.push(task);
-          }
+      if (component instanceof TSceneComponent && component.shouldRender) {
+        const task = component.getRenderTask();
+        if (task) {
+          tasks.push(task);
         }
       }
     }
