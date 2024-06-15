@@ -75,6 +75,7 @@ export * from './input/events';
 export { default as TKeyboard } from './input/keyboard';
 export { default as TMouse } from './input/mouse';
 export * from './input/mouse';
+export { default as TTouch } from './input/touch';
 export { default as TSimpleController } from './input/simple-controller';
 
 export { default as TTransform } from './math/transform';

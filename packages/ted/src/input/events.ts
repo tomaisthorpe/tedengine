@@ -6,6 +6,10 @@ export enum TEventTypesInput {
   MouseUp = 'mouseup',
   MouseDown = 'mousedown',
   MouseMove = 'mousemove',
+  TouchStart = 'touchstart',
+  TouchEnd = 'touchend',
+  TouchMove = 'touchmove',
+  TouchCancel = 'touchcancel',
   ActionPressed = 'controller_actionpressed',
   ActionReleased = 'controller_actionreleased',
 }
@@ -38,6 +42,22 @@ export interface TMouseDownEvent extends TMouseLocation {
 
 export interface TMouseMoveEvent extends TMouseLocation {
   type: TEventTypesInput.MouseMove;
+}
+
+export interface TTouchStartEvent extends TMouseLocation {
+  type: TEventTypesInput.TouchStart;
+}
+
+export interface TTouchEndEvent extends TMouseLocation {
+  type: TEventTypesInput.TouchEnd;
+}
+
+export interface TTouchMoveEvent extends TMouseLocation {
+  type: TEventTypesInput.TouchMove;
+}
+
+export interface TTouchCancelEvent extends TMouseLocation {
+  type: TEventTypesInput.TouchCancel;
 }
 
 export interface TActionPressedEvent {
