@@ -5,6 +5,7 @@ import TImage from '../graphics/image';
 import TMesh from '../graphics/mesh';
 import TTexture from '../graphics/texture';
 import TTilemap from '../graphics/tilemap';
+import type { IAsset, IJobAsset } from './resource-manager';
 
 export interface TResourcePackConfig {
   meshes?: string[];
@@ -18,7 +19,10 @@ export interface TResourcePackConfig {
 export default class TResourcePack {
   private resources: TResourcePackConfig;
 
-  constructor(private engine: TEngine, ...configs: TResourcePackConfig[]) {
+  constructor(
+    private engine: TEngine,
+    ...configs: TResourcePackConfig[]
+  ) {
     // Merge all configs into one
     this.resources = configs.reduce(
       (reducedConfig, config) => {
@@ -55,7 +59,7 @@ export default class TResourcePack {
         textures: [],
         sounds: [],
         tilemaps: [],
-      }
+      },
     );
   }
 
@@ -63,31 +67,23 @@ export default class TResourcePack {
    * Load everything in the resource pack, promise resolves once loaded.
    */
   public async load(): Promise<void> {
-    for (const mesh of this.resources.meshes || []) {
-      await this.engine.resources.load<TMesh>(TMesh, mesh);
-    }
+    const resourceTypes: {
+      [key: string]: { new (): IJobAsset | IAsset };
+    } = {
+      meshes: TMesh,
+      materials: TColorMaterial,
+      images: TImage,
+      textures: TTexture,
+      sounds: TTSound,
+      tilemaps: TTilemap,
+    };
 
-    for (const materials of this.resources.materials || []) {
-      await this.engine.resources.load<TColorMaterial>(
-        TColorMaterial,
-        materials
-      );
-    }
-
-    for (const image of this.resources.images || []) {
-      await this.engine.resources.load<TImage>(TImage, image);
-    }
-
-    for (const texture of this.resources.textures || []) {
-      await this.engine.resources.load<TTexture>(TTexture, texture);
-    }
-
-    for (const sound of this.resources.sounds || []) {
-      await this.engine.resources.load<TTSound>(TTSound, sound);
-    }
-
-    for (const tilemap of this.resources.tilemaps || []) {
-      await this.engine.resources.load<TTilemap>(TTilemap, tilemap);
+    for (const resourceType in resourceTypes) {
+      for (const resource of this.resources[
+        resourceType as keyof TResourcePackConfig
+      ] || []) {
+        await this.engine.resources.load(resourceTypes[resourceType], resource);
+      }
     }
   }
 }
