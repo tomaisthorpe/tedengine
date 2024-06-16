@@ -11,6 +11,10 @@ class Actor extends TActor {
     super();
 
     const clip = engine.resources.get<TSound>(sound);
+    if (!clip) {
+      return;
+    }
+
     clip.volume = 0.7;
 
     const section = engine.debugPanel.addSection('Audio', true);
@@ -26,7 +30,7 @@ class Actor extends TActor {
       (value: string) => {
         clip.volume = parseFloat(value);
       },
-      { max: 1, min: 0, step: 0.1 }
+      { max: 1, min: 0, step: 0.1 },
     );
   }
 }
