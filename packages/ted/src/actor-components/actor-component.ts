@@ -6,10 +6,19 @@ export interface TActorComponentWithOnUpdate extends TActorComponent {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
 }
 
+export interface TActorComponentWithOnDestroy extends TActorComponent {
+  onDestroy(): void;
+}
+
 const hasOnUpdate = (
-  state: TActorComponent
+  state: TActorComponent,
 ): state is TActorComponentWithOnUpdate =>
   (state as TActorComponentWithOnUpdate).onUpdate !== undefined;
+
+const hasOnDestroy = (
+  state: TActorComponent,
+): state is TActorComponentWithOnDestroy =>
+  (state as TActorComponentWithOnDestroy).onDestroy !== undefined;
 
 /**
  * Component for an actor.
@@ -17,6 +26,8 @@ const hasOnUpdate = (
  */
 export default class TActorComponent {
   public uuid: string = uuidv4();
+
+  public dead = false;
 
   constructor(public actor: TActor) {
     // @todo should the compenent itself do this?
@@ -35,6 +46,15 @@ export default class TActorComponent {
   public update(engine: TEngine, delta: number): void {
     if (hasOnUpdate(this)) {
       this.onUpdate(engine, delta);
+    }
+  }
+
+  public destroy(): void {
+    if (this.dead) return;
+
+    this.dead = true;
+    if (hasOnDestroy(this)) {
+      this.onDestroy();
     }
   }
 }

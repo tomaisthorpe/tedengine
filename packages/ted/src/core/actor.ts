@@ -91,6 +91,10 @@ export default class TActor {
 
     this.dead = true;
 
+    for (const component of this.components) {
+      component.destroy();
+    }
+
     if (hasOnDestroy(this)) {
       this.onDestroy();
     }
@@ -98,7 +102,5 @@ export default class TActor {
     if (this.world) {
       this.world.removeActor(this);
     }
-
-    // @todo clean up the components
   }
 }
