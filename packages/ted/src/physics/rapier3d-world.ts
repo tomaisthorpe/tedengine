@@ -451,7 +451,7 @@ export default class TRapier3DWorld implements TPhysicsWorld {
           return true;
         }
 
-        result.push({ uuid, distance: intersection.toi });
+        result.push({ uuid, distance: intersection.timeOfImpact });
 
         return true;
       },
