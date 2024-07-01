@@ -1,5 +1,18 @@
 # @tedengine/ted
 
+## 0.8.0
+
+### Minor Changes
+
+- 4421cf4: Fix get resource return signature missing undefined
+- f8aeeb5: Add basic touch handling
+- 71a205a: Add destroy method to components
+- 89096a8: Add 2D physics mode
+
+### Patch Changes
+
+- 0b5713a: Update dependencies
+
 ## 0.7.0
 
 ### Minor Changes
