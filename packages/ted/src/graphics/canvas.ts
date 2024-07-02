@@ -16,8 +16,12 @@ export default class TCanvas {
     return this.canvas.getContext('2d') as OffscreenCanvasRenderingContext2D;
   }
 
+  public async getImageBitmap(): Promise<ImageBitmap> {
+    return createImageBitmap(this.canvas);
+  }
+
   public async getTexture(config?: TTextureOptions): Promise<TTexture> {
-    const image = await createImageBitmap(this.canvas);
+    const image = await this.getImageBitmap();
     const texture = new TTexture();
     await texture.setImageBitmap(this.engine.jobs, image, config);
 
