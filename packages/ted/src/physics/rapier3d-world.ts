@@ -139,6 +139,10 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     });
 
     const bodies: TPhysicsBody[] = [];
+
+    // Filter out any bodies that have been deleted
+    this.objects = this.objects.filter((obj) => obj.body.isValid());
+
     for (const obj of this.objects) {
       bodies.push({
         uuid: obj.uuid,
