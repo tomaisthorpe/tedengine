@@ -153,6 +153,9 @@ export default class TWorld {
     };
 
     this.queuePhysicsStateChange(sc);
+
+    // Remove any listeners that have been registered
+    delete this.collisionListeners[component.uuid];
   }
 
   private registerActorWithPhysicsWorker(actor: TActor) {
