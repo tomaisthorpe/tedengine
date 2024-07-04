@@ -31,6 +31,9 @@ export { default as TFollowComponentCameraController } from './cameras/follow-co
 export { default as TActor } from './core/actor';
 export * from './core/actor';
 
+export { default as TActorPool } from './core/actor-pool';
+export * from './core/actor-pool';
+
 export { default as TEventQueue } from './core/event-queue';
 export * from './core/event-queue';
 
