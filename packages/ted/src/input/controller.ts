@@ -1,5 +1,7 @@
 import TEventQueue from '../core/event-queue';
 import type TPawn from '../core/pawn';
+import type { TWindowBlurEvent } from '../fred/events';
+import { TEventTypesWindow } from '../fred/events';
 import { TEventTypesInput } from './events';
 import type { TMouseLocation, TMouseMoveEvent } from './events';
 import type {
@@ -25,7 +27,16 @@ export default class TController {
 
   public mouseLocation?: TMouseLocation;
 
-  constructor(private engineEventQueue: TEventQueue) {}
+  constructor(private engineEventQueue: TEventQueue) {
+    this.resetAxisValues = this.resetAxisValues.bind(this);
+
+    // Reset all axis values when the window loses focus
+    // This is to prevent axis getting stuck in a pressed state
+    engineEventQueue.addListener<TWindowBlurEvent>(
+      TEventTypesWindow.Blur,
+      this.resetAxisValues,
+    );
+  }
 
   // @todo add validation on button
   // @todo add support for different event types
@@ -159,5 +170,28 @@ export default class TController {
 
   public update() {
     this.events.update();
+  }
+
+  /**
+   * Resets all current axis values to 0.
+   */
+  private resetAxisValues() {
+    Object.keys(this.axes).forEach((key) => {
+      this.axes[key] = 0;
+    });
+
+    console.log('reset axis values');
+  }
+
+  /**
+   * Tears down the controller and removes all event listeners.
+   *
+   * @todo add rest of event listeners
+   */
+  public destroy() {
+    this.engineEventQueue.removeListener<TWindowBlurEvent>(
+      TEventTypesWindow.Blur,
+      this.resetAxisValues,
+    );
   }
 }
