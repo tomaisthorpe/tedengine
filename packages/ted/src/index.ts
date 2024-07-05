@@ -57,6 +57,7 @@ export * from './engine/config';
 export { default as TEngine } from './engine/engine';
 export * from './engine/engine';
 
+export * from './fred/events';
 export { default as TFred } from './fred/fred';
 
 export * from './graphics';

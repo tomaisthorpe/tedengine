@@ -21,6 +21,8 @@ import { TMessageTypesJobs } from '../jobs/messages';
 import type { TFrameParams } from '../renderer/frame-params';
 import TRenderer from '../renderer/renderer';
 import type { TEngineContextData, TGameContextData } from '../ui/context';
+import type { TWindowBlurEvent, TWindowFocusEvent } from './events';
+import { TEventTypesWindow } from './events';
 import type { TFredMessageReady, TFredMessageShutdown } from './messages';
 import { TFredMessageTypes } from './messages';
 
@@ -153,6 +155,12 @@ export default class TFred {
     this.onChangeFullscreen = this.onChangeFullscreen.bind(this);
     window.addEventListener('fullscreenchange', this.onChangeFullscreen);
 
+    this.onBlur = this.onBlur.bind(this);
+    window.addEventListener('blur', this.onBlur);
+
+    this.onFocus = this.onFocus.bind(this);
+    window.addEventListener('focus', this.onFocus);
+
     this.container.append(this.canvas);
 
     this.jobs = new TJobManager([
@@ -258,6 +266,20 @@ export default class TFred {
     }
   }
 
+  private onBlur() {
+    const message: TWindowBlurEvent = {
+      type: TEventTypesWindow.Blur,
+    };
+    this.events.broadcast(message);
+  }
+
+  private onFocus() {
+    const message: TWindowFocusEvent = {
+      type: TEventTypesWindow.Focus,
+    };
+    this.events.broadcast(message);
+  }
+
   /**
    * Trigger cleanup across the whole engine
    */
@@ -271,6 +293,8 @@ export default class TFred {
     }
 
     window.removeEventListener('fullscreenchange', this.onChangeFullscreen);
+    window.removeEventListener('blur', this.onBlur);
+    window.removeEventListener('focus', this.onFocus);
 
     // @todo do full teardown on this thread
     this.mouse?.destroy();

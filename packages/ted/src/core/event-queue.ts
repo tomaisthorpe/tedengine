@@ -47,17 +47,17 @@ export default class TEventQueue {
    */
   public addListener<T extends TEvent>(
     type: string,
-    func: (event: T) => void
+    func: (event: T) => void,
   ): void;
   public addListener<T extends TEvent>(
     type: string,
     subType: string,
-    func: (event: T) => void
+    func: (event: T) => void,
   ): void;
   public addListener<T extends TEvent>(
     type: string,
     subTypeOrFunc: string | ((event: T) => void),
-    func?: (event: T) => void
+    func?: (event: T) => void,
   ): void {
     let callback = func;
     if (!func) {
@@ -84,17 +84,17 @@ export default class TEventQueue {
    */
   public removeListener<T extends TEvent>(
     type: string,
-    func: (event: T) => void
+    func: (event: T) => void,
   ): void;
   public removeListener<T extends TEvent>(
     type: string,
     subType: string,
-    func: (event: T) => void
+    func: (event: T) => void,
   ): void;
   public removeListener<T extends TEvent>(
     type: string,
     subTypeOrFunc: string | ((event: T) => void),
-    func?: (event: T) => void
+    func?: (event: T) => void,
   ): void {
     let callback = func;
     if (!func) {
@@ -110,7 +110,7 @@ export default class TEventQueue {
     if (this.listeners[typeString] !== undefined) {
       // Remove any functions that are equal to the given one
       this.listeners[typeString] = this.listeners[typeString].filter(
-        (f) => f !== callback
+        (f) => f !== callback,
       );
     }
   }
