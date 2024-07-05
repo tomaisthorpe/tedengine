@@ -11,6 +11,11 @@ export default class TSimpleController extends TController {
     super(engine.events);
 
     // Movement
+    this.addAxisFromKeyEvent('Vertical', 'w', 1);
+    this.addAxisFromKeyEvent('Vertical', 's', -1);
+    this.addAxisFromKeyEvent('Horizontal', 'a', -1);
+    this.addAxisFromKeyEvent('Horizontal', 'd', 1);
+
     this.addActionFromKeyEvent('Up', 'w');
     this.addActionFromKeyEvent('Left', 'a');
     this.addActionFromKeyEvent('Down', 's');
