@@ -11,6 +11,7 @@ export interface TPoolableActor extends TActor {
 
 export default class TActorPool<T extends TPoolableActor> {
   private actors: T[] = [];
+  public dead = false;
 
   constructor(
     // Function that creates a new actor
@@ -31,6 +32,8 @@ export default class TActorPool<T extends TPoolableActor> {
    * @returns
    */
   public acquire(): T | undefined {
+    if (this.dead) return;
+
     if (this.actors.length === 0) {
       const actor = this.actor();
       actor.pool = this;
@@ -57,8 +60,14 @@ export default class TActorPool<T extends TPoolableActor> {
   /**
    * Runs destroy all actors remaining in the pool.
    * This will not destroy actors that have been acquired.
+   *
+   * Once this method is called, the pool is no longer usable.
    */
   public destroy(): void {
+    if (this.dead) return;
+
+    this.dead = true;
+
     for (const actor of this.actors) {
       actor.destroy();
     }
