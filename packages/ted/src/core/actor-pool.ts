@@ -7,6 +7,11 @@ export interface TPoolableActor extends TActor {
   reset(): void;
 
   pool: TActorPool<TPoolableActor>;
+
+  /**
+   * Set to true when the actor is acquired from the pool
+   */
+  acquired: boolean;
 }
 
 export default class TActorPool<T extends TPoolableActor> {
@@ -36,11 +41,18 @@ export default class TActorPool<T extends TPoolableActor> {
 
     if (this.actors.length === 0) {
       const actor = this.actor();
+
       actor.pool = this;
+      actor.acquired = true;
+
       return actor;
     }
 
-    return this.actors.pop();
+    const actor = this.actors.pop();
+    if (!actor) return;
+
+    actor.acquired = true;
+    return actor;
   }
 
   /**
@@ -49,6 +61,7 @@ export default class TActorPool<T extends TPoolableActor> {
    */
   public release(actor: T): void {
     actor.reset();
+    actor.acquired = false;
 
     if (actor.world) {
       actor.world.removeActor(actor);
