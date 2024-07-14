@@ -224,14 +224,14 @@ export default class TRapier3DWorld implements TPhysicsWorld {
         ? this.RAPIER.RigidBodyDesc.fixed()
         : this.RAPIER.RigidBodyDesc.dynamic();
 
-    if (options?.fixedRotation) {
-      bodyDesc.lockRotations();
-    }
-
     // If we are in 2D mode, disable the Z axis, and only allow rotations around Z
     if (this.physicsMode === '2d') {
       bodyDesc.enabledTranslations(true, true, false);
       bodyDesc.enabledRotations(false, false, true);
+    }
+
+    if (options?.fixedRotation) {
+      bodyDesc.lockRotations();
     }
 
     bodyDesc.setTranslation(...translation);
