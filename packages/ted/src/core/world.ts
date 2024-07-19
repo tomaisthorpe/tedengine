@@ -56,7 +56,7 @@ export type TPhysicsMode = '2d' | '3d';
 
 export interface TCollisionClass {
   name: string;
-  ignores?: [string];
+  ignores?: string[];
 }
 
 export interface TWorldUpdateStats {
