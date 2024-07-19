@@ -5,7 +5,7 @@ import type {
   TPhysicsBodyOptions,
   TPhysicsCollision,
 } from './physics-world';
-import type { TPhysicsStateChange } from './state-changes';
+import type { TPhysicsRemoveBody, TPhysicsStateChange } from './state-changes';
 
 export enum TPhysicsMessageTypes {
   INIT = 'init',
@@ -32,6 +32,7 @@ export interface TPhysicsInMessageSimulateStep {
   type: TPhysicsMessageTypes.SIMULATE_STEP;
   delta: number;
   newBodies: TPhysicsRegisterBody[];
+  removeBodies: TPhysicsRemoveBody[];
   stateChanges: TPhysicsStateChange[];
 }
 

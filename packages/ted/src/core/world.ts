@@ -25,6 +25,7 @@ import type {
   TPhysicsApplyCentralImpulse,
   TPhysicsUpdateBodyOptions,
   TPhysicsUpdateTransform,
+  TPhysicsRemoveBody,
 } from '../physics/state-changes';
 import { TPhysicsStateChangeType } from '../physics/state-changes';
 import { createPhysicsWorker } from '../physics/create-worker';
@@ -88,6 +89,7 @@ export default class TWorld {
   // List of state changes and bodies to send to physics worker on next step
   private queuedStateChanges: TPhysicsStateChange[] = [];
   private queuedNewBodies: TPhysicsRegisterBody[] = [];
+  private queuedRemoveBodies: TPhysicsRemoveBody[] = [];
 
   private updateResolve?: (stats: TWorldUpdateStats) => void;
   private lastDelta = 0;
@@ -147,12 +149,12 @@ export default class TWorld {
     // If there is no collider, it definitely won't be in the physics world
     if (!component.collider) return;
 
-    const sc: TPhysicsStateChange = {
+    const sc: TPhysicsRemoveBody = {
       type: TPhysicsStateChangeType.REMOVE_BODY,
       uuid: component.uuid,
     };
 
-    this.queuePhysicsStateChange(sc);
+    this.queuedRemoveBodies.push(sc);
 
     // Remove any listeners that have been registered
     delete this.collisionListeners[component.uuid];
@@ -267,6 +269,7 @@ export default class TWorld {
         type: TPhysicsMessageTypes.SIMULATE_STEP,
         delta,
         newBodies: this.queuedNewBodies,
+        removeBodies: this.queuedRemoveBodies,
         stateChanges: this.queuedStateChanges,
       };
 
@@ -274,6 +277,7 @@ export default class TWorld {
       this.workerPort?.postMessage(message);
 
       this.queuedNewBodies = [];
+      this.queuedRemoveBodies = [];
       this.queuedStateChanges = [];
     });
   }

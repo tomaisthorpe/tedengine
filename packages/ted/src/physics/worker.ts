@@ -41,6 +41,11 @@ enginePort.onmessage = async (event: MessageEvent) => {
       const now = performance.now();
       const stepMessage = data as TPhysicsInMessageSimulateStep;
 
+      // Remove bodies before adding new ones to prevent re-adding the same body
+      for (const body of stepMessage.removeBodies) {
+        world.removeBody(body.uuid);
+      }
+
       for (const body of stepMessage.newBodies) {
         world.addBody(
           body.uuid,
@@ -94,9 +99,6 @@ function applyStateChanges(
           stateChange.translation,
           stateChange.rotation,
         );
-        break;
-      case TPhysicsStateChangeType.REMOVE_BODY:
-        world.removeBody(stateChange.uuid);
         break;
     }
   }

@@ -13,8 +13,7 @@ export type TPhysicsStateChange =
   | TPhysicsApplyCentralForce
   | TPhysicsApplyCentralImpulse
   | TPhysicsUpdateBodyOptions
-  | TPhysicsUpdateTransform
-  | TPhysicsRemoveBody;
+  | TPhysicsUpdateTransform;
 
 export interface TPhysicsApplyCentralForce {
   type: TPhysicsStateChangeType.APPLY_CENTRAL_FORCE;
