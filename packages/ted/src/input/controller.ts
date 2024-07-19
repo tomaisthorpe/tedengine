@@ -179,8 +179,6 @@ export default class TController {
     Object.keys(this.axes).forEach((key) => {
       this.axes[key] = 0;
     });
-
-    console.log('reset axis values');
   }
 
   /**
