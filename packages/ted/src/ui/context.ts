@@ -6,7 +6,7 @@ export interface TEventQueueContextData {
 }
 
 export const TEventQueueContext = React.createContext<TEventQueueContextData>(
-  undefined!
+  undefined!,
 );
 
 export interface TGameContextData {
@@ -20,5 +20,15 @@ export interface TEngineContextData {
 }
 
 export const TEngineContext = React.createContext<TEngineContextData>(
-  undefined!
+  undefined!,
 );
+
+export interface TUIContextData {
+  renderingSize: {
+    width: number;
+    height: number;
+  };
+  scaling: number;
+}
+
+export const TUIContext = React.createContext<TUIContextData>(undefined!);

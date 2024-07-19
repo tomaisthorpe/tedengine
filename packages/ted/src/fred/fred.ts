@@ -71,6 +71,8 @@ export default class TFred {
     private updateEngineContext: (ctx: TEngineContextData) => void,
     private updateGameContext: (ctx: TGameContextData) => void,
     private setErrorMessage: (message: string) => void,
+    private setScaling: (scaling: number) => void,
+    private setRenderingSize: (size: { width: number; height: number }) => void,
     private config?: TFredConfig,
   ) {
     engineWorker.onmessage = this.onEngineMessage.bind(this);
@@ -259,6 +261,12 @@ export default class TFred {
       // This is the size that the canvas itself displays as in the browser
       this.canvas.style.width = `${containerWidth}px`;
       this.canvas.style.height = `${containerHeight}px`;
+
+      this.setScaling(containerWidth / this.canvas.width);
+      this.setRenderingSize({
+        width: this.canvas.width,
+        height: this.canvas.height,
+      });
     }
 
     if (this.renderer) {

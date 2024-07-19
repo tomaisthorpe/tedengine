@@ -1,6 +1,11 @@
 import * as React from 'react';
 import type TEventQueue from '../core/event-queue';
-import { TEngineContext, TEventQueueContext, TGameContext } from './context';
+import {
+  TEngineContext,
+  TEventQueueContext,
+  TGameContext,
+  TUIContext,
+} from './context';
 import type { TEngineContextData, TGameContextData } from './context';
 
 export function useGameContext(): TGameContextData {
@@ -13,4 +18,8 @@ export function useEngineContext(): TEngineContextData {
 
 export function useEventQueue(): TEventQueue | undefined {
   return React.useContext(TEventQueueContext).events;
+}
+
+export function useUIContext() {
+  return React.useContext(TUIContext);
 }
