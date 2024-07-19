@@ -95,7 +95,7 @@ export default class TWorld {
 
   private onCreatedResolve?: () => void;
 
-  private collisionListeners: { [key: string]: TCollisionListener } = {};
+  private collisionListeners: { [key: string]: TCollisionListener[] } = {};
 
   private jobs: TJobManager;
   constructor(
@@ -349,23 +349,25 @@ export default class TWorld {
   }
 
   private checkCollision(bodyA: string, bodyB: string) {
-    const listener = this.collisionListeners[bodyA];
-    if (!listener) return;
+    const listeners = this.collisionListeners[bodyA];
+    if (!listeners) return;
 
-    // Just incase wasn't supplied
-    if (!listener.collisionClass) return;
+    for (const listener of listeners) {
+      // Just incase wasn't supplied
+      if (!listener.collisionClass) continue;
 
-    // Check if the collision class matches what the listener is looking for
-    if (this.collisionClassLookup[bodyB] !== listener.collisionClass) {
-      return;
-    }
+      // Check if the collision class matches what the listener is looking for
+      if (this.collisionClassLookup[bodyB] !== listener.collisionClass) {
+        continue;
+      }
 
-    const actor = this.actors.find(
-      (actor) => actor.rootComponent.uuid === bodyB,
-    );
+      const actor = this.actors.find(
+        (actor) => actor.rootComponent.uuid === bodyB,
+      );
 
-    if (actor) {
-      listener.handler(actor);
+      if (actor) {
+        listener.handler(actor);
+      }
     }
   }
 
@@ -391,16 +393,31 @@ export default class TWorld {
     this.queuePhysicsStateChange(sc);
   }
 
+  /**
+   * Adds a listener for when a collision occurs with a specific collision class
+   *
+   * @todo add support for removing listeners
+   */
   public onEnterCollisionClass(
     actor: TActor,
     collisionClass: string,
     handler: TCollisionCallback,
   ) {
-    this.collisionListeners[actor.rootComponent.uuid] = {
+    if (!actor.rootComponent.collider) {
+      throw new Error(
+        'cannot add collision listener to actor without collider',
+      );
+    }
+
+    if (!this.collisionListeners[actor.rootComponent.uuid]) {
+      this.collisionListeners[actor.rootComponent.uuid] = [];
+    }
+
+    this.collisionListeners[actor.rootComponent.uuid].push({
       componentUUID: actor.rootComponent.uuid,
       collisionClass,
       handler,
-    };
+    });
   }
 
   private queuePhysicsStateChange(stateChange: TPhysicsStateChange) {
