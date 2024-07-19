@@ -60,6 +60,8 @@ export default class TActorPool<T extends TPoolableActor> {
    * @param actor
    */
   public release(actor: T): void {
+    if (actor.acquired === false) return;
+
     actor.reset();
     actor.acquired = false;
 
