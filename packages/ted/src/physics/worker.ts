@@ -83,23 +83,27 @@ function applyStateChanges(
   stateChanges: TPhysicsStateChange[],
 ) {
   for (const stateChange of stateChanges) {
-    switch (stateChange.type) {
-      case TPhysicsStateChangeType.APPLY_CENTRAL_FORCE:
-        world.applyCentralForce(stateChange.uuid, stateChange.force);
-        break;
-      case TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE:
-        world.applyCentralImpulse(stateChange.uuid, stateChange.impulse);
-        break;
-      case TPhysicsStateChangeType.UPDATE_BODY_OPTIONS:
-        world.updateBodyOptions(stateChange.uuid, stateChange.options);
-        break;
-      case TPhysicsStateChangeType.UPDATE_TRANSFORM:
-        world.updateTransform(
-          stateChange.uuid,
-          stateChange.translation,
-          stateChange.rotation,
-        );
-        break;
+    try {
+      switch (stateChange.type) {
+        case TPhysicsStateChangeType.APPLY_CENTRAL_FORCE:
+          world.applyCentralForce(stateChange.uuid, stateChange.force);
+          break;
+        case TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE:
+          world.applyCentralImpulse(stateChange.uuid, stateChange.impulse);
+          break;
+        case TPhysicsStateChangeType.UPDATE_BODY_OPTIONS:
+          world.updateBodyOptions(stateChange.uuid, stateChange.options);
+          break;
+        case TPhysicsStateChangeType.UPDATE_TRANSFORM:
+          world.updateTransform(
+            stateChange.uuid,
+            stateChange.translation,
+            stateChange.rotation,
+          );
+          break;
+      }
+    } catch (e) {
+      // @todo handle error, these are likely to be caused by the world not having the body
     }
   }
 }

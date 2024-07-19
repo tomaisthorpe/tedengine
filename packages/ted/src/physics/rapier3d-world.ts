@@ -283,6 +283,9 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     }
 
     this.world.removeRigidBody(body);
+
+    // Remove the body from the list
+    this.objects = this.objects.filter((obj) => obj.uuid !== uuid);
   }
 
   applyCentralForce(uuid: string, force: vec3): void {
