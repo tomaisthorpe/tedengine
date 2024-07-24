@@ -76,6 +76,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: docs-artifacts
+          path: dist/apps/docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
