@@ -1,0 +1,24 @@
+# Collision Classes
+
+Console also shows logs from sphere hitting any bodies with 'CustomClass' collision class.
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      game={
+        new Worker(
+          new URL('@examples/physics/collision-classes.ts', import.meta.url),
+        )
+      }
+    />
+  );
+};
+
+<Game />

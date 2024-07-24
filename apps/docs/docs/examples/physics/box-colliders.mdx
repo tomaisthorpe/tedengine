@@ -1,0 +1,22 @@
+# Box & Sphere Colliders
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      game={
+        new Worker(
+          new URL('@examples/physics/box-colliders.ts', import.meta.url),
+        )
+      }
+    />
+  );
+};
+
+<Game />

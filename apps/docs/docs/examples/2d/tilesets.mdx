@@ -1,0 +1,18 @@
+# Tilesets
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      game={new Worker(new URL('@examples/2d/tilesets.ts', import.meta.url))}
+    />
+  );
+};
+
+<Game />

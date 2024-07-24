@@ -1,0 +1,28 @@
+# Game Config
+
+Simple example to show what can be configured.
+This example shows 100% container width with fixed 4:3 ratio and rendering at 400x300.
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      width="100%"
+      height="600px"
+      config={{
+        renderWidth: 400,
+        renderHeight: 300,
+        imageRendering: 'pixelated',
+      }}
+      game={new Worker(new URL('@examples/game-config.ts', import.meta.url))}
+    />
+  );
+};
+
+<Game />

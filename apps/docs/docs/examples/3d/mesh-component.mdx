@@ -1,0 +1,21 @@
+# Mesh Component
+
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useIsBrowser();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      aspectRatio="auto"
+      game={
+        new Worker(new URL('@examples/3d/mesh-component.ts', import.meta.url))
+      }
+    />
+  );
+};
+
+<Game />
