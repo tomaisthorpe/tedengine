@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders ErrorScreen component 1`] = `
+<div>
+  <div
+    class="sc-aYaIB fUyEip"
+  >
+    <div>
+      It's all gone wrong...try refresh.
+    </div>
+    <div
+      class="sc-gEvDqW jwmyZY"
+    >
+      Something went wrong
+    </div>
+  </div>
+</div>
+`;

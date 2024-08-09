@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders LoadingScreen component 1`] = `
+<div>
+  <div
+    class="sc-aYaIB bSpyLO"
+  >
+    Loading...
+  </div>
+</div>
+`;
