@@ -17,7 +17,7 @@ export interface TResourcePackConfig {
 }
 
 export default class TResourcePack {
-  private resources: TResourcePackConfig;
+  public resources: TResourcePackConfig;
 
   constructor(
     private engine: TEngine,
