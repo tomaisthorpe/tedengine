@@ -49,12 +49,12 @@ export default class TResourceManager {
       return this.resources.get(key) as T;
     }
 
-    const response = await fetch(key);
     const resource = new type();
 
     if (isJobAsset(resource)) {
       await resource.loadWithJob(this.jobs, key);
     } else {
+      const response = await fetch(key);
       await resource.load(response);
     }
 
