@@ -78,12 +78,19 @@ export default class TResourcePack {
       tilemaps: TTilemap,
     };
 
+    // Load all resources in parallel
+    const promises: Promise<IJobAsset | IAsset>[] = [];
+
     for (const resourceType in resourceTypes) {
       for (const resource of this.resources[
         resourceType as keyof TResourcePackConfig
       ] || []) {
-        await this.engine.resources.load(resourceTypes[resourceType], resource);
+        promises.push(
+          this.engine.resources.load(resourceTypes[resourceType], resource),
+        );
       }
     }
+
+    await Promise.all(promises);
   }
 }
