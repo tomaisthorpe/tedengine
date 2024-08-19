@@ -1,0 +1,20 @@
+# 2D Mode
+
+Use WASD to move the box, it should be restricted to only move on the X/Y axis.
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      game={new Worker(new URL('@examples/physics/2d-mode.ts', import.meta.url))}
+    />
+  );
+};
+
+<Game />
