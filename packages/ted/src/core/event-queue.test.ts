@@ -26,6 +26,7 @@ describe('TEventQueue', () => {
     expect(eventQueue['queue']).toContain(event);
   });
 
+
   test('should relay event to message ports', () => {
     const event: TEvent = {
       type: 'test',
@@ -126,5 +127,25 @@ describe('TEventQueue', () => {
     expect(listener1).toHaveBeenCalledWith(event1);
     expect(listener2).toHaveBeenCalledWith(event2);
     expect(eventQueue['queue']).toHaveLength(0);
+  });
+});
+
+describe('TEventQueue with child queues', () => {
+  let eventQueue: TEventQueue;
+  let childQueue: TEventQueue;
+
+  beforeEach(() => {
+    childQueue = new TEventQueue();
+    eventQueue = new TEventQueue([], [childQueue]);
+  });
+
+  test('should relay event to child queues', () => {
+    const event: TEvent = {
+      type: 'test',
+    };
+
+    eventQueue.broadcast(event);
+
+    expect(childQueue['queue']).toContain(event);
   });
 });

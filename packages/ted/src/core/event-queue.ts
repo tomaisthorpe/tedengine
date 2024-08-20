@@ -7,6 +7,10 @@ export interface TEvent {
   payload?: object;
 }
 
+export interface IChildEventQueue {
+  broadcast(event: TEvent, dontRelay?: boolean): void;
+}
+
 /**
  * Processes all event handling across the game.
  *
@@ -19,7 +23,7 @@ export default class TEventQueue {
   /**
    * @param relayTo workers to rely all events to
    */
-  constructor(private relayTo: MessagePort[] = []) {}
+  constructor(private relayTo: MessagePort[] = [], private childQueues: IChildEventQueue[] = []) {}
 
   /**
    * Adds the event to the event queue, ready to be processed.
@@ -28,6 +32,11 @@ export default class TEventQueue {
    */
   public broadcast(event: TEvent, dontRelay?: boolean): void {
     this.queue.push(event);
+
+    // Relay the event to any child queues
+    for (const childQueue of this.childQueues) {
+      childQueue.broadcast(event, true);
+    }
 
     if (dontRelay) return;
 
