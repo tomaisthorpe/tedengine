@@ -1,4 +1,4 @@
-import type TEngine from '../engine/engine';
+import type TEventQueue from '../core/event-queue';
 import TController from './controller';
 
 /**
@@ -7,8 +7,8 @@ import TController from './controller';
  * It follows a common pattern used in a number of games.
  */
 export default class TSimpleController extends TController {
-  constructor(engine: TEngine) {
-    super(engine.events);
+  constructor(eventQueue: TEventQueue) {
+    super(eventQueue);
 
     // Movement
     this.addAxisFromKeyEvent('Vertical', 'w', 1);

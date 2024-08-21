@@ -27,12 +27,12 @@ export default class TController {
 
   public mouseLocation?: TMouseLocation;
 
-  constructor(private engineEventQueue: TEventQueue) {
+  constructor(private inputEventQueue: TEventQueue) {
     this.resetAxisValues = this.resetAxisValues.bind(this);
 
     // Reset all axis values when the window loses focus
     // This is to prevent axis getting stuck in a pressed state
-    engineEventQueue.addListener<TWindowBlurEvent>(
+    inputEventQueue.addListener<TWindowBlurEvent>(
       TEventTypesWindow.Blur,
       this.resetAxisValues,
     );
@@ -41,7 +41,7 @@ export default class TController {
   // @todo add validation on button
   // @todo add support for different event types
   public addActionFromMouseEvent(action: string, button: number): void {
-    this.engineEventQueue.addListener<TMouseDownEvent>(
+    this.inputEventQueue.addListener<TMouseDownEvent>(
       TEventTypesInput.MouseDown,
       button.toString(),
       (e) => {
@@ -54,7 +54,7 @@ export default class TController {
       },
     );
 
-    this.engineEventQueue.addListener<TMouseUpEvent>(
+    this.inputEventQueue.addListener<TMouseUpEvent>(
       TEventTypesInput.MouseUp,
       button.toString(),
       (e) => {
@@ -70,7 +70,7 @@ export default class TController {
 
   public addActionFromKeyEvent(action: string, key: string): void {
     // Add listener on the engine event queue
-    this.engineEventQueue.addListener<TKeyDownEvent>(
+    this.inputEventQueue.addListener<TKeyDownEvent>(
       TEventTypesInput.KeyDown,
       key,
       (e) => {
@@ -83,7 +83,7 @@ export default class TController {
       },
     );
 
-    this.engineEventQueue.addListener<TKeyUpEvent>(
+    this.inputEventQueue.addListener<TKeyUpEvent>(
       TEventTypesInput.KeyUp,
       key,
       (e) => {
@@ -102,7 +102,7 @@ export default class TController {
       this.axes[axis] = 0;
     }
 
-    this.engineEventQueue.addListener<TKeyDownEvent>(
+    this.inputEventQueue.addListener<TKeyDownEvent>(
       TEventTypesInput.KeyDown,
       key,
       (e) => {
@@ -110,7 +110,7 @@ export default class TController {
       },
     );
 
-    this.engineEventQueue.addListener<TKeyUpEvent>(
+    this.inputEventQueue.addListener<TKeyUpEvent>(
       TEventTypesInput.KeyUp,
       key,
       (e) => {
@@ -120,7 +120,7 @@ export default class TController {
   }
 
   public enableMouseTracking() {
-    this.engineEventQueue.addListener<TMouseMoveEvent>(
+    this.inputEventQueue.addListener<TMouseMoveEvent>(
       TEventTypesInput.MouseMove,
       (e) => {
         const { client, screen, clip } = e;
@@ -187,7 +187,7 @@ export default class TController {
    * @todo add rest of event listeners
    */
   public destroy() {
-    this.engineEventQueue.removeListener<TWindowBlurEvent>(
+    this.inputEventQueue.removeListener<TWindowBlurEvent>(
       TEventTypesWindow.Blur,
       this.resetAxisValues,
     );

@@ -1,6 +1,7 @@
 import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import type TActor from './actor';
+import TEventQueue from './event-queue';
 import TWorld from './world';
 import type { TWorldUpdateStats } from './world';
 
@@ -54,7 +55,12 @@ export default class TGameState {
 
   public activeCamera?: ICamera;
 
-  constructor(protected engine: TEngine) { }
+  /**
+   * Event queue for the game state which will recieve all events when the state is active.
+   */
+  public events: TEventQueue = new TEventQueue();
+
+  constructor(protected engine: TEngine) {}
 
   /**
    * Adds actor to the world in this game state.
@@ -79,6 +85,8 @@ export default class TGameState {
     engine: TEngine,
     delta: number,
   ): Promise<TWorldUpdateStats | undefined> {
+    this.events.update();
+
     if (!this.world) return;
 
     const stats = await this.world.update(engine, delta);

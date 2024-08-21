@@ -3,6 +3,7 @@ import TEventQueue from '../core/event-queue';
 import type { TEvent } from '../core/event-queue';
 import TGameStateManager from '../core/game-state-manager';
 import { TMessageTypesCore } from '../core/messages';
+import TProxyEventQueue from '../core/proxy-event-queue';
 import TResourceManager from '../core/resource-manager';
 import type { TWorldUpdateStats } from '../core/world';
 import TDebugPanel from '../debug/debug-panel';
@@ -36,7 +37,14 @@ export type TPostMessageFunc =
   | ((message: unknown) => void);
 
 export default class TEngine {
+  /**
+   * Event queue for the engine which will recieve all events.
+   * Events are broadcast to the active game state queue and any workers.
+   *
+   * Add listeners to the game state queue to ensure they are only called when the game state is active.
+   */
   public events: TEventQueue;
+
   public resources: TResourceManager;
   public gameState: TGameStateManager = new TGameStateManager(this);
   public debugPanel: TDebugPanel;
@@ -59,12 +67,12 @@ export default class TEngine {
   public stats: {
     engineTime: number;
   } & TWorldUpdateStats = {
-      engineTime: 0,
-      physicsTotalTime: 0,
-      physicsStepTime: 0,
-      actorUpdateTime: 0,
-      worldUpdateTime: 0,
-    };
+    engineTime: 0,
+    physicsTotalTime: 0,
+    physicsStepTime: 0,
+    actorUpdateTime: 0,
+    worldUpdateTime: 0,
+  };
   private lastEngineTimeUpdate = 0;
   private fredPort!: MessagePort;
 
@@ -79,7 +87,11 @@ export default class TEngine {
 
     this.triggerBootstrap(workerScope.postMessage, channel);
 
-    this.events = new TEventQueue([this.fredPort]);
+    const proxyQueue = new TProxyEventQueue(
+      () => this.gameState.current()?.events,
+    );
+
+    this.events = new TEventQueue([this.fredPort], [proxyQueue]);
 
     this.update = this.update.bind(this);
     this.onMessage = this.onMessage.bind(this);

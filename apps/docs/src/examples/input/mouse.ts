@@ -15,10 +15,16 @@ import type {
 } from '@tedengine/ted';
 
 class Cube extends TPawn implements TActorWithOnUpdate {
-  constructor(engine: TEngine, x: number, y: number, z: number) {
+  constructor(
+    engine: TEngine,
+    state: TGameState,
+    x: number,
+    y: number,
+    z: number,
+  ) {
     super();
 
-    const controller = new TSimpleController(engine);
+    const controller = new TSimpleController(state.events);
     controller.possess(this);
 
     const box = new TBoxComponent(engine, this, 100, 100, 2);
@@ -26,7 +32,7 @@ class Cube extends TPawn implements TActorWithOnUpdate {
 
     this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
 
-    engine.events.addListener<TMouseUpEvent>(
+    state.events.addListener<TMouseUpEvent>(
       TEventTypesInput.MouseUp,
       (e: TMouseUpEvent) => {
         console.log(
@@ -70,7 +76,7 @@ class ColliderState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Cube(engine, 100, 100, -10);
+    const box = new Cube(engine, this, 100, 100, -10);
     this.addActor(box);
 
     this.activeCamera = new TOrthographicCamera(engine);
