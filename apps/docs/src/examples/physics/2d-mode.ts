@@ -16,10 +16,16 @@ import type { TActorWithOnUpdate } from '@tedengine/ted';
 class Cube extends TPawn implements TActorWithOnUpdate {
   private speed = 10;
 
-  constructor(engine: TEngine, x: number, y: number, z: number) {
+  constructor(
+    engine: TEngine,
+    gameState: TGameState,
+    x: number,
+    y: number,
+    z: number,
+  ) {
     super();
 
-    const controller = new TSimpleController(engine);
+    const controller = new TSimpleController(gameState.events);
     controller.possess(this);
 
     const box = new TBoxComponent(engine, this, 1, 1, 1);
@@ -58,15 +64,15 @@ class Plane extends TActor {
 class ColliderState extends TGameState {
   public beforeWorldCreate() {
     // Disable gravity
-    this.world!.config.mode = "2d";
+    this.world!.config.mode = '2d';
   }
-  
+
   public async onCreate(engine: TEngine) {
     this.onReady(engine);
   }
 
   public onReady(engine: TEngine) {
-    const box = new Cube(engine, 0, 5, 0);
+    const box = new Cube(engine, this, 0, 5, 0);
     this.addActor(box);
 
     const plane = new Plane(engine);
