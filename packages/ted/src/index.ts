@@ -81,6 +81,7 @@ export { default as TMouse } from './input/mouse';
 export * from './input/mouse';
 export { default as TTouch } from './input/touch';
 export { default as TSimpleController } from './input/simple-controller';
+export { default as TTopDownController } from './input/top-down-controller';
 
 export { default as TTransform } from './math/transform';
 

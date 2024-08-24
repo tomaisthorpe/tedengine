@@ -28,7 +28,7 @@ import type {
  * @todo fix issue that controller updates actors a frame behind the input
  */
 export default class TController {
-  private possessing?: TPawn;
+  protected possessing?: TPawn;
   private events: TEventQueue = new TEventQueue();
   private axes: { [key: string]: number } = {};
 
