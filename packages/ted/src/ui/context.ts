@@ -1,5 +1,14 @@
 import * as React from 'react';
 import type TEventQueue from '../core/event-queue';
+import type TFred from '../fred/fred';
+
+export interface TFredContextData {
+  fred: TFred | undefined;
+}
+
+export const TFredContext = React.createContext<TFredContextData>({
+  fred: undefined,
+});
 
 export interface TEventQueueContextData {
   events: TEventQueue | undefined;

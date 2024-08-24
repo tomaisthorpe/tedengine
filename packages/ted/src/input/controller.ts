@@ -1,9 +1,16 @@
 import TEventQueue from '../core/event-queue';
 import type TPawn from '../core/pawn';
+import type TEngine from '../engine/engine';
 import type { TWindowBlurEvent } from '../fred/events';
 import { TEventTypesWindow } from '../fred/events';
 import { TEventTypesInput } from './events';
-import type { TMouseLocation, TMouseMoveEvent } from './events';
+import type {
+  TMouseLocation,
+  TMouseMoveEvent,
+  TPointerLockReleased,
+  TPointerLockAcquired,
+  TMouseMovement,
+} from './events';
 import type {
   TKeyDownEvent,
   TKeyUpEvent,
@@ -26,6 +33,8 @@ export default class TController {
   private axes: { [key: string]: number } = {};
 
   public mouseLocation?: TMouseLocation;
+  public mouseMovement?: TMouseMovement;
+  public pointerLocked = false;
 
   constructor(private inputEventQueue: TEventQueue) {
     this.resetAxisValues = this.resetAxisValues.bind(this);
@@ -123,14 +132,45 @@ export default class TController {
     this.inputEventQueue.addListener<TMouseMoveEvent>(
       TEventTypesInput.MouseMove,
       (e) => {
-        const { client, screen, clip } = e;
+        const { client, screen, clip, movement } = e;
         this.mouseLocation = {
           client,
           screen,
           clip,
         };
+
+        this.mouseMovement = movement;
       },
     );
+  }
+
+  public enablePointerLock(engine: TEngine) {
+    // Engine event queue is used to request pointer lock as it is a global event
+    engine.events.broadcast({
+      type: TEventTypesInput.PointerLockRequest,
+    });
+
+    this.handlePointerLockAcquired = this.handlePointerLockAcquired.bind(this);
+
+    engine.events.addListener<TPointerLockAcquired>(
+      TEventTypesInput.PointerLockAcquired,
+      this.handlePointerLockAcquired,
+    );
+
+    this.handlePointerLockRelease = this.handlePointerLockRelease.bind(this);
+
+    engine.events.addListener<TPointerLockReleased>(
+      TEventTypesInput.PointerLockReleased,
+      this.handlePointerLockRelease,
+    );
+  }
+
+  private handlePointerLockRelease() {
+    this.pointerLocked = false;
+  }
+
+  private handlePointerLockAcquired() {
+    this.pointerLocked = true;
   }
 
   /**
@@ -184,7 +224,7 @@ export default class TController {
   /**
    * Tears down the controller and removes all event listeners.
    *
-   * @todo add rest of event listeners
+   * @todo add rest of event listeners, including pointer lock change
    */
   public destroy() {
     this.inputEventQueue.removeListener<TWindowBlurEvent>(

@@ -1,0 +1,22 @@
+# Pointer Lock
+
+Clicking on the game will lock the pointer to the game. This is useful for games that require the mouse to be locked, such as first-person shooters.
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      game={
+        new Worker(new URL('@examples/input/pointer-lock.ts', import.meta.url))
+      }
+    />
+  );
+};
+
+<Game />;

@@ -1,4 +1,3 @@
-import type { IProjectionContext } from './mouse';
 import TMouse from './mouse';
 import { TEventQueue } from '../index';
 describe('TMouse', () => {
@@ -22,18 +21,21 @@ describe('TMouse', () => {
     },
   });
 
-  // Undefined projection matrix, so no world space coordinates are calculated
-  const projectionContext: IProjectionContext = {};
-
   // @todo add remove event listeners
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  new TMouse(eventQueue, canvas, projectionContext);
+  new TMouse(eventQueue, canvas);
 
   test('mousemove event should be broadcasted', () => {
     const event = new MouseEvent('mousemove', {
       clientX: 100,
       clientY: 500,
     });
+
+    // Assign these here as the above does not properly set them
+    // @ts-expect-error - above doesn't work
+    event.movementX = 50;
+    // @ts-expect-error - above doesn't work
+    event.movementY = 50;
 
     const broadcastSpy = jest.spyOn(eventQueue, 'broadcast');
 
@@ -44,6 +46,10 @@ describe('TMouse', () => {
       client: new Float32Array([100, 500]),
       screen: new Float32Array([0, 250]),
       clip: new Float32Array([-1, 0]),
+      movement: {
+        client: new Float32Array([50, 50]),
+        clip: new Float32Array([0.1, -0.1]),
+      },
     });
   });
 

@@ -2,6 +2,7 @@ import { vec2 } from 'gl-matrix';
 import type TEventQueue from '../core/event-queue';
 import type {
   TMouseLocation,
+  TMouseMovement,
   TTouchCancelEvent,
   TTouchEndEvent,
   TTouchMoveEvent,
@@ -47,6 +48,7 @@ export default class TMouse {
     const event: TTouchMoveEvent = {
       type: TEventTypesInput.TouchMove,
       ...this.getTouchLocation(e),
+      movement: this.getTouchMovement(e),
     };
 
     eventQueue.broadcast(event);
@@ -96,5 +98,16 @@ export default class TMouse {
     };
 
     return result;
+  }
+
+  private getTouchMovement(e: TouchEvent): TMouseMovement {
+    const touch = e.touches[0];
+    return {
+      client: vec2.fromValues(touch.clientX, touch.clientY),
+      clip: vec2.fromValues(
+        touch.clientX / this.canvas.clientWidth,
+        -touch.clientY / this.canvas.clientHeight,
+      ),
+    };
   }
 }

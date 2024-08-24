@@ -23,7 +23,10 @@ export default class TEventQueue {
   /**
    * @param relayTo workers to rely all events to
    */
-  constructor(private relayTo: MessagePort[] = [], private childQueues: IChildEventQueue[] = []) {}
+  constructor(
+    private relayTo: MessagePort[] = [],
+    private childQueues: IChildEventQueue[] = [],
+  ) {}
 
   /**
    * Adds the event to the event queue, ready to be processed.

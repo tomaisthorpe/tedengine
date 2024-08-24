@@ -42,7 +42,7 @@ export interface TFredConfig {
  * TFred runs on the main browser thread and handles rendering, input and the UI context
  */
 export default class TFred {
-  private canvas?: HTMLCanvasElement;
+  public canvas?: HTMLCanvasElement;
   public events!: TEventQueue;
   private keyboard!: TKeyboard;
   private mouse!: TMouse;

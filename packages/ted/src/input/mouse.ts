@@ -6,6 +6,7 @@ import type {
   TMouseUpEvent,
   TMouseDownEvent,
   TMouseLocation,
+  TMouseMovement,
 } from './events';
 import { TEventTypesInput } from './events';
 
@@ -45,6 +46,7 @@ export default class TMouse {
     const event: TMouseMoveEvent = {
       type: TEventTypesInput.MouseMove,
       ...this.getMouseLocation(e),
+      movement: this.getMouseMovement(e),
     };
 
     eventQueue.broadcast(event);
@@ -83,5 +85,15 @@ export default class TMouse {
     };
 
     return result;
+  }
+
+  private getMouseMovement(e: MouseEvent): TMouseMovement {
+    return {
+      client: vec2.fromValues(e.movementX, e.movementY),
+      clip: vec2.fromValues(
+        e.movementX / this.canvas.clientWidth,
+        -e.movementY / this.canvas.clientHeight,
+      ),
+    };
   }
 }
