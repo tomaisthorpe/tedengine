@@ -86,7 +86,17 @@ const config: Config = {
     locales: ['en'],
   },
 
-  plugins: [configureEngine as any],
+  plugins: [
+    configureEngine as any,
+    [
+      'docusaurus-plugin-typedoc-api',
+      {
+        projectRoot: path.join(__dirname, '../..'),
+        packages: ['packages/ted'],
+        tsconfigName: 'packages/ted/tsconfig.json',
+      },
+    ],
+  ],
   presets: [
     [
       'classic',
@@ -117,6 +127,11 @@ const config: Config = {
           label: 'Docs',
         },
         {
+          to: 'api',
+          label: 'API',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/tomaisthorpe/tedengine',
           label: 'GitHub',
           position: 'right',
@@ -132,6 +147,10 @@ const config: Config = {
             {
               label: 'Examples',
               to: '/examples/2d/sprite-canvas',
+            },
+            {
+              to: 'api',
+              label: 'API',
             },
           ],
         },
