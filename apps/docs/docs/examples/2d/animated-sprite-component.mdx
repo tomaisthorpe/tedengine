@@ -1,0 +1,27 @@
+# Animated Sprite Component
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      config={{
+        renderWidth: 200,
+        renderHeight: 150,
+        imageRendering: 'pixelated',
+      }}
+      game={
+        new Worker(
+          new URL('@examples/2d/animated-sprite-component.ts', import.meta.url),
+        )
+      }
+    />
+  );
+};
+
+<Game />

@@ -12,6 +12,8 @@ export * from './actor-components/sprite-component';
 export { default as TTexturedMeshComponent } from './actor-components/textured-mesh-component';
 export { default as TTilemapComponent } from './actor-components/tilemap-component';
 export * from './actor-components/tilemap-component';
+export { default as TAnimatedSpriteComponent } from './actor-components/animated-sprite-component';
+export * from './actor-components/animated-sprite-component';
 
 export { default as TAudio } from './audio/audio';
 export { default as TSound } from './audio/sound';
