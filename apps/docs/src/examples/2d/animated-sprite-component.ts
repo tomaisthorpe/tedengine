@@ -20,7 +20,7 @@ class Sprite extends TActor {
   constructor(engine: TEngine) {
     super();
 
-    const box = new TAnimatedSpriteComponent(
+    const sprite = new TAnimatedSpriteComponent(
       engine,
       this,
       12,
@@ -32,9 +32,17 @@ class Sprite extends TActor {
         frameRate: 10,
       },
     );
-    box.applyTexture(engine, asteroidTexture);
+    sprite.applyTexture(engine, asteroidTexture);
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
+
+    const section = engine.debugPanel.addSection('Animation', true);
+    section.addButtons('Toggle Animation', {
+      label: 'Toggle',
+      onClick: () => {
+        sprite.toggleAnimation();
+      },
+    });
   }
 }
 
@@ -61,6 +69,7 @@ const config = {
     game: SpriteState,
   },
   defaultState: 'game',
+  debugPanelOpen: true,
 };
 
 new TEngine(config, self as DedicatedWorkerGlobalScope);

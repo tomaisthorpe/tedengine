@@ -18,6 +18,7 @@ export default class TAnimatedSpriteComponent
   implements TActorComponentWithOnUpdate
 {
   public frame = 0;
+  public paused = false;
 
   private time = 0;
 
@@ -35,6 +36,8 @@ export default class TAnimatedSpriteComponent
   }
 
   public async onUpdate(_: TEngine, delta: number): Promise<void> {
+    if (this.paused) return;
+
     this.time += delta;
     if (this.time > 1 / this.spriteSheetOptions.frameRate) {
       this.time = 0;
@@ -64,5 +67,17 @@ export default class TAnimatedSpriteComponent
     ];
 
     return task;
+  }
+
+  public toggleAnimation(): void {
+    this.paused = !this.paused;
+  }
+
+  public pauseAnimation(): void {
+    this.paused = true;
+  }
+
+  public resumeAnimation(): void {
+    this.paused = false;
   }
 }
