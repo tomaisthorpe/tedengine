@@ -19,13 +19,17 @@ export default class TRenderableTexturedMesh {
   private indexBuffer?: WebGLBuffer;
   private uvBuffer?: WebGLBuffer;
 
+  // Instance buffers, used to override the UVs of the mesh
+  private instanceUVBuffer?: WebGLBuffer;
+
   private vao?: WebGLVertexArrayObject;
 
   public render(
     gl: WebGL2RenderingContext,
     texturedProgram: TTexturedProgram,
     texture: TRenderableTexture,
-    m: mat4
+    m: mat4,
+    instanceUVs?: number[],
   ) {
     if (this.positionBuffer === undefined) {
       this.createBuffers(gl);
@@ -54,8 +58,22 @@ export default class TRenderableTexturedMesh {
     gl.uniformMatrix4fv(
       texturedProgram.program!.uniformLocations.mMatrix,
       false,
-      m
+      m,
     );
+
+    gl.uniform1f(
+      texturedProgram.program!.uniformLocations.uEnableInstanceUVs,
+      instanceUVs ? 1 : 0,
+    );
+
+    if (instanceUVs && this.instanceUVBuffer) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array(instanceUVs),
+        gl.STATIC_DRAW,
+      );
+    }
 
     const vertexCount = this.indexes.length;
     const type = gl.UNSIGNED_SHORT;
@@ -65,7 +83,7 @@ export default class TRenderableTexturedMesh {
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
-    const { vertexPosition, normalPosition, uvPosition } =
+    const { vertexPosition, normalPosition, uvPosition, instanceUVPosition } =
       program.attribLocations;
 
     this.vao = gl.createVertexArray()!;
@@ -85,7 +103,7 @@ export default class TRenderableTexturedMesh {
         type,
         normalize,
         stride,
-        offset
+        offset,
       );
 
       gl.enableVertexAttribArray(vertexPosition);
@@ -106,14 +124,14 @@ export default class TRenderableTexturedMesh {
         type,
         normalize,
         stride,
-        offset
+        offset,
       );
 
       gl.enableVertexAttribArray(normalPosition);
     }
 
     if (uvPosition !== -1) {
-      // Color buffer
+      // UV buffer
 
       const numComponents = 2;
       const type = gl.FLOAT;
@@ -127,10 +145,31 @@ export default class TRenderableTexturedMesh {
         type,
         normalize,
         stride,
-        offset
+        offset,
       );
 
       gl.enableVertexAttribArray(uvPosition);
+    }
+
+    if (instanceUVPosition !== -1) {
+      // Instance UV buffer
+
+      const numComponents = 2;
+      const type = gl.FLOAT;
+      const normalize = false;
+      const stride = 0;
+      const offset = 0;
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer!);
+      gl.vertexAttribPointer(
+        instanceUVPosition,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset,
+      );
+
+      gl.enableVertexAttribArray(instanceUVPosition);
     }
   }
 
@@ -143,7 +182,7 @@ export default class TRenderableTexturedMesh {
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array(this.positions),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     this.normalBuffer = gl.createBuffer()!;
@@ -151,7 +190,7 @@ export default class TRenderableTexturedMesh {
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array(this.normals),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     this.indexBuffer = gl.createBuffer()!;
@@ -159,11 +198,14 @@ export default class TRenderableTexturedMesh {
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
       new Uint16Array(this.indexes),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     this.uvBuffer = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.uvs), gl.STATIC_DRAW);
+
+    // Data will be buffered at render time if provided
+    this.instanceUVBuffer = gl.createBuffer()!;
   }
 }

@@ -55,5 +55,6 @@ export interface TSerializedTexturedMaterial {
   type: 'textured';
   options: {
     texture: string;
+    instanceUVs?: number[];
   };
 }

@@ -3,6 +3,9 @@
 in vec4 aVertexPosition;
 in vec2 aVertexUV;
 
+uniform float uEnableInstanceUVs;
+in vec2 aVertexInstanceUV;
+
 uniform mat4 uMMatrix;
 
 uniform Settings {
@@ -14,7 +17,7 @@ out highp vec2 vUV;
 void main() {
   gl_Position = uVPMatrix * uMMatrix * aVertexPosition;
 
-  vUV = aVertexUV;
+  vUV = aVertexInstanceUV * uEnableInstanceUVs + aVertexUV * (1.0 - uEnableInstanceUVs);
 }
 ----
 #version 300 es

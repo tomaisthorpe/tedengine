@@ -4,7 +4,7 @@ import type { IAsset } from '../core/resource-manager';
 const compileShader = (
   gl: WebGL2RenderingContext,
   shaderSource: string,
-  shaderType: number
+  shaderType: number,
 ): WebGLShader => {
   // @todo add error handling here
   const shader = gl.createShader(shaderType);
@@ -22,7 +22,7 @@ const compileShader = (
 const createProgram = (
   gl: WebGL2RenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ) => {
   // @todo add error handling here
   const program = gl.createProgram();
@@ -73,12 +73,12 @@ export default class TProgram implements IAsset {
     const vertexShader = compileShader(
       gl,
       this.vertexShaderSource!,
-      gl.VERTEX_SHADER
+      gl.VERTEX_SHADER,
     );
     const fragmentShader = compileShader(
       gl,
       this.fragmentShaderSource!,
-      gl.FRAGMENT_SHADER
+      gl.FRAGMENT_SHADER,
     );
 
     this.program = createProgram(gl, vertexShader, fragmentShader);
@@ -86,43 +86,52 @@ export default class TProgram implements IAsset {
 
     this.attribLocations.vertexPosition = gl.getAttribLocation(
       this.program,
-      'aVertexPosition'
+      'aVertexPosition',
     );
     this.attribLocations.normalPosition = gl.getAttribLocation(
       this.program,
-      'aVertexNormal'
+      'aVertexNormal',
     );
     this.attribLocations.colorPosition = gl.getAttribLocation(
       this.program,
-      'aVertexColor'
+      'aVertexColor',
     );
     this.attribLocations.uvPosition = gl.getAttribLocation(
       this.program,
-      'aVertexUV'
+      'aVertexUV',
+    );
+
+    this.attribLocations.instanceUVPosition = gl.getAttribLocation(
+      this.program,
+      'aVertexInstanceUV',
     );
 
     this.uniformLocations.mMatrix = gl.getUniformLocation(
       this.program,
-      'uMMatrix'
+      'uMMatrix',
     );
     this.uniformLocations.uPalette = gl.getUniformLocation(
       this.program,
-      'uPalette'
+      'uPalette',
+    );
+    this.uniformLocations.uEnableInstanceUVs = gl.getUniformLocation(
+      this.program,
+      'uEnableInstanceUVs',
     );
   }
 
   public getAttributeLocations(
     gl: WebGL2RenderingContext,
-    attributes: string[]
+    attributes: string[],
   ): WebGLUniformLocation[] {
     return attributes.map(
-      (attribute) => gl.getUniformLocation(this.program!, attribute)!
+      (attribute) => gl.getUniformLocation(this.program!, attribute)!,
     );
   }
 
   public getUniformLocation(
     gl: WebGL2RenderingContext,
-    name: string
+    name: string,
   ): WebGLUniformLocation {
     if (!this.uniformLocations[name]) {
       this.uniformLocations[name] = gl.getUniformLocation(this.program!, name);

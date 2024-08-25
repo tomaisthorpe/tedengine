@@ -153,7 +153,13 @@ export default class TRenderer {
 
         const mesh = this.registeredTexturedMeshes[task.uuid];
         const texture = this.registeredTextures[task.material.options.texture];
-        mesh.render(gl, this.texturedProgram!, texture, task.transform);
+        mesh.render(
+          gl,
+          this.texturedProgram!,
+          texture,
+          task.transform,
+          task.material.options.instanceUVs,
+        );
       }
     }
 
@@ -171,7 +177,13 @@ export default class TRenderer {
       for (const task of layer) {
         const mesh = this.registeredTexturedMeshes[task.uuid];
         const texture = this.registeredTextures[task.material.options.texture];
-        mesh.render(gl, this.texturedProgram!, texture, task.transform);
+        mesh.render(
+          gl,
+          this.texturedProgram!,
+          texture,
+          task.transform,
+          task.material.options.instanceUVs,
+        );
       }
     }
   }
