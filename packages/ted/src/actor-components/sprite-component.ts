@@ -48,7 +48,7 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
     public height: number,
     private origin: TOriginPoint = TOriginPoint.Center,
     public layer: TSpriteLayer = TSpriteLayer.Foreground_0,
-    bodyOptions?: TPhysicsBodyOptions
+    bodyOptions?: TPhysicsBodyOptions,
   ) {
     super(actor, bodyOptions);
 
@@ -73,7 +73,7 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
       material: {
         type: 'textured',
         options: {
-          texture: this.texture.uuid,
+          texture: this.texture.uuid!,
         },
       },
       layer: this.layer,

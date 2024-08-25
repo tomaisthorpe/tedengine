@@ -2,6 +2,7 @@
 import type { mat4 } from 'gl-matrix';
 import type { TSpriteLayer } from '../actor-components/sprite-component';
 import type { TCameraView } from '../cameras/camera-view';
+import type { TPalette } from '../graphics/color-material';
 
 // It must be only made up of only transferable objects.
 export interface TFrameParams {
@@ -35,11 +36,24 @@ export interface TSerializedSpriteInstance {
   type: TRenderTask.SpriteInstance;
   uuid: string;
   transform: mat4;
-  material: TSerializedMaterial;
+  material: TSerializedTexturedMaterial;
   layer: TSpriteLayer;
 }
 
-export interface TSerializedMaterial {
-  type: 'color' | 'textured';
-  options: any;
+export type TSerializedMaterial =
+  | TSerializedColorMaterial
+  | TSerializedTexturedMaterial;
+
+export interface TSerializedColorMaterial {
+  type: 'color';
+  options: {
+    palette: TPalette;
+  };
+}
+
+export interface TSerializedTexturedMaterial {
+  type: 'textured';
+  options: {
+    texture: string;
+  };
 }

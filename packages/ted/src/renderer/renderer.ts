@@ -152,8 +152,7 @@ export default class TRenderer {
         gl.useProgram(this.texturedProgram!.program!.program!);
 
         const mesh = this.registeredTexturedMeshes[task.uuid];
-        const texture =
-          this.registeredTextures[task.material.options['texture']];
+        const texture = this.registeredTextures[task.material.options.texture];
         mesh.render(gl, this.texturedProgram!, texture, task.transform);
       }
     }
@@ -171,8 +170,7 @@ export default class TRenderer {
     for (const layer of layers) {
       for (const task of layer) {
         const mesh = this.registeredTexturedMeshes[task.uuid];
-        const texture =
-          this.registeredTextures[task.material.options['texture']];
+        const texture = this.registeredTextures[task.material.options.texture];
         mesh.render(gl, this.texturedProgram!, texture, task.transform);
       }
     }

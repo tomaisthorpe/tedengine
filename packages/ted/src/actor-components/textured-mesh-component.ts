@@ -37,7 +37,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
       material: {
         type: 'textured',
         options: {
-          texture: this.texture.uuid,
+          texture: this.texture.uuid!,
         },
       },
     };
