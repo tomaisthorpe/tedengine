@@ -7,13 +7,20 @@ import TTexture from '../graphics/texture';
 import TTilemap from '../graphics/tilemap';
 import type { IAsset, IJobAsset } from './resource-manager';
 
+export interface TResourceWithConfig {
+  url: string;
+  config: unknown;
+}
+
+export type TResource = string | TResourceWithConfig;
+
 export interface TResourcePackConfig {
-  meshes?: string[];
-  materials?: string[];
-  images?: string[];
-  textures?: string[];
-  sounds?: string[];
-  tilemaps?: string[];
+  meshes?: TResource[];
+  materials?: TResource[];
+  images?: TResource[];
+  textures?: TResource[];
+  sounds?: TResource[];
+  tilemaps?: TResource[];
 }
 
 export default class TResourcePack {
@@ -85,8 +92,19 @@ export default class TResourcePack {
       for (const resource of this.resources[
         resourceType as keyof TResourcePackConfig
       ] || []) {
+        if (typeof resource === 'string') {
+          promises.push(
+            this.engine.resources.load(resourceTypes[resourceType], resource),
+          );
+          continue;
+        }
+
         promises.push(
-          this.engine.resources.load(resourceTypes[resourceType], resource),
+          this.engine.resources.load(
+            resourceTypes[resourceType],
+            resource.url,
+            resource.config,
+          ),
         );
       }
     }

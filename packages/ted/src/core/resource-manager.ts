@@ -5,7 +5,7 @@ export interface IAsset {
 }
 
 export interface IJobAsset {
-  loadWithJob(jobs: TJobManager, url: string): Promise<void>;
+  loadWithJob(jobs: TJobManager, url: string, config?: unknown): Promise<void>;
 }
 
 export default class TResourceManager {
@@ -43,6 +43,7 @@ export default class TResourceManager {
   public async load<T extends IAsset | IJobAsset>(
     type: { new (): T },
     key: string,
+    config?: unknown,
   ): Promise<T> {
     // If already loaded, then just resolve
     if (this.isResourcedLoaded(key)) {
@@ -52,7 +53,7 @@ export default class TResourceManager {
     const resource = new type();
 
     if (isJobAsset(resource)) {
-      await resource.loadWithJob(this.jobs, key);
+      await resource.loadWithJob(this.jobs, key, config);
     } else {
       const response = await fetch(key);
       await resource.load(response);

@@ -33,9 +33,17 @@ export default class TTexture implements IJobAsset {
   }
 
   // @todo - add support for setting the filter
-  public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {
+  public async loadWithJob(
+    jobs: TJobManager,
+    url: string,
+    config?: { filter: TTextureFilter },
+  ): Promise<void> {
     if (!hasResourceManager(jobs.additionalContext)) {
       throw new Error('job manager does not have resource manager');
+    }
+
+    if (config?.filter !== undefined) {
+      this._filter = config.filter;
     }
 
     // First load the image

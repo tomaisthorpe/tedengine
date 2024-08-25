@@ -10,11 +10,19 @@ import {
   TAnimatedSpriteComponent,
   TSpriteLayer,
   TOrthographicCamera,
+  TTextureFilter,
 } from '@tedengine/ted';
 
 class Sprite extends TActor {
   public static resources: TResourcePackConfig = {
-    textures: [asteroidTexture],
+    textures: [
+      {
+        url: asteroidTexture,
+        config: {
+          filter: TTextureFilter.Nearest,
+        },
+      },
+    ],
   };
 
   constructor(engine: TEngine) {
@@ -23,8 +31,8 @@ class Sprite extends TActor {
     const sprite = new TAnimatedSpriteComponent(
       engine,
       this,
-      12,
-      24,
+      12 * 4,
+      24 * 4,
       TOriginPoint.Center,
       TSpriteLayer.Foreground_0,
       {
