@@ -106,7 +106,7 @@ export default class TEngine {
       resourceManager: this.resources,
     };
 
-    this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen);
+    this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen, this);
   }
 
   async onMessage(ev: MessageEvent) {

@@ -27,10 +27,11 @@ export default class TDebugPanel extends TDebugPanelSection {
   constructor(
     events: TEventQueue,
     private isOpen = false,
+    engine: TEngine,
   ) {
     super(events, 'Debug', true);
 
-    this.createDefaultRows();
+    this.createDefaultRows(engine);
 
     events.addListener<TKeyUpEvent>(TEventTypesInput.KeyUp, '`', (e) =>
       this.toggle(),
@@ -70,7 +71,7 @@ export default class TDebugPanel extends TDebugPanelSection {
     return section;
   }
 
-  private createDefaultRows() {
+  private createDefaultRows(engine: TEngine) {
     this.addValue('Engine (ms)', (engine: TEngine) => {
       return engine.stats.engineTime.toFixed(1);
     });
@@ -104,6 +105,16 @@ export default class TDebugPanel extends TDebugPanelSection {
     );
 
     this.addFredValue('Render (ms)', 'renderTime');
+
+    this.addButtons('Debug Physics', {
+      label: 'Toggle',
+      onClick: () => {
+        const world = engine.gameState.current()?.world;
+        if (world) {
+          world.physicsDebug = !world.physicsDebug;
+        }
+      },
+    });
   }
 
   /**

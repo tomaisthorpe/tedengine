@@ -59,7 +59,7 @@ enginePort.onmessage = async (event: MessageEvent) => {
       // Apply the state changes
       applyStateChanges(world, stepMessage.stateChanges);
 
-      const worldState = world.step(stepMessage.delta);
+      const worldState = world.step(stepMessage.delta, stepMessage.debug);
 
       const message: TPhysicsOutMessageSimulateDone = {
         type: TPhysicsMessageTypes.SIMULATE_DONE,

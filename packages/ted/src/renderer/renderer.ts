@@ -14,6 +14,8 @@ import TTexturedProgram from './textured-program';
 import type TEventQueue from '../core/event-queue';
 import type { TRenderingSizeChangedEvent } from './events';
 import { TEventTypesRenderer } from './events';
+import TPhysicsDebugProgram from './physics-debug-program';
+import TPhysicsDebug from './physics-debug';
 
 export default class TRenderer {
   private registeredPrograms: { [key: string]: TProgram } = {};
@@ -23,6 +25,9 @@ export default class TRenderer {
   private registeredTextures: { [key: string]: TRenderableTexture } = {};
   private colorProgram?: TColorProgram;
   private texturedProgram?: TTexturedProgram;
+  private physicsDebugProgram?: TPhysicsDebugProgram;
+
+  private physicsDebug?: TPhysicsDebug;
 
   // @todo remove, needed for input atm
   public projectionMatrix?: mat4;
@@ -61,6 +66,14 @@ export default class TRenderer {
 
     this.texturedProgram = new TTexturedProgram(this, this.resourceManager);
     await this.texturedProgram.load();
+
+    this.physicsDebugProgram = new TPhysicsDebugProgram(
+      this,
+      this.resourceManager,
+    );
+    await this.physicsDebugProgram.load();
+
+    this.physicsDebug = new TPhysicsDebug();
 
     const blockIndex = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
@@ -106,6 +119,16 @@ export default class TRenderer {
       'Settings',
     );
     gl.uniformBlockBinding(this.texturedProgram.program!.program!, tIndex, 0);
+
+    const pIndex = gl.getUniformBlockIndex(
+      this.physicsDebugProgram.program!.program!,
+      'Settings',
+    );
+    gl.uniformBlockBinding(
+      this.physicsDebugProgram.program!.program!,
+      pIndex,
+      0,
+    );
   }
 
   public context(): WebGL2RenderingContext {
@@ -135,6 +158,14 @@ export default class TRenderer {
     for (const task of frameParams.renderTasks) {
       if (task.type === TRenderTask.SpriteInstance) {
         sprites.push(task);
+        continue;
+      }
+
+      if (task.type === TRenderTask.PhysicsDebug) {
+        gl.useProgram(this.physicsDebugProgram!.program!.program!);
+
+        this.physicsDebug?.render(gl, this.physicsDebugProgram!, task.vertices);
+
         continue;
       }
 

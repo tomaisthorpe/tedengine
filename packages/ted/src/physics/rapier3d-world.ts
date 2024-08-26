@@ -118,9 +118,13 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     return a;
   }
 
-  step(delta: number): {
+  step(
+    delta: number,
+    debug?: boolean,
+  ): {
     bodies: TPhysicsBody[];
     collisions: TPhysicsCollision[];
+    debug?: { vertices: Float32Array };
   } {
     this.world.step(this.eventQueue);
 
@@ -158,6 +162,11 @@ export default class TRapier3DWorld implements TPhysicsWorld {
           obj.body.rotation().w,
         ],
       });
+    }
+
+    if (debug) {
+      const { vertices } = this.world.debugRender();
+      return { bodies, collisions, debug: { vertices } };
     }
 
     return { bodies, collisions };

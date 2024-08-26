@@ -2,11 +2,19 @@ import type { vec3 } from 'gl-matrix';
 import type { TColliderConfig } from './colliders';
 import type { TWorldConfig } from '../core/world';
 
+export interface TPhysicsWorldDebug {
+  vertices: Float32Array;
+}
+
 export interface TPhysicsWorld {
   create(config: TWorldConfig): Promise<void>;
-  step(delta: number): {
+  step(
+    delta: number,
+    debug?: boolean,
+  ): {
     bodies: TPhysicsBody[];
     collisions: TPhysicsCollision[];
+    debug?: TPhysicsWorldDebug;
   };
   addBody(
     uuid: string,

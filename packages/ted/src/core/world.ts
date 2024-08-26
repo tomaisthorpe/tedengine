@@ -7,8 +7,12 @@ import type {
   TPhysicsQueryOptions,
   TPhysicsQueryLineResult,
   TPhysicsQueryAreaResult,
+  TPhysicsWorldDebug,
 } from '../physics/physics-world';
-import type { TSerializedRenderTask } from '../renderer/frame-params';
+import {
+  TRenderTask,
+  type TSerializedRenderTask,
+} from '../renderer/frame-params';
 import type TActor from './actor';
 import type {
   TPhysicsInMessageSimulateStep,
@@ -98,6 +102,9 @@ export default class TWorld {
   private onCreatedResolve?: () => void;
 
   private collisionListeners: { [key: string]: TCollisionListener[] } = {};
+
+  private lastPhysicsDebug?: TPhysicsWorldDebug;
+  public physicsDebug = false;
 
   private jobs: TJobManager;
   constructor(
@@ -220,6 +227,9 @@ export default class TWorld {
           message.collisions,
           message.stepElapsedTime,
         );
+
+        this.lastPhysicsDebug = message.debug;
+
         break;
       }
       case TMessageTypesJobs.RELAY_RESULT: {
@@ -271,6 +281,7 @@ export default class TWorld {
         newBodies: this.queuedNewBodies,
         removeBodies: this.queuedRemoveBodies,
         stateChanges: this.queuedStateChanges,
+        debug: this.physicsDebug,
       };
 
       // This will trigger a message that will eventually result in updateResolve being triggered
@@ -287,6 +298,14 @@ export default class TWorld {
 
     for (const actor of this.actors) {
       tasks.push(...actor.getRenderTasks());
+    }
+
+    if (this.physicsDebug && this.lastPhysicsDebug) {
+      tasks.push({
+        type: TRenderTask.PhysicsDebug,
+        uuid: 'physics-debug',
+        vertices: this.lastPhysicsDebug?.vertices,
+      });
     }
 
     return tasks;

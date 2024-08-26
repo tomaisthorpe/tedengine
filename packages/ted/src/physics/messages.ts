@@ -4,6 +4,7 @@ import type {
   TPhysicsBody,
   TPhysicsBodyOptions,
   TPhysicsCollision,
+  TPhysicsWorldDebug,
 } from './physics-world';
 import type { TPhysicsRemoveBody, TPhysicsStateChange } from './state-changes';
 
@@ -34,6 +35,7 @@ export interface TPhysicsInMessageSimulateStep {
   newBodies: TPhysicsRegisterBody[];
   removeBodies: TPhysicsRemoveBody[];
   stateChanges: TPhysicsStateChange[];
+  debug?: boolean;
 }
 
 export interface TPhysicsRegisterBody {
@@ -49,4 +51,5 @@ export interface TPhysicsOutMessageSimulateDone {
   bodies: TPhysicsBody[];
   collisions: TPhysicsCollision[];
   stepElapsedTime: number;
+  debug?: TPhysicsWorldDebug;
 }

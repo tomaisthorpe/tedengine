@@ -18,11 +18,13 @@ export interface TSerializedShader {
 
 export type TSerializedRenderTask =
   | TSerializedMeshInstance
-  | TSerializedSpriteInstance;
+  | TSerializedSpriteInstance
+  | TSerializedPhysicsDebug;
 
 export enum TRenderTask {
   MeshInstance = 'mi',
   SpriteInstance = 'si',
+  PhysicsDebug = 'pd',
 }
 
 export interface TSerializedMeshInstance {
@@ -38,6 +40,12 @@ export interface TSerializedSpriteInstance {
   transform: mat4;
   material: TSerializedTexturedMaterial;
   layer: TSpriteLayer;
+}
+
+export interface TSerializedPhysicsDebug {
+  type: TRenderTask.PhysicsDebug;
+  uuid: string;
+  vertices: Float32Array;
 }
 
 export type TSerializedMaterial =
