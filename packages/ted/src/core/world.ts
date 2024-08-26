@@ -305,6 +305,7 @@ export default class TWorld {
         type: TRenderTask.PhysicsDebug,
         uuid: 'physics-debug',
         vertices: this.lastPhysicsDebug?.vertices,
+        colors: this.lastPhysicsDebug?.colors,
       });
     }
 

@@ -46,6 +46,7 @@ export interface TSerializedPhysicsDebug {
   type: TRenderTask.PhysicsDebug;
   uuid: string;
   vertices: Float32Array;
+  colors: Float32Array;
 }
 
 export type TSerializedMaterial =

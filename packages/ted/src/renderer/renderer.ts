@@ -164,7 +164,12 @@ export default class TRenderer {
       if (task.type === TRenderTask.PhysicsDebug) {
         gl.useProgram(this.physicsDebugProgram!.program!.program!);
 
-        this.physicsDebug?.render(gl, this.physicsDebugProgram!, task.vertices);
+        this.physicsDebug?.render(
+          gl,
+          this.physicsDebugProgram!,
+          task.vertices,
+          task.colors,
+        );
 
         continue;
       }

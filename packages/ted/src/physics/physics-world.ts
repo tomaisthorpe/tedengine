@@ -4,6 +4,7 @@ import type { TWorldConfig } from '../core/world';
 
 export interface TPhysicsWorldDebug {
   vertices: Float32Array;
+  colors: Float32Array;
 }
 
 export interface TPhysicsWorld {

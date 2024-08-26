@@ -6,6 +6,7 @@ import type {
 } from '../core/world';
 import type { TColliderConfig } from './colliders';
 import { TColliderType } from './colliders';
+import type { TPhysicsWorldDebug } from './physics-world';
 import {
   TPhysicsBodyType,
   type TPhysicsBody,
@@ -124,7 +125,7 @@ export default class TRapier3DWorld implements TPhysicsWorld {
   ): {
     bodies: TPhysicsBody[];
     collisions: TPhysicsCollision[];
-    debug?: { vertices: Float32Array };
+    debug?: TPhysicsWorldDebug;
   } {
     this.world.step(this.eventQueue);
 
@@ -165,8 +166,8 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     }
 
     if (debug) {
-      const { vertices } = this.world.debugRender();
-      return { bodies, collisions, debug: { vertices } };
+      const { vertices, colors } = this.world.debugRender();
+      return { bodies, collisions, debug: { vertices, colors } };
     }
 
     return { bodies, collisions };
