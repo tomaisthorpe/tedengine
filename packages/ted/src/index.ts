@@ -61,6 +61,8 @@ export * from './engine/engine';
 
 export * from './fred/events';
 export { default as TFred } from './fred/fred';
+export * from './fred/browser';
+export { default as TBrowser } from './fred/browser';
 
 export * from './graphics';
 export { default as TCanvas } from './graphics/canvas';

@@ -21,6 +21,7 @@ import { TMessageTypesJobs } from '../jobs/messages';
 import type { TFrameParams } from '../renderer/frame-params';
 import TRenderer from '../renderer/renderer';
 import type { TEngineContextData, TGameContextData } from '../ui/context';
+import TBrowser from './browser';
 import type { TWindowBlurEvent, TWindowFocusEvent } from './events';
 import { TEventTypesWindow } from './events';
 import type { TFredMessageReady, TFredMessageShutdown } from './messages';
@@ -132,11 +133,21 @@ export default class TFred {
 
   /**
    * Bootstrap gets the main thread ready for loading by:
+   * - Checking browser features
    * - Creating the canvas
    * - Starting to prepare graphics
    * - Setting up events, input, audio
    */
   private async bootstrap() {
+    const browser = new TBrowser();
+    if (!browser.supports('webgl2') || !browser.supports('offscreencanvas')) {
+      // @todo show error message
+      this.setErrorMessage(
+        'Browser does not support WebGL2 or OffscreenCanvas',
+      );
+      return;
+    }
+
     // Create the canvas
     this.container.classList.add('t-game-container');
     this.canvas = document.createElement('canvas');
