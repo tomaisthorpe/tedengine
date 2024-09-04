@@ -22,6 +22,7 @@ import type { TRenderingSizeChangedEvent } from '../renderer/events';
 import { TEventTypesRenderer } from '../renderer/events';
 import type { TFrameParams } from '../renderer/frame-params';
 import type { TGameContextData, TEngineContextData } from '../ui/context';
+import TSegmentTimer from '../debug/segment-timer';
 import type {
   TEngineMessageBootstrap,
   TEngineMessageFrameReady,
@@ -44,6 +45,8 @@ export default class TEngine {
    * Add listeners to the game state queue to ensure they are only called when the game state is active.
    */
   public events: TEventQueue;
+
+  public segmentTimer: TSegmentTimer;
 
   public resources: TResourceManager;
   public gameState: TGameStateManager = new TGameStateManager(this);
@@ -107,6 +110,7 @@ export default class TEngine {
     };
 
     this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen, this);
+    this.segmentTimer = new TSegmentTimer(this.debugPanel, 'Segment Timer');
   }
 
   async onMessage(ev: MessageEvent) {
@@ -184,10 +188,17 @@ export default class TEngine {
 
     this.debugPanel.update(this, delta);
 
+    const endEventUpdate = this.segmentTimer.startSegment('Event Update');
     this.events.update();
+    endEventUpdate();
 
+    const endGameStateUpdate =
+      this.segmentTimer.startSegment('Game State Update');
     const stats = await this.gameState.update(delta);
+    endGameStateUpdate();
 
+    const endFramePreparation =
+      this.segmentTimer.startSegment('Frame Preparation');
     const camera = this.gameState.getActiveCamera() || getDefaultCamera(this);
 
     const params: TFrameParams = {
@@ -206,11 +217,12 @@ export default class TEngine {
     };
 
     this.fredPort.postMessage(message);
+    endFramePreparation();
 
     this.frameNumber++;
 
     // Update stats
-    // @todo move this more relevant
+    // @todo update stats with segment timer data
     const elapsed = now - this.lastEngineTimeUpdate;
     if (elapsed > TIME_PER_ENGINE_TIME_UPDATE) {
       this.stats.engineTime = performance.now() - now;

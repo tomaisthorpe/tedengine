@@ -55,6 +55,8 @@ export { default as TResourcePack } from './core/resource-pack';
 export * from './core/resource-pack';
 
 export { default as TDebugPanel } from './debug/debug-panel';
+export { default as TSegmentTimer } from './debug/segment-timer';
+export * from './debug/segment-timer';
 export * from './engine/config';
 export { default as TEngine } from './engine/engine';
 export * from './engine/engine';

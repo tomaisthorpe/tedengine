@@ -15,7 +15,7 @@ export default class TDebugPanelValue
   constructor(
     label: string,
     private updateFunction: TUpdateFunction,
-    private indentLevel: number
+    private indentLevel: number,
   ) {
     super(label);
   }
