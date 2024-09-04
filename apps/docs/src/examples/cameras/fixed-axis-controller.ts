@@ -89,6 +89,7 @@ class ColliderState extends TGameState {
     const controller = new TFixedAxisCameraController({
       distance: 5,
       axis: 'z',
+      leadFactor: 0.5,
     });
     controller.attachTo(box.rootComponent);
     camera.controller = controller;

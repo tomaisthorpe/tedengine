@@ -26,11 +26,15 @@ export default class TFollowAxisCameraController implements TCameraController {
 
   public bounds?: { min: vec3; max: vec3 };
 
+  private lastPosition?: vec3;
+  public leadFactor = 0; // Adjustable lead factor
+
   constructor(config?: {
     distance?: number;
     axis?: string;
     deadzone?: number;
     bounds?: { min: vec3; max: vec3 };
+    leadFactor?: number;
   }) {
     if (config?.distance !== undefined) {
       this.distance = config.distance;
@@ -57,14 +61,36 @@ export default class TFollowAxisCameraController implements TCameraController {
 
       this.bounds = config.bounds;
     }
+
+    if (config?.leadFactor !== undefined) {
+      this.leadFactor = config.leadFactor;
+    }
   }
 
   attachTo(component: TSceneComponent) {
     this.component = component;
   }
 
-  async onUpdate(camera: TBaseCamera, _: TEngine, __: number): Promise<void> {
+  async onUpdate(
+    camera: TBaseCamera,
+    _: TEngine,
+    delta: number,
+  ): Promise<void> {
     if (!this.component || !this.axisConfig[this.axis]) return;
+
+    const currentPosition = this.component.getWorldTransform().translation;
+
+    // Calculate velocity locally
+    const velocity = vec3.create();
+    if (this.lastPosition && this.leadFactor > 0) {
+      vec3.subtract(velocity, currentPosition, this.lastPosition);
+      vec3.scale(velocity, velocity, 1 / delta);
+    }
+    this.lastPosition = vec3.clone(currentPosition);
+
+    // Calculate lead position
+    const leadPosition = vec3.create();
+    vec3.scaleAndAdd(leadPosition, currentPosition, velocity, this.leadFactor);
 
     const distance = vec3.multiply(
       vec3.create(),
@@ -72,42 +98,27 @@ export default class TFollowAxisCameraController implements TCameraController {
       vec3.fromValues(this.distance, this.distance, this.distance),
     );
 
-    const target = this.component.getWorldTransform();
-    const translation = vec3.add(vec3.create(), target.translation, distance);
+    const targetPosition = vec3.add(vec3.create(), leadPosition, distance);
 
-    // Calculate the linear distance between the camera's current position and the target position
-    const normalisedDistance = vec3.sub(
-      vec3.create(),
-      camera.cameraComponent.transform.translation,
-      distance,
-    );
-    const linearDistance = vec3.distance(
-      normalisedDistance,
-      target.translation,
-    );
-
+    // Apply bounds
     if (this.bounds) {
-      translation[0] = Math.max(
-        this.bounds.min[0],
-        Math.min(this.bounds.max[0], translation[0]),
-      );
-      translation[1] = Math.max(
-        this.bounds.min[1],
-        Math.min(this.bounds.max[1], translation[1]),
-      );
-      translation[2] = Math.max(
-        this.bounds.min[2],
-        Math.min(this.bounds.max[2], translation[2]),
-      );
+      vec3.max(targetPosition, targetPosition, this.bounds.min);
+      vec3.min(targetPosition, targetPosition, this.bounds.max);
     }
 
-    if (linearDistance > this.deadzone) {
+    // Apply deadzone
+    const currentCameraPosition = camera.cameraComponent.transform.translation;
+    const distanceToTarget = vec3.distance(
+      currentCameraPosition,
+      targetPosition,
+    );
+    if (distanceToTarget > this.deadzone) {
+      camera.moveTo(targetPosition);
+
       const rotation = quat.fromEuler(
         quat.create(),
         ...this.axisConfig[this.axis].rotation,
       );
-
-      camera.moveTo(translation);
       camera.cameraComponent.transform.rotation = rotation;
     }
   }
