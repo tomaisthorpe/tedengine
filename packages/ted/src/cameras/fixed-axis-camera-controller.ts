@@ -28,6 +28,7 @@ export default class TFollowAxisCameraController implements TCameraController {
 
   private lastPosition?: vec3;
   public leadFactor = 0; // Adjustable lead factor
+  public maxLead = 0; // Maximum lead distance
 
   constructor(config?: {
     distance?: number;
@@ -35,6 +36,7 @@ export default class TFollowAxisCameraController implements TCameraController {
     deadzone?: number;
     bounds?: { min: vec3; max: vec3 };
     leadFactor?: number;
+    maxLead?: number;
   }) {
     if (config?.distance !== undefined) {
       this.distance = config.distance;
@@ -65,6 +67,10 @@ export default class TFollowAxisCameraController implements TCameraController {
     if (config?.leadFactor !== undefined) {
       this.leadFactor = config.leadFactor;
     }
+
+    if (config?.maxLead !== undefined) {
+      this.maxLead = config.maxLead;
+    }
   }
 
   attachTo(component: TSceneComponent) {
@@ -88,9 +94,20 @@ export default class TFollowAxisCameraController implements TCameraController {
     }
     this.lastPosition = vec3.clone(currentPosition);
 
-    // Calculate lead position
+    // Calculate lead position with maximum lead
     const leadPosition = vec3.create();
-    vec3.scaleAndAdd(leadPosition, currentPosition, velocity, this.leadFactor);
+    const leadVector = vec3.create();
+    vec3.scale(leadVector, velocity, this.leadFactor);
+
+    // Limit the lead vector to the maximum lead distance
+    if (this.maxLead > 0) {
+      const leadDistance = vec3.length(leadVector);
+      if (leadDistance > this.maxLead) {
+        vec3.scale(leadVector, leadVector, this.maxLead / leadDistance);
+      }
+    }
+
+    vec3.add(leadPosition, currentPosition, leadVector);
 
     const distance = vec3.multiply(
       vec3.create(),
