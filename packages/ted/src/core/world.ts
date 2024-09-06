@@ -14,12 +14,7 @@ import {
   type TSerializedRenderTask,
 } from '../renderer/frame-params';
 import type TActor from './actor';
-import type {
-  TPhysicsInMessageSimulateStep,
-  TPhysicsOutMessageSimulateDone,
-  TPhysicsInMessageWorldSetup,
-  TPhysicsRegisterBody,
-} from '../physics/messages';
+import type { TPhysicsRegisterBody } from '../physics/state-changes';
 import { TPhysicsMessageTypes } from '../physics/messages';
 import type TSceneComponent from '../actor-components/scene-component';
 import type { TActorWithOnWorldAdd } from './actor';
@@ -38,6 +33,7 @@ import type TJobManager from '../jobs/job-manager';
 import type { TJobsMessageRelayResult } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import type TGameState from './game-state';
+import type { TPhysicsSimulateStepResult } from '../physics/jobs';
 
 const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
   (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
@@ -95,7 +91,6 @@ export default class TWorld {
   private queuedNewBodies: TPhysicsRegisterBody[] = [];
   private queuedRemoveBodies: TPhysicsRemoveBody[] = [];
 
-  private updateResolve?: (stats: TWorldUpdateStats) => void;
   private lastDelta = 0;
   private updateStartTime = 0;
 
@@ -198,13 +193,6 @@ export default class TWorld {
   }
 
   private onMessage(event: MessageEvent) {
-    if (
-      event.data.type !== TPhysicsMessageTypes.SIMULATE_DONE &&
-      event.data.type !== TMessageTypesJobs.RELAY_RESULT
-    ) {
-      console.log('game world received', event.data);
-    }
-
     const { data } = event;
     switch (data.type) {
       case TPhysicsMessageTypes.INIT:
@@ -215,23 +203,6 @@ export default class TWorld {
 
         this.setupWorld();
         break;
-      case TPhysicsMessageTypes.WORLD_CREATED:
-        if (this.onCreatedResolve) {
-          this.onCreatedResolve();
-        }
-        break;
-      case TPhysicsMessageTypes.SIMULATE_DONE: {
-        const message = data as TPhysicsOutMessageSimulateDone;
-        this.onPhysicsUpdate(
-          message.bodies,
-          message.collisions,
-          message.stepElapsedTime,
-        );
-
-        this.lastPhysicsDebug = message.debug;
-
-        break;
-      }
       case TMessageTypesJobs.RELAY_RESULT: {
         const relayResultMessage = data as TJobsMessageRelayResult;
         this.jobs.onRelayedResult(relayResultMessage.wrappedResult);
@@ -243,54 +214,52 @@ export default class TWorld {
   /**
    * Sends the world config once the worker has been created
    */
-  private setupWorld() {
-    if (!this.config) {
-      throw new Error('config not set');
+  private async setupWorld() {
+    await this.jobs.do<void>({ type: 'create_world', args: [this.config] });
+
+    if (this.onCreatedResolve) {
+      this.onCreatedResolve();
     }
-
-    const message: TPhysicsInMessageWorldSetup = {
-      type: TPhysicsMessageTypes.WORLD_SETUP,
-      config: this.config,
-    };
-
-    this.workerPort?.postMessage(message);
   }
 
   /**
    * Called every frame with delta and triggers update on all actors
    */
-  public update(engine: TEngine, delta: number): Promise<TWorldUpdateStats> {
-    return new Promise((resolve) => {
-      if (this.paused) {
-        resolve({
-          worldUpdateTime: 0,
-          physicsStepTime: 0,
-          physicsTotalTime: 0,
-          actorUpdateTime: 0,
-        });
-      }
-
-      this.updateStartTime = performance.now();
-
-      this.lastDelta = delta;
-      this.updateResolve = resolve;
-
-      const message: TPhysicsInMessageSimulateStep = {
-        type: TPhysicsMessageTypes.SIMULATE_STEP,
-        delta,
-        newBodies: this.queuedNewBodies,
-        removeBodies: this.queuedRemoveBodies,
-        stateChanges: this.queuedStateChanges,
-        debug: this.physicsDebug,
+  public async update(_: TEngine, delta: number): Promise<TWorldUpdateStats> {
+    if (this.paused) {
+      return {
+        worldUpdateTime: 0,
+        physicsStepTime: 0,
+        physicsTotalTime: 0,
+        actorUpdateTime: 0,
       };
+    }
 
-      // This will trigger a message that will eventually result in updateResolve being triggered
-      this.workerPort?.postMessage(message);
+    this.updateStartTime = performance.now();
+    this.lastDelta = delta;
 
-      this.queuedNewBodies = [];
-      this.queuedRemoveBodies = [];
-      this.queuedStateChanges = [];
+    // Copy the queued state changes
+    const stateChanges = [...this.queuedStateChanges];
+    const newBodies = [...this.queuedNewBodies];
+    const removeBodies = [...this.queuedRemoveBodies];
+
+    // Clear the queued state changes
+    this.queuedNewBodies = [];
+    this.queuedRemoveBodies = [];
+    this.queuedStateChanges = [];
+
+    const result = await this.jobs.do<TPhysicsSimulateStepResult>({
+      type: 'simulate_step',
+      args: [delta, newBodies, removeBodies, stateChanges, this.physicsDebug],
     });
+
+    const stats = this.onPhysicsUpdate(
+      result.bodies,
+      result.collisions,
+      result.stepElapsedTime,
+    );
+
+    return stats;
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {
@@ -330,7 +299,7 @@ export default class TWorld {
     worldState: TPhysicsBody[],
     collisions: TPhysicsCollision[],
     stepElapsedTime: number,
-  ) {
+  ): TWorldUpdateStats {
     for (const obj of worldState) {
       // Find the actor with root component with this uuid
       for (const actor of this.actors) {
@@ -369,7 +338,7 @@ export default class TWorld {
       actorUpdateTime: afterActorUpdate - startActorUpdate,
     };
 
-    this.updateResolve?.(stats);
+    return stats;
   }
 
   private checkCollision(bodyA: string, bodyB: string) {

@@ -1,5 +1,6 @@
 import type { vec3 } from 'gl-matrix';
 import type { TPhysicsBodyOptions } from './physics-world';
+import type { TColliderConfig } from './colliders';
 
 export enum TPhysicsStateChangeType {
   APPLY_CENTRAL_FORCE = 'apply_force',
@@ -43,4 +44,12 @@ export interface TPhysicsUpdateTransform {
 export interface TPhysicsRemoveBody {
   type: TPhysicsStateChangeType.REMOVE_BODY;
   uuid: string;
+}
+
+export interface TPhysicsRegisterBody {
+  uuid: string;
+  collider: TColliderConfig;
+  translation: [number, number, number];
+  rotation: [number, number, number, number];
+  options?: TPhysicsBodyOptions;
 }
