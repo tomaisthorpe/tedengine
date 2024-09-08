@@ -1,5 +1,51 @@
 # @tedengine/ted
 
+## 0.9.0
+
+### Minor Changes
+
+- 98d4346: Add simple actor pool with preallocation
+- 46136d6: Check for WebGL2 and OffscreenCanvas support on bootstrap
+- ea23c72: Add window blur/focus events
+- 904cdca: Add pointer lock to controller
+- d11e903: Reset controller axis values on window blur
+- 2841262: Add draft segment timer
+- 4069f03: Add proxy event queues
+- 43c78c7: Add frame step option to animated sprite components
+- 78b1ec8: Add movement using axes to simple controller
+- b256b67: Add physics debug renderer
+- 43f5ec3: Add top down input controller
+- c9d72dc: Add colors to physics debug renderer
+- df9daa5: Add ability to set texture filter in resource packs
+- 03f7c7b: Add instance UVs for textured meshes
+- 3569cca: Add getImageBitmap to TCanvas
+- 132bc1c: Add child event queues
+- 00115a6: Destroyed pools can no longer be used
+- c8b6d39: Load resources within resource packs in parallel
+- 3f3f55a: Add lead to fixed axis camera controller
+- 46e00e0: Add method to toggle animation sprite
+- 56c8c65: Add UI context for scaling info
+- bdbb00c: Add acquired flag when actor has been acquired from pool
+- 48cc046: Add max lead option to fixed axis controller
+- 8bcbd75: Add game state event queue
+
+### Patch Changes
+
+- 63b37a1: Remove reset axis log
+- b7cf58b: Fix 'fixedRotation' option not working correctly in 2d mode
+- f3163b8: Don't allow actors to be released to pool more than once
+- 718e27d: Fix adding multiple on enter collision listeners
+- 3805dc6: Fix collision class ignores type
+- e6e2310: Improve serialized material types
+- bc5dc7f: Update segment timer section label to performance
+- a2ff636: Delete collision listeners on remove actor
+- 1f06ea2: Proxy queues now silently fail if no child queue available
+- 1a29650: Fix deleted physics bodies causing unreachable error
+- aed739f: Move physics communication to job system
+- 791c181: Fix physics state changes causing panics after removing body
+- 4cbdef4: Remove physics bodies before registering any new bodies
+- b788b8f: Fix resources fetching multiple times when using jobs
+
 ## 0.8.0
 
 ### Minor Changes
