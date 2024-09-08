@@ -110,7 +110,7 @@ export default class TEngine {
     };
 
     this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen, this);
-    this.segmentTimer = new TSegmentTimer(this.debugPanel, 'Segment Timer');
+    this.segmentTimer = new TSegmentTimer(this.debugPanel, 'Performance');
   }
 
   async onMessage(ev: MessageEvent) {

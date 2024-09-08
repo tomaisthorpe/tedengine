@@ -24,7 +24,7 @@ export default class TSegmentTimer {
     private debugPanel: TDebugPanel,
     label: string,
   ) {
-    this.debugSection = debugPanel.addSection(label, true);
+    this.debugSection = debugPanel.addSection(label, false);
   }
 
   startSegment(name: string): () => void {
