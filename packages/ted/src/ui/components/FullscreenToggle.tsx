@@ -14,6 +14,24 @@ const Button = styled.div`
   &:hover {
     border-color: rgba(255, 255, 255, 0.3);
   }
+
+  &:hover:after {
+    content: 'Toggle Fullscreen';
+    position: absolute;
+    top: 40px;
+    right: -5px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    cursor: pointer;
+  }
 `;
 
 export default function FullscreenToggle({
