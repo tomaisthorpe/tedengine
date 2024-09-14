@@ -9,4 +9,5 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/ted',
   collectCoverageFrom: ['./src/**/*'],
+  setupFilesAfterEnv: ['./jest.setup.ts'],
 };

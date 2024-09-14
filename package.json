@@ -41,6 +41,7 @@
     "@nx/react": "19.3.0",
     "@nx/vite": "19.3.0",
     "@nx/workspace": "19.3.0",
+    "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "16.0.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.6",

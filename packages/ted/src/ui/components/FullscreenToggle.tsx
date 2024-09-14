@@ -1,12 +1,19 @@
 import styled from 'styled-components';
+import { useUIContext } from '../hooks';
+
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
 
 const Button = styled.div`
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 36px;
-  height: 32px;
-  border: 5px solid rgba(0, 0, 0, 0.2);
+  width: 28px;
+  height: 26px;
+  border: 4px solid rgba(0, 0, 0, 0.2);
   border-radius: 3px;
   transition-property: border-color;
   transition-duration: 0.2s;
@@ -18,10 +25,10 @@ const Button = styled.div`
   &:hover:after {
     content: 'Toggle Fullscreen';
     position: absolute;
-    top: 40px;
-    right: -5px;
+    top: 26px;
+    right: -4px;
     background: rgba(0, 0, 0, 0.5);
-    padding: 5px 8px;
+    padding: 3px 6px;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.2);
     font-size: 12px;
@@ -39,5 +46,16 @@ export default function FullscreenToggle({
 }: {
   toggleFullscreen: () => void;
 }) {
-  return <Button onClick={toggleFullscreen} />;
+  const { scaling } = useUIContext();
+
+  return (
+    <Container
+      style={{
+        transform: `scale(${scaling})`,
+        transformOrigin: 'top right',
+      }}
+    >
+      <Button onClick={toggleFullscreen} />
+    </Container>
+  );
 }
