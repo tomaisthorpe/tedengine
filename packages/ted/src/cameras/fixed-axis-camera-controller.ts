@@ -103,8 +103,6 @@ export default class TFixedAxisCameraController
     engine: TEngine,
     delta: number,
   ): Promise<void> {
-    await super.onUpdate(camera, engine, delta);
-
     if (!this.component || !this.axisConfig[this.axis]) return;
 
     const currentPosition = this.component.getWorldTransform().translation;
@@ -140,10 +138,13 @@ export default class TFixedAxisCameraController
 
     const targetPosition = vec3.add(vec3.create(), leadPosition, distance);
 
-    // Apply bounds
+    // Apply bounds to target position
+    let outOfBounds = false;
     if (this.bounds) {
+      const originalTarget = vec3.clone(targetPosition);
       vec3.max(targetPosition, targetPosition, this.bounds.min);
       vec3.min(targetPosition, targetPosition, this.bounds.max);
+      outOfBounds = !vec3.equals(originalTarget, targetPosition);
     }
 
     // Apply deadzone
@@ -152,8 +153,10 @@ export default class TFixedAxisCameraController
       currentCameraPosition,
       targetPosition,
     );
-    if (distanceToTarget > this.deadzone) {
-      this.moveTo(targetPosition);
+
+    if (distanceToTarget > this.deadzone || outOfBounds) {
+      // Move the camera using the base controller method
+      this.moveTo(targetPosition, outOfBounds);
 
       const rotation = quat.fromEuler(
         quat.create(),
@@ -161,5 +164,7 @@ export default class TFixedAxisCameraController
       );
       camera.cameraComponent.transform.rotation = rotation;
     }
+
+    await super.onUpdate(camera, engine, delta);
   }
 }

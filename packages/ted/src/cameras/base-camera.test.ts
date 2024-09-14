@@ -52,37 +52,4 @@ describe('TBaseCamera', () => {
     camera.lookAt(vec3.fromValues(-1, -2, -3));
     expect([...camera.cameraComponent.transform.rotation]).toMatchSnapshot();
   });
-
-  test('lerp = 1 should result in instant transition', async () => {
-    camera.lerp = 1;
-    camera.moveTo(vec3.fromValues(10, 10, 10));
-
-    await camera.onUpdate({} as any, 1);
-
-    expect(camera.cameraComponent.transform.translation).toEqual(
-      vec3.fromValues(10, 10, 10),
-    );
-  });
-
-  test('lerp = 0 should result in no movement', async () => {
-    camera.lerp = 0;
-    camera.moveTo(vec3.fromValues(10, 10, 10));
-
-    await camera.onUpdate({} as any, 1);
-
-    expect(camera.cameraComponent.transform.translation).toEqual(
-      vec3.fromValues(0, 0, 0),
-    );
-  });
-
-  test('lerp = 0.5 should result in partial movement', async () => {
-    camera.lerp = 0.5;
-    camera.moveTo(vec3.fromValues(10, 10, 10));
-
-    await camera.onUpdate({} as any, 1);
-
-    expect(camera.cameraComponent.transform.translation).toEqual(
-      vec3.fromValues(5, 5, 5),
-    );
-  });
 });

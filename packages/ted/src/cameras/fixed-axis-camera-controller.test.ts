@@ -86,11 +86,11 @@ describe('onUpdate with deadzone', () => {
 
     const translation = vec3.fromValues(6, 2, 3);
 
-    jest.spyOn(camera, 'moveTo');
+    jest.spyOn(controller, 'moveTo');
 
     controller.onUpdate(camera, {} as any, 0);
 
-    expect(camera.moveTo).toHaveBeenCalledWith(translation);
+    expect(controller.moveTo).toHaveBeenCalledWith(translation, false);
   });
 
   test('should not move camera if linear distance is less than or equal to deadzone', () => {
@@ -106,10 +106,10 @@ describe('onUpdate with deadzone', () => {
     });
     controller.attachTo(comp);
 
-    jest.spyOn(camera, 'moveTo');
+    jest.spyOn(controller, 'moveTo');
 
     controller.onUpdate(camera, {} as any, 0);
 
-    expect(camera.moveTo).not.toHaveBeenCalled();
+    expect(controller.moveTo).not.toHaveBeenCalled();
   });
 });

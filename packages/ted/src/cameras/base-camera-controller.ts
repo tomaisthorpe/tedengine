@@ -18,21 +18,27 @@ export default class TBaseCameraController {
 
   private targetPosition?: vec3;
   private targetLookAt?: vec3;
+  private instantMove = false;
+  private instantLookAt = false;
 
   /**
    * Move the camera to the specified position using linear interpolation.
    * @param position The target position to move the camera to.
+   * @param instant If true, move the camera instantly without interpolation.
    */
-  public moveTo(position: vec3) {
+  public moveTo(position: vec3, instant = false) {
     this.targetPosition = vec3.clone(position);
+    this.instantMove = instant;
   }
 
   /**
    * Adjust the camera to look at the specified target position using linear interpolation.
    * @param target The target position to look at.
+   * @param instant If true, rotate the camera instantly without interpolation.
    */
-  public lookAt(target: vec3) {
+  public lookAt(target: vec3, instant = false) {
     this.targetLookAt = vec3.clone(target);
+    this.instantLookAt = instant;
   }
 
   /**
@@ -53,11 +59,12 @@ export default class TBaseCameraController {
       camera.cameraComponent.getWorldTransform().translation;
 
     if (this.targetPosition) {
-      if (this.lerpFactor >= 1) {
+      if (this.instantMove || this.lerpFactor >= 1) {
         camera.cameraComponent.transform.translation = vec3.clone(
           this.targetPosition,
         );
         this.targetPosition = undefined;
+        this.instantMove = false;
       } else {
         camera.cameraComponent.transform.translation = this.lerpVector(
           currentPosition,
@@ -78,9 +85,12 @@ export default class TBaseCameraController {
 
       const desiredQuat = tempTransform.rotation;
 
-      if (this.lerpFactor >= 1) {
-        camera.cameraComponent.transform.rotation = quat.clone(desiredQuat);
+      if (this.instantLookAt || this.lerpFactor >= 1) {
+        camera.cameraComponent.transform.rotation = quat.clone(
+          tempTransform.rotation,
+        );
         this.targetLookAt = undefined;
+        this.instantLookAt = false;
       } else {
         camera.cameraComponent.transform.rotation = this.lerpQuaternion(
           camera.cameraComponent.transform.rotation,
