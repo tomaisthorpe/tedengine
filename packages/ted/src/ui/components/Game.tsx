@@ -84,7 +84,14 @@ const TGame = ({
 
   return (
     <TFredContext.Provider value={{ fred }}>
-      <TUIContext.Provider value={{ scaling, renderingSize }}>
+      <TUIContext.Provider
+        value={{
+          scaling,
+          renderingSize,
+          showFullscreenToggle: config?.showFullscreenToggle ?? true,
+          showAudioToggle: config?.showAudioToggle ?? false,
+        }}
+      >
         <TEventQueueContext.Provider value={{ events }}>
           <TEngineContext.Provider value={engineData}>
             <TGameContext.Provider value={gameData}>

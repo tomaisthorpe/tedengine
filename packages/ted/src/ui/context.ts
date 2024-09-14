@@ -38,6 +38,8 @@ export interface TUIContextData {
     height: number;
   };
   scaling: number;
+  showFullscreenToggle: boolean;
+  showAudioToggle: boolean;
 }
 
 export const TUIContext = React.createContext<TUIContextData>(undefined!);

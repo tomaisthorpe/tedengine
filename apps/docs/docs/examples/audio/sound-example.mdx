@@ -13,6 +13,9 @@ export const Game = () => {
       game={
         new Worker(new URL('@examples/audio/sound-example.ts', import.meta.url))
       }
+      config={{
+        showAudioToggle: true,
+      }}
     />
   );
 };

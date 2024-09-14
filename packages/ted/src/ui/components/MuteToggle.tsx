@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useFred } from '../hooks';
+import { useFred, useUIContext } from '../hooks';
 import { useEffect, useState } from 'react';
 
 const Button = styled.div`
@@ -38,12 +38,17 @@ const Button = styled.div`
 export default function MuteToggle() {
   const fred = useFred();
   const [muted, setMuted] = useState(false);
+  const { showAudioToggle } = useUIContext();
 
   useEffect(() => {
     if (fred) {
       setMuted(fred.audio.muted);
     }
   }, [fred]);
+
+  if (!showAudioToggle) {
+    return null;
+  }
 
   const toggleMute = () => {
     if (fred) {

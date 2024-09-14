@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useUIContext } from '../hooks';
 
 const Button = styled.div`
   width: 28px;
@@ -38,5 +39,10 @@ export default function FullscreenToggle({
 }: {
   toggleFullscreen: () => void;
 }) {
+  const { showFullscreenToggle } = useUIContext();
+  if (!showFullscreenToggle) {
+    return null;
+  }
+
   return <Button onClick={toggleFullscreen} />;
 }

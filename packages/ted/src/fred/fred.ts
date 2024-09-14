@@ -37,6 +37,8 @@ export interface TFredConfig {
   renderWidth?: number;
   renderHeight?: number;
   imageRendering: 'auto' | 'pixelated' | 'crisp-edges';
+  showFullscreenToggle?: boolean;
+  showAudioToggle?: boolean;
 }
 
 /**
