@@ -1,10 +1,14 @@
 import { vec3, quat } from 'gl-matrix';
 import type TSceneComponent from '../actor-components/scene-component';
 import type TEngine from '../engine/engine';
+import type ICameraController from './camera-controller';
+import TBaseCameraController from './base-camera-controller';
 import type TBaseCamera from './base-camera';
-import type TCameraController from './camera-controller';
 
-export default class TFollowAxisCameraController implements TCameraController {
+export default class TFixedAxisCameraController
+  extends TBaseCameraController
+  implements ICameraController
+{
   private component?: TSceneComponent;
 
   // Distance from the attached component on the z axis.
@@ -37,7 +41,10 @@ export default class TFollowAxisCameraController implements TCameraController {
     bounds?: { min: vec3; max: vec3 };
     leadFactor?: number;
     maxLead?: number;
+    lerpFactor?: number;
   }) {
+    super();
+
     if (config?.distance !== undefined) {
       this.distance = config.distance;
     }
@@ -71,17 +78,33 @@ export default class TFollowAxisCameraController implements TCameraController {
     if (config?.maxLead !== undefined) {
       this.maxLead = config.maxLead;
     }
+
+    if (config?.lerpFactor !== undefined) {
+      this.lerpFactor = config.lerpFactor;
+    }
   }
 
-  attachTo(component: TSceneComponent) {
+  /**
+   * Attach this controller to a scene component.
+   * @param component The scene component to attach to.
+   */
+  attachTo(component: TSceneComponent): void {
     this.component = component;
   }
 
-  async onUpdate(
+  /**
+   * Update the camera position based on the target's position and velocity.
+   * @param camera The camera to update.
+   * @param engine The game engine.
+   * @param delta Time delta.
+   */
+  public async onUpdate(
     camera: TBaseCamera,
-    _: TEngine,
+    engine: TEngine,
     delta: number,
   ): Promise<void> {
+    await super.onUpdate(camera, engine, delta);
+
     if (!this.component || !this.axisConfig[this.axis]) return;
 
     const currentPosition = this.component.getWorldTransform().translation;
@@ -130,7 +153,7 @@ export default class TFollowAxisCameraController implements TCameraController {
       targetPosition,
     );
     if (distanceToTarget > this.deadzone) {
-      camera.moveTo(targetPosition);
+      this.moveTo(targetPosition);
 
       const rotation = quat.fromEuler(
         quat.create(),
