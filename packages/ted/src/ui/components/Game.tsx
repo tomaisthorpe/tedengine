@@ -14,8 +14,8 @@ import type { TGameContextData, TEngineContextData } from '../context';
 import DebugPanel from './DebugPanel';
 import LoadingScreen from './LoadingScreen';
 import ErrorScreen from './ErrorScreen';
-import FullscreenToggle from './FullscreenToggle';
 import PointerLock from './PointerLock';
+import GameControls from './GameControls';
 
 const Container = styled.div`
   display: block;
@@ -106,11 +106,7 @@ const TGame = ({
                       {children}
                     </>
                   )}
-                  {fred && (
-                    <FullscreenToggle
-                      toggleFullscreen={() => fred.toggleFullscreen()}
-                    />
-                  )}
+                  {fred && <GameControls fred={fred} />}
                   {engineData.loading && <LoadingScreen />}
                   <PointerLock />
                   {errorMessage && <ErrorScreen error={errorMessage} />}

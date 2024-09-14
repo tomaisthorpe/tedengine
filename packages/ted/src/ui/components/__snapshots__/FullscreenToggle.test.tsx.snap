@@ -3,13 +3,8 @@
 exports[`renders FullscreenToggle component 1`] = `
 <div>
   <div
-    class="sc-aYaIB iLSmij"
-    style="transform: scale(1); transform-origin: top right;"
-  >
-    <div
-      class="sc-gEvDqW DlZNN"
-    />
-  </div>
+    class="sc-aYaIB gABHKd"
+  />
   ,
 </div>
 `;

@@ -50,7 +50,7 @@ export default class TFred {
   private renderer!: TRenderer;
   private resources!: TResourceManager;
   private jobs!: TJobManager;
-  private audio: TAudio = new TAudio();
+  public audio: TAudio = new TAudio();
 
   // Holds the state of the latest frame.
   // This should be rendered when the render loops happens.

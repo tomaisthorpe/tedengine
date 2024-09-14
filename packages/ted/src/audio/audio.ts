@@ -4,6 +4,21 @@ export default class TAudio {
   private ctx?: AudioContext;
   private sounds: { [key: string]: HTMLAudioElement } = {};
 
+  private _muted = false;
+
+  public get muted() {
+    return this._muted;
+  }
+
+  public set muted(value: boolean) {
+    this._muted = value;
+
+    // Loop through all sounds and set the muted property
+    Object.values(this.sounds).forEach((sound) => {
+      sound.muted = value;
+    });
+  }
+
   /**
    * Gets the AudioContext. You must do this AFTER the user has interacted with
    * page. Otherwise Chrome will block the context.
@@ -26,6 +41,8 @@ export default class TAudio {
   }
 
   public play(uuid: string, volume: number) {
+    if (this.muted) return;
+
     this.sounds[uuid].volume = volume;
     this.sounds[uuid].play();
   }

@@ -13,14 +13,3 @@ test('renders FullscreenToggle component', () => {
   );
   expect(container).toMatchSnapshot();
 });
-
-test('renders FullscreenToggle component with scaling', () => {
-  const { container } = render(
-    <TUIContext.Provider
-      value={{ scaling: 2, renderingSize: { width: 1, height: 1 } }}
-    >
-      <FullscreenToggle toggleFullscreen={() => {}} />,
-    </TUIContext.Provider>,
-  );
-  expect(container.firstChild).toHaveStyle('transform: scale(2)');
-});
