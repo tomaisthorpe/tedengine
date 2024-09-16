@@ -1,3 +1,4 @@
+import type { vec4 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import TTexture from '../graphics/texture';
@@ -13,6 +14,8 @@ import TSceneComponent from './scene-component';
 export default class TTexturedMeshComponent extends TSceneComponent {
   protected mesh: TTexturedMesh = new TTexturedMesh();
   public texture: TTexture = new TTexture();
+
+  public colorFilter?: vec4;
 
   constructor(actor: TActor, bodyOptions?: TPhysicsBodyOptions) {
     super(actor, bodyOptions);
@@ -38,6 +41,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
         type: 'textured',
         options: {
           texture: this.texture.uuid!,
+          colorFilter: this.colorFilter,
         },
       },
     };

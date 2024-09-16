@@ -1,5 +1,5 @@
 import asteroidTexture from '@assets/asteroid.png';
-import { vec3 } from 'gl-matrix';
+import { vec3, vec4 } from 'gl-matrix';
 import type { TResourcePackConfig } from '@tedengine/ted';
 import {
   TGameState,
@@ -20,6 +20,61 @@ class Sprite extends TActor {
 
     const box = new TSpriteComponent(engine, this, 1, 1, TOriginPoint.Center);
     box.applyTexture(engine, asteroidTexture);
+    box.colorFilter = vec4.fromValues(1, 1, 1, 1);
+
+    const section = engine.debugPanel.addSection('Color Filter', true);
+    section.addInput(
+      'Red',
+      'range',
+      '1',
+      (value) => {
+        box.colorFilter[0] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
+    section.addInput(
+      'Green',
+      'range',
+      '1',
+      (value) => {
+        box.colorFilter[1] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
+    section.addInput(
+      'Blue',
+      'range',
+      '1',
+      (value) => {
+        box.colorFilter[2] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
+    section.addInput(
+      'Alpha',
+      'range',
+      '1',
+      (value) => {
+        box.colorFilter[3] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
   }
@@ -45,6 +100,7 @@ const config = {
     game: SpriteState,
   },
   defaultState: 'game',
+  debugPanelOpen: true,
 };
 
 new TEngine(config, self as DedicatedWorkerGlobalScope);

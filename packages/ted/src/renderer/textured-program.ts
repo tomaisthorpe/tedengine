@@ -8,13 +8,13 @@ export default class TTexturedProgram {
 
   constructor(
     private renderer: TRenderer,
-    private resourceManager: TResourceManager
+    private resourceManager: TResourceManager,
   ) {}
 
   public async load() {
     this.program = await this.resourceManager.load<TProgram>(
       TProgram,
-      basicShader
+      basicShader,
     );
 
     const gl = this.renderer.context();
@@ -22,8 +22,14 @@ export default class TTexturedProgram {
   }
 
   public getTextureUniformLocation(
-    gl: WebGL2RenderingContext
+    gl: WebGL2RenderingContext,
   ): WebGLUniformLocation | undefined {
     return this.program?.getUniformLocation(gl, 'uTexture');
+  }
+
+  public getColorFilterUniformLocation(
+    gl: WebGL2RenderingContext,
+  ): WebGLUniformLocation | undefined {
+    return this.program?.getUniformLocation(gl, 'uColorFilter');
   }
 }

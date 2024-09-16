@@ -1,5 +1,5 @@
 // TFrameParams is used to tell the rendered how to render a frame.
-import type { mat4 } from 'gl-matrix';
+import type { mat4, vec4 } from 'gl-matrix';
 import type { TSpriteLayer } from '../actor-components/sprite-component';
 import type { TCameraView } from '../cameras/camera-view';
 import type { TPalette } from '../graphics/color-material';
@@ -65,5 +65,6 @@ export interface TSerializedTexturedMaterial {
   options: {
     texture: string;
     instanceUVs?: number[];
+    colorFilter?: vec4;
   };
 }

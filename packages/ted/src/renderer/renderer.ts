@@ -195,6 +195,7 @@ export default class TRenderer {
           texture,
           task.transform,
           task.material.options.instanceUVs,
+          task.material.options.colorFilter,
         );
       }
     }
@@ -219,6 +220,7 @@ export default class TRenderer {
           texture,
           task.transform,
           task.material.options.instanceUVs,
+          task.material.options.colorFilter,
         );
       }
     }

@@ -1,4 +1,5 @@
 import type { mat4 } from 'gl-matrix';
+import { vec4 } from 'gl-matrix';
 import { v4 as uuidv4 } from 'uuid';
 import type TProgram from './program';
 import type TRenderableTexture from './renderable-texture';
@@ -22,6 +23,8 @@ export default class TRenderableTexturedMesh {
   // Instance buffers, used to override the UVs of the mesh
   private instanceUVBuffer?: WebGLBuffer;
 
+  private colorFilterUniformLocation?: WebGLUniformLocation;
+
   private vao?: WebGLVertexArrayObject;
 
   public render(
@@ -30,19 +33,24 @@ export default class TRenderableTexturedMesh {
     texture: TRenderableTexture,
     m: mat4,
     instanceUVs?: number[],
+    colorFilter: vec4 = vec4.fromValues(1, 1, 1, 1),
   ) {
     if (this.positionBuffer === undefined) {
       this.createBuffers(gl);
 
       // Create the VAO for the vertex and color buffers
       this.createVAO(gl, texturedProgram.program!);
+
+      this.colorFilterUniformLocation =
+        texturedProgram.getColorFilterUniformLocation(gl);
     }
 
     if (
       !this.vao ||
       !this.indexBuffer ||
       !this.uvBuffer ||
-      !this.normalBuffer
+      !this.normalBuffer ||
+      !this.colorFilterUniformLocation
     ) {
       return;
     }
@@ -60,6 +68,8 @@ export default class TRenderableTexturedMesh {
       false,
       m,
     );
+
+    gl.uniform4fv(this.colorFilterUniformLocation, colorFilter);
 
     gl.uniform1f(
       texturedProgram.program!.uniformLocations.uEnableInstanceUVs,

@@ -74,6 +74,7 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
         type: 'textured',
         options: {
           texture: this.texture.uuid!,
+          colorFilter: this.colorFilter,
         },
       },
       layer: this.layer,
