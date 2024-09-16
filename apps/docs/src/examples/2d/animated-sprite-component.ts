@@ -1,5 +1,5 @@
 import asteroidTexture from '@assets/person.png';
-import { vec3 } from 'gl-matrix';
+import { vec3, vec4 } from 'gl-matrix';
 import type { TResourcePackConfig } from '@tedengine/ted';
 import {
   TGameState,
@@ -41,6 +41,61 @@ class Sprite extends TActor {
       },
     );
     sprite.applyTexture(engine, asteroidTexture);
+    sprite.colorFilter = vec4.fromValues(0, 0, 0, 0.5);
+
+    const filterSection = engine.debugPanel.addSection('Color Filter', true);
+    filterSection.addInput(
+      'Red',
+      'range',
+      '1',
+      (value) => {
+        sprite.colorFilter[0] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
+    filterSection.addInput(
+      'Green',
+      'range',
+      '1',
+      (value) => {
+        sprite.colorFilter[1] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
+    filterSection.addInput(
+      'Blue',
+      'range',
+      '1',
+      (value) => {
+        sprite.colorFilter[2] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
+    filterSection.addInput(
+      'Alpha',
+      'range',
+      '1',
+      (value) => {
+        sprite.colorFilter[3] = parseFloat(value);
+      },
+      {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+    );
 
     this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
 

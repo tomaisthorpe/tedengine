@@ -132,7 +132,9 @@ export default class TRenderer {
   }
 
   public context(): WebGL2RenderingContext {
-    return this.canvas.getContext('webgl2')!;
+    return this.canvas.getContext('webgl2', {
+      alpha: false,
+    })!;
   }
 
   public render(frameParams: TFrameParams) {
