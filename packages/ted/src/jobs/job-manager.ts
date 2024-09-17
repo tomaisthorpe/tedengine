@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { TJobContextTypes } from './context-types';
 import type {
   TAudioJobContext,
+  TGameStateJobContext,
   TJobContext,
   TJobFunc,
   TPhysicsJobContext,
@@ -39,9 +40,13 @@ export default class TJobManager {
     | TJobContext
     | TRenderJobContext
     | TAudioJobContext
-    | TPhysicsJobContext;
+    | TPhysicsJobContext
+    | TGameStateJobContext;
 
-  constructor(contexts: TJobContextTypes[]) {
+  constructor(
+    contexts: TJobContextTypes[],
+    private parent?: TJobManager,
+  ) {
     for (const context of contexts) {
       this.canProcess[context] = true;
     }
@@ -72,12 +77,14 @@ export default class TJobManager {
   // @todo jobs don't currently ever reject
   public do<T>(job: TJob, transferList: Transferable[] = []): Promise<T> {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
       // Check if we can process this job
       const config = AllJobs[job.type];
 
       const args = job.args || [];
 
+      // First check if we can process the job.
+      // If required context is not set, it's an engine job
       if (this.canProcess[config.requiredContext || TJobContextTypes.Engine]) {
         // TODO sort this typing using generics instead
         const func = config.func as TJobFunc<typeof this.additionalContext>;
@@ -86,15 +93,26 @@ export default class TJobManager {
         return;
       }
 
-      const uuid = uuidv4();
-      this.relayedJobs[uuid] = resolve;
+      // If we can't process it, then check if we have a registered relay for it
+      if (this.relays[config.requiredContext || TJobContextTypes.Engine]) {
+        const uuid = uuidv4();
+        this.relayedJobs[uuid] = resolve;
 
-      // If we can't process it, then it needs to be handled by another worker
-      this.relays[config.requiredContext || TJobContextTypes.Engine]({
-        uuid,
-        job,
-        transferList,
-      });
+        this.relays[config.requiredContext || TJobContextTypes.Engine]({
+          uuid,
+          job,
+          transferList,
+        });
+
+        return;
+      }
+
+      // If we still can't process it, pass onto parent job manager
+      if (this.parent) {
+        return await this.parent.do<T>(job, transferList);
+      }
+
+      reject(new Error(`Job ${job.type} cannot be processed`));
     });
   }
 

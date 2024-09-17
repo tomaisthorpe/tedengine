@@ -106,7 +106,7 @@ export default class TWorld {
     private engine: TEngine,
     public gameState: TGameState,
   ) {
-    this.jobs = engine.jobs;
+    this.jobs = gameState.jobs;
   }
 
   public async create(): Promise<void> {

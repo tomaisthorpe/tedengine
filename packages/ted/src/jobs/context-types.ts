@@ -3,4 +3,5 @@ export enum TJobContextTypes {
   Engine = 'engine',
   Audio = 'audio',
   Physics = 'physics',
+  GameState = 'gamestate',
 }

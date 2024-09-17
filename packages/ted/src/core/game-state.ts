@@ -1,5 +1,7 @@
 import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
+import { TJobContextTypes } from '../jobs/context-types';
+import TJobManager from '../jobs/job-manager';
 import type TActor from './actor';
 import TEventQueue from './event-queue';
 import TWorld from './world';
@@ -60,7 +62,14 @@ export default class TGameState {
    */
   public events: TEventQueue = new TEventQueue();
 
-  constructor(protected engine: TEngine) {}
+  public jobs: TJobManager;
+
+  constructor(protected engine: TEngine) {
+    this.jobs = new TJobManager([TJobContextTypes.GameState], engine.jobs);
+    this.jobs.additionalContext = {
+      gameState: this,
+    };
+  }
 
   /**
    * Adds actor to the world in this game state.

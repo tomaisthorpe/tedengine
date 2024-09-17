@@ -8,6 +8,7 @@ import type {
   TJobContext,
   TPhysicsJobContext,
   TRenderJobContext,
+  TGameStateJobContext,
 } from '../jobs/jobs';
 
 function hasResourceManager(
@@ -15,7 +16,8 @@ function hasResourceManager(
     | TJobContext
     | TRenderJobContext
     | TAudioJobContext
-    | TPhysicsJobContext,
+    | TPhysicsJobContext
+    | TGameStateJobContext,
 ): additionalContext is TJobContext | TRenderJobContext | TAudioJobContext {
   return (additionalContext as TJobContext).resourceManager !== undefined;
 }
