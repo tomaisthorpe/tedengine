@@ -116,7 +116,7 @@ const ButtonsRow = ({
   <div>
     {row.data.buttons.map((button: any) => (
       <RowButton
-        key={button.label}
+        key={button.uuid}
         onClick={() => {
           const event: TDebugActionEvent = {
             type: TEventTypesDebug.Action,

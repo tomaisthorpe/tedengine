@@ -37,14 +37,14 @@ export default class TDebugPanelButtons
       this.events.addListener<TDebugActionEvent>(
         TEventTypesDebug.Action,
         button.uuid,
-        this.getActionHandler(button.uuid)
+        this.getActionHandler(button.uuid),
       );
     }
   }
 
   private getActionHandler(uuid: string) {
     return (e: TDebugActionEvent) => {
-      const button = this.buttons.filter((button) => (button.uuid = uuid));
+      const button = this.buttons.filter((button) => button.uuid === uuid);
       if (button.length > 0) {
         button[0].onClick(button[0]);
       }
