@@ -1,5 +1,24 @@
 # @tedengine/ted
 
+## 0.10.0
+
+### Minor Changes
+
+- 8689535: Add color filters for textured components
+- 1e60b27: Add tooltip on fullscreen button
+- 88ee726: Update depdendencies
+- 4309336: Add game state job manager
+- 7c525d3: Add audio toggle to game controls
+- 0ad8af7: Add config to show/hide fullscreen/audio toggles
+- fb01f13: Ensure bounds are strictly kept for fixed axis camera controller
+- 5d32162: Fullscreen button scales with rendering size
+- d0d5425: Move camera lerp functionality to a base camera controller
+
+### Patch Changes
+
+- beeb945: Fix debug buttons modifying each others uuids
+- 227102f: Set alpha to false on webgl2 context to improve blending
+
 ## 0.9.0
 
 ### Minor Changes
