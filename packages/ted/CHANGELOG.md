@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.10.1
+
+### Patch Changes
+
+- 0f08b43: Fix rendering problems with textured meshes on some machines
+
 ## 0.10.0
 
 ### Minor Changes
