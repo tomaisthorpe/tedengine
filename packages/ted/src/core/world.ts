@@ -253,6 +253,8 @@ export default class TWorld {
       args: [delta, newBodies, removeBodies, stateChanges, this.physicsDebug],
     });
 
+    this.lastPhysicsDebug = result.debug;
+
     const stats = this.onPhysicsUpdate(
       result.bodies,
       result.collisions,
