@@ -50,7 +50,8 @@ export default class TRenderableTexturedMesh {
       !this.indexBuffer ||
       !this.uvBuffer ||
       !this.normalBuffer ||
-      !this.colorFilterUniformLocation
+      !this.colorFilterUniformLocation ||
+      !this.instanceUVBuffer
     ) {
       return;
     }
@@ -76,11 +77,20 @@ export default class TRenderableTexturedMesh {
       instanceUVs ? 1 : 0,
     );
 
-    if (instanceUVs && this.instanceUVBuffer) {
+    if (instanceUVs) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
       gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(instanceUVs),
+        gl.STATIC_DRAW,
+      );
+    } else {
+      // Even if instanceUVs are not provided, we need to bind the buffer
+      // Some machines seem to require this, otherwise the shader will fail.
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array(this.uvs),
         gl.STATIC_DRAW,
       );
     }
