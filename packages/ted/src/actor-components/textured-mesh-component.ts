@@ -17,6 +17,8 @@ export default class TTexturedMeshComponent extends TSceneComponent {
 
   public colorFilter?: vec4;
 
+  public instanceUVScales?: [number, number];
+
   constructor(actor: TActor, bodyOptions?: TPhysicsBodyOptions) {
     super(actor, bodyOptions);
 
@@ -42,6 +44,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
         options: {
           texture: this.texture.uuid!,
           colorFilter: this.colorFilter,
+          instanceUVScales: this.instanceUVScales,
         },
       },
     };

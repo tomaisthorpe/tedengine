@@ -22,7 +22,6 @@ export default class TRenderableTexturedMesh {
 
   // Instance buffers, used to override the UVs of the mesh
   private instanceUVBuffer?: WebGLBuffer;
-
   private colorFilterUniformLocation?: WebGLUniformLocation;
 
   private vao?: WebGLVertexArrayObject;
@@ -33,6 +32,7 @@ export default class TRenderableTexturedMesh {
     texture: TRenderableTexture,
     m: mat4,
     instanceUVs?: number[],
+    instanceUVScales?: [number, number],
     colorFilter: vec4 = vec4.fromValues(1, 1, 1, 1),
   ) {
     if (this.positionBuffer === undefined) {
@@ -92,6 +92,18 @@ export default class TRenderableTexturedMesh {
         gl.ARRAY_BUFFER,
         new Float32Array(this.uvs),
         gl.STATIC_DRAW,
+      );
+    }
+
+    if (instanceUVScales) {
+      gl.uniform2fv(
+        texturedProgram.program!.uniformLocations.uInstanceUVScale,
+        new Float32Array(instanceUVScales),
+      );
+    } else {
+      gl.uniform2fv(
+        texturedProgram.program!.uniformLocations.uInstanceUVScale,
+        new Float32Array([1, 1]),
       );
     }
 

@@ -114,6 +114,12 @@ export default class TProgram implements IAsset {
       this.program,
       'uPalette',
     );
+
+    this.uniformLocations.uInstanceUVScale = gl.getUniformLocation(
+      this.program,
+      'uInstanceUVScale',
+    );
+
     this.uniformLocations.uEnableInstanceUVs = gl.getUniformLocation(
       this.program,
       'uEnableInstanceUVs',

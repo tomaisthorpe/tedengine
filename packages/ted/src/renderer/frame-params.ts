@@ -65,6 +65,7 @@ export interface TSerializedTexturedMaterial {
   options: {
     texture: string;
     instanceUVs?: number[];
+    instanceUVScales?: [number, number];
     colorFilter?: vec4;
   };
 }

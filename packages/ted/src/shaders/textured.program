@@ -14,10 +14,12 @@ uniform Settings {
 
 out highp vec2 vUV;
 
+uniform vec2 uInstanceUVScale;
+
 void main() {
   gl_Position = uVPMatrix * uMMatrix * aVertexPosition;
 
-  vUV = aVertexInstanceUV * uEnableInstanceUVs + aVertexUV * (1.0 - uEnableInstanceUVs);
+  vUV = (aVertexInstanceUV * uEnableInstanceUVs + aVertexUV * (1.0 - uEnableInstanceUVs)) * uInstanceUVScale;
 }
 ----
 #version 300 es
