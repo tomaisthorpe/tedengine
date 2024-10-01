@@ -7,8 +7,7 @@ import type TBaseCamera from './base-camera';
 
 export default class TFixedAxisCameraController
   extends TBaseCameraController
-  implements ICameraController
-{
+  implements ICameraController {
   private component?: TSceneComponent;
 
   // Distance from the attached component on the z axis.
@@ -23,14 +22,13 @@ export default class TFixedAxisCameraController
       rotation: [number, number, number];
     };
   } = {
-    x: { distance: [1, 0, 0], rotation: [0, 90, 0] },
-    y: { distance: [0, 1, 0], rotation: [-90, 0, 0] },
-    z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
-  };
+      x: { distance: [1, 0, 0], rotation: [0, 90, 0] },
+      y: { distance: [0, 1, 0], rotation: [-90, 0, 0] },
+      z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
+    };
 
   public bounds?: { min: vec3; max: vec3 };
 
-  private lastPosition?: vec3;
   public leadFactor = 0; // Adjustable lead factor
   public maxLead = 0; // Maximum lead distance
 
@@ -107,13 +105,8 @@ export default class TFixedAxisCameraController
 
     const currentPosition = this.component.getWorldTransform().translation;
 
-    // Calculate velocity locally
-    const velocity = vec3.create();
-    if (this.lastPosition && this.leadFactor > 0) {
-      vec3.subtract(velocity, currentPosition, this.lastPosition);
-      vec3.scale(velocity, velocity, 1 / delta);
-    }
-    this.lastPosition = vec3.clone(currentPosition);
+    const velocity = this.component.linearVelocity ?? [0, 0, 0];
+    vec3.scale(velocity, velocity, delta);
 
     // Calculate lead position with maximum lead
     const leadPosition = vec3.create();

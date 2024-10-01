@@ -66,6 +66,8 @@ export interface TPhysicsBody {
   uuid: string;
   translation: [number, number, number];
   rotation: [number, number, number, number];
+  angularVelocity: [number, number, number];
+  linearVelocity: [number, number, number];
 }
 
 export interface TPhysicsCollision {

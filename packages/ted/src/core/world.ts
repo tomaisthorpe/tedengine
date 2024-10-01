@@ -313,6 +313,9 @@ export default class TWorld {
             ...obj.rotation,
           );
 
+          // @todo should we just update the linear and angular velocity here?
+          actor.rootComponent.updatePhysicsBody(obj);
+
           break;
         }
       }

@@ -9,6 +9,7 @@ import type {
 } from '../renderer/frame-params';
 import TActorComponent from './actor-component';
 import type {
+  TPhysicsBody,
   TPhysicsBodyOptions,
   TPhysicsBodyType,
 } from '../physics/physics-world';
@@ -146,5 +147,22 @@ export default class TSceneComponent extends TActorComponent {
    */
   public applyTransform() {
     this.actor?.world?.updateTransform(this);
+  }
+
+  private _physicsBody: TPhysicsBody | undefined;
+
+  /**
+   * Set physics body for this component, this is automatically called by the physics world.
+   * Changing this will not update the physics world, use the various `set` methods instead.
+   */
+  public updatePhysicsBody(body: TPhysicsBody | undefined) {
+    this._physicsBody = body;
+  }
+  public get angularVelocity(): vec3 | undefined {
+    return this._physicsBody?.angularVelocity;
+  }
+
+  public get linearVelocity(): vec3 | undefined {
+    return this._physicsBody?.linearVelocity;
   }
 }

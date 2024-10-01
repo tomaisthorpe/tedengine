@@ -76,7 +76,6 @@ class ColliderState extends TGameState {
     this.addActor(plane);
 
     const camera = new TPerspectiveCamera(engine);
-    camera.lerp = 0.1;
     this.addActor(camera);
     // this.activeCamera = camera;
     camera.cameraComponent.showDebugCamera(engine);
@@ -90,8 +89,9 @@ class ColliderState extends TGameState {
     const controller = new TFixedAxisCameraController({
       distance: 5,
       axis: 'z',
-      leadFactor: 0.5,
+      leadFactor: 50,
       maxLead: 0.9,
+      lerpFactor: 0.9,
     });
     controller.attachTo(box.rootComponent);
     camera.controller = controller;

@@ -163,6 +163,16 @@ export default class TRapier3DWorld implements TPhysicsWorld {
           obj.body.rotation().z,
           obj.body.rotation().w,
         ],
+        angularVelocity: [
+          obj.body.angvel().x,
+          obj.body.angvel().y,
+          obj.body.angvel().z,
+        ],
+        linearVelocity: [
+          obj.body.linvel().x,
+          obj.body.linvel().y,
+          obj.body.linvel().z,
+        ],
       });
     }
 
