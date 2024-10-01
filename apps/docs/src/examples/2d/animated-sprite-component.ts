@@ -41,7 +41,7 @@ class Sprite extends TActor {
       },
     );
     sprite.applyTexture(engine, asteroidTexture);
-    sprite.colorFilter = vec4.fromValues(0, 0, 0, 0.5);
+    sprite.colorFilter = vec4.fromValues(1, 1, 1, 1);
 
     const filterSection = engine.debugPanel.addSection('Color Filter', true);
     filterSection.addInput(
