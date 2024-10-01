@@ -127,6 +127,7 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     collisions: TPhysicsCollision[];
     debug?: TPhysicsWorldDebug;
   } {
+    this.world.timestep = delta;
     this.world.step(this.eventQueue);
 
     const collisions: TPhysicsCollision[] = [];
