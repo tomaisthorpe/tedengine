@@ -36,6 +36,8 @@ export default class TController {
   public mouseMovement?: TMouseMovement;
   public pointerLocked = false;
 
+  public isDown: { [key: string]: boolean } = {};
+
   constructor(private inputEventQueue: TEventQueue) {
     this.resetAxisValues = this.resetAxisValues.bind(this);
 
@@ -45,6 +47,27 @@ export default class TController {
       TEventTypesWindow.Blur,
       this.resetAxisValues,
     );
+
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
+
+    this.inputEventQueue.addListener<TKeyDownEvent>(
+      TEventTypesInput.KeyDown,
+      this.handleKeyDown,
+    );
+
+    this.inputEventQueue.addListener<TKeyUpEvent>(
+      TEventTypesInput.KeyUp,
+      this.handleKeyUp,
+    );
+  }
+
+  private handleKeyDown(e: TKeyDownEvent) {
+    this.isDown[e.subType] = true;
+  }
+
+  private handleKeyUp(e: TKeyUpEvent) {
+    this.isDown[e.subType] = false;
   }
 
   // @todo add validation on button
@@ -219,6 +242,10 @@ export default class TController {
     Object.keys(this.axes).forEach((key) => {
       this.axes[key] = 0;
     });
+
+    Object.keys(this.isDown).forEach((key) => {
+      this.isDown[key] = false;
+    });
   }
 
   /**
@@ -230,6 +257,16 @@ export default class TController {
     this.inputEventQueue.removeListener<TWindowBlurEvent>(
       TEventTypesWindow.Blur,
       this.resetAxisValues,
+    );
+
+    this.inputEventQueue.removeListener<TKeyDownEvent>(
+      TEventTypesInput.KeyDown,
+      this.handleKeyDown,
+    );
+
+    this.inputEventQueue.removeListener<TKeyUpEvent>(
+      TEventTypesInput.KeyUp,
+      this.handleKeyUp,
     );
   }
 }
