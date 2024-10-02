@@ -51,6 +51,7 @@ export interface TWorldConfig {
   gravity: vec3;
   defaultCollisionClass: string;
   collisionClasses: TCollisionClass[];
+  physicsScale?: number;
 }
 
 export type TPhysicsMode = '2d' | '3d';

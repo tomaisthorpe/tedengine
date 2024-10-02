@@ -52,12 +52,15 @@ export default class TRapier3DWorld implements TPhysicsWorld {
   } = {};
 
   private physicsMode: TPhysicsMode = '3d';
+  private physicsScale = 1;
 
   private objects: TRapierObject[] = [];
 
   public async create(config: TWorldConfig): Promise<void> {
     this.RAPIER = await import('@dimforge/rapier3d-compat');
     await this.RAPIER.init();
+
+    this.physicsScale = config.physicsScale || 1;
 
     this.world = new this.RAPIER.World({
       x: config.gravity[0],
@@ -153,9 +156,9 @@ export default class TRapier3DWorld implements TPhysicsWorld {
       bodies.push({
         uuid: obj.uuid,
         translation: [
-          obj.body.translation().x,
-          obj.body.translation().y,
-          obj.body.translation().z,
+          obj.body.translation().x / this.physicsScale,
+          obj.body.translation().y / this.physicsScale,
+          obj.body.translation().z / this.physicsScale,
         ],
         rotation: [
           obj.body.rotation().x,
@@ -178,7 +181,14 @@ export default class TRapier3DWorld implements TPhysicsWorld {
 
     if (debug) {
       const { vertices, colors } = this.world.debugRender();
-      return { bodies, collisions, debug: { vertices, colors } };
+      return {
+        bodies,
+        collisions,
+        debug: {
+          vertices: vertices.map((v) => v / this.physicsScale),
+          colors,
+        },
+      };
     }
 
     return { bodies, collisions };
@@ -206,20 +216,20 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     if (collider.type === TColliderType.BOX) {
       const config = collider as TBoxColliderConfig;
       shape = this.RAPIER.ColliderDesc.cuboid(
-        config.width / 2,
-        config.height / 2,
-        config.depth / 2,
+        config.width / 2 * this.physicsScale,
+        config.height / 2 * this.physicsScale,
+        config.depth / 2 * this.physicsScale,
       );
     } else if (collider.type === TColliderType.PLANE) {
       const config = collider as TPlaneColliderConfig;
       shape = this.RAPIER.ColliderDesc.cuboid(
-        config.width / 2,
+        config.width / 2 * this.physicsScale,
         0.000001,
-        config.height / 2,
+        config.height / 2 * this.physicsScale,
       );
     } else if (collider.type === TColliderType.SPHERE) {
       const config = collider as TSphereColliderConfig;
-      shape = this.RAPIER.ColliderDesc.ball(config.radius);
+      shape = this.RAPIER.ColliderDesc.ball(config.radius * this.physicsScale);
     } else {
       throw new Error('Unknown collider type');
     }
@@ -255,7 +265,11 @@ export default class TRapier3DWorld implements TPhysicsWorld {
       bodyDesc.lockRotations();
     }
 
-    bodyDesc.setTranslation(...translation);
+    bodyDesc.setTranslation(
+      translation[0] * this.physicsScale,
+      translation[1] * this.physicsScale,
+      translation[2] * this.physicsScale,
+    );
     bodyDesc.setRotation({
       x: rotation[0],
       y: rotation[1],
@@ -416,9 +430,9 @@ export default class TRapier3DWorld implements TPhysicsWorld {
 
     body.setTranslation(
       {
-        x: translation[0],
-        y: translation[1],
-        z: translation[2],
+        x: translation[0] * this.physicsScale,
+        y: translation[1] * this.physicsScale,
+        z: translation[2] * this.physicsScale,
       },
       true,
     );
@@ -445,9 +459,9 @@ export default class TRapier3DWorld implements TPhysicsWorld {
 
     const ray = new this.RAPIER.Ray(
       {
-        x: from[0],
-        y: from[1],
-        z: from[2],
+        x: from[0] * this.physicsScale,
+        y: from[1] * this.physicsScale,
+        z: from[2] * this.physicsScale,
       },
       {
         x: normalized[0],
@@ -495,10 +509,14 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     to: vec3,
     options?: TPhysicsQueryOptions | undefined,
   ): TPhysicsQueryAreaResult[] {
-    const size = vec3.sub(vec3.create(), to, from);
+    // Scale to and from to the physics scale
+    const toScaled = vec3.scale(vec3.create(), to, this.physicsScale);
+    const fromScaled = vec3.scale(vec3.create(), from, this.physicsScale);
+
+    const size = vec3.sub(vec3.create(), toScaled, fromScaled);
     const midPoint = vec3.scale(
       vec3.create(),
-      vec3.add(vec3.create(), to, from),
+      vec3.add(vec3.create(), toScaled, fromScaled),
       0.5,
     );
 
