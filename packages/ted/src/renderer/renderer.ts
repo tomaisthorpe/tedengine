@@ -164,12 +164,12 @@ export default class TRenderer {
       }
 
       if (task.type === TRenderTask.SpriteInstances) {
-        for (const transform of task.transforms) {
+        for (const instance of task.instances) {
           sprites.push({
             type: TRenderTask.SpriteInstance,
             uuid: task.uuid,
-            transform: transform,
-            material: task.material,
+            transform: instance.transform,
+            material: instance.material ?? task.material,
             layer: task.layer,
           });
         }

@@ -47,7 +47,10 @@ export interface TSerializedSpriteInstance {
 export interface TSerializedSpriteInstances {
   type: TRenderTask.SpriteInstances;
   uuid: string;
-  transforms: mat4[];
+  instances: {
+    transform: mat4;
+    material?: TSerializedTexturedMaterial;
+  }[];
   material: TSerializedTexturedMaterial;
   layer: TSpriteLayer;
 }

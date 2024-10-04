@@ -1,9 +1,10 @@
-import type { mat4, quat } from 'gl-matrix';
+import type { mat4, quat, vec4 } from 'gl-matrix';
 import { vec3 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import TTransform from '../math/transform';
 import type { TPhysicsBodyOptions } from '../physics/physics-world';
+import type { TSerializedTexturedMaterial } from '../renderer/frame-params';
 import {
   TRenderTask,
   type TSerializedRenderTask,
@@ -16,8 +17,14 @@ import type { TActorComponentWithOnUpdate } from './actor-component';
 export type TParticleConfigVec3 = vec3 | (() => vec3);
 export type TParticleConfigQuat = quat | (() => quat);
 export type TParticleConfigNumber = number | (() => number);
+export type TParticleConfigVec4 = vec4 | (() => vec4);
 
-export type TParticleBehaviourConfigVec3 = vec3 | ((ttl?: number) => vec3);
+export type TParticleBehaviourConfigVec3 =
+  | vec3
+  | ((particle: TParticle) => vec3);
+export type TParticleBehaviourConfigVec4 =
+  | vec4
+  | ((particle: TParticle) => vec4);
 
 export interface TParticleInitializers {
   position?: TParticleConfigVec3;
@@ -25,11 +32,13 @@ export interface TParticleInitializers {
   velocity?: TParticleConfigVec3;
   ttl?: TParticleConfigNumber;
   scale?: TParticleConfigVec3;
+  colorFilter?: TParticleConfigVec4;
 }
 
 export interface TParticleBehaviours {
   force?: TParticleBehaviourConfigVec3;
   scale?: TParticleBehaviourConfigVec3;
+  colorFilter?: TParticleBehaviourConfigVec4;
 }
 
 export interface TEmitterConfig {
@@ -48,6 +57,7 @@ export interface TParticle {
   transform: TTransform;
   ttl?: number;
   velocity: vec3;
+  colorFilter?: vec4;
 }
 
 export default class TParticlesComponent
@@ -81,16 +91,30 @@ export default class TParticlesComponent
   }
 
   public override getRenderTask(): TSerializedRenderTask | undefined {
-    const transforms: mat4[] = [];
+    const instances: {
+      transform: mat4;
+      material?: TSerializedTexturedMaterial;
+    }[] = [];
     const componentTransform = this.getWorldTransform();
     for (const particle of this.particles) {
-      transforms.push(componentTransform.add(particle.transform).getMatrix());
+      instances.push({
+        transform: componentTransform.add(particle.transform).getMatrix(),
+        material: particle.colorFilter
+          ? {
+              type: 'textured',
+              options: {
+                texture: this.texture.uuid!,
+                colorFilter: particle.colorFilter,
+              },
+            }
+          : undefined,
+      });
     }
 
     return {
       type: TRenderTask.SpriteInstances,
       uuid: this.mesh.uuid,
-      transforms,
+      instances,
       material: {
         type: 'textured',
         options: {
@@ -109,7 +133,7 @@ export default class TParticlesComponent
           vec3.create(),
 
           typeof this.systemConfig.behaviours.force === 'function'
-            ? this.systemConfig.behaviours.force(particle.ttl)
+            ? this.systemConfig.behaviours.force(particle)
             : this.systemConfig.behaviours.force,
           delta,
         );
@@ -120,7 +144,7 @@ export default class TParticlesComponent
       if (this.systemConfig.behaviours?.scale) {
         const scale =
           typeof this.systemConfig.behaviours.scale === 'function'
-            ? this.systemConfig.behaviours.scale(particle.ttl)
+            ? this.systemConfig.behaviours.scale(particle)
             : this.systemConfig.behaviours.scale;
 
         particle.transform.scale = scale;
@@ -131,6 +155,15 @@ export default class TParticlesComponent
         particle.transform.translation,
         particle.velocity,
       );
+
+      if (this.systemConfig.behaviours?.colorFilter) {
+        const colorFilter =
+          typeof this.systemConfig.behaviours.colorFilter === 'function'
+            ? this.systemConfig.behaviours.colorFilter(particle)
+            : this.systemConfig.behaviours.colorFilter;
+
+        particle.colorFilter = colorFilter;
+      }
 
       if (particle.ttl) {
         particle.ttl -= delta;
@@ -202,6 +235,13 @@ export default class TParticlesComponent
           : initializers.ttl;
     }
 
-    this.particles.push(particle);
+    if (initializers.colorFilter) {
+      particle.colorFilter =
+        typeof initializers.colorFilter === 'function'
+          ? initializers.colorFilter()
+          : initializers.colorFilter;
+    }
+
+    this.particles.unshift(particle);
   }
 }
