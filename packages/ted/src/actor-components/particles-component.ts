@@ -17,6 +17,8 @@ export type TParticleConfigVec3 = vec3 | (() => vec3);
 export type TParticleConfigQuat = quat | (() => quat);
 export type TParticleConfigNumber = number | (() => number);
 
+export type TParticleBehaviourConfigVec3 = vec3 | ((ttl?: number) => vec3);
+
 export interface TParticleInitializers {
   position?: TParticleConfigVec3;
   rotation?: TParticleConfigQuat;
@@ -26,7 +28,8 @@ export interface TParticleInitializers {
 }
 
 export interface TParticleBehaviours {
-  force?: TParticleConfigVec3;
+  force?: TParticleBehaviourConfigVec3;
+  scale?: TParticleBehaviourConfigVec3;
 }
 
 export interface TEmitterConfig {
@@ -106,12 +109,21 @@ export default class TParticlesComponent
           vec3.create(),
 
           typeof this.systemConfig.behaviours.force === 'function'
-            ? this.systemConfig.behaviours.force()
+            ? this.systemConfig.behaviours.force(particle.ttl)
             : this.systemConfig.behaviours.force,
           delta,
         );
 
         particle.velocity = vec3.add(vec3.create(), particle.velocity, force);
+      }
+
+      if (this.systemConfig.behaviours?.scale) {
+        const scale =
+          typeof this.systemConfig.behaviours.scale === 'function'
+            ? this.systemConfig.behaviours.scale(particle.ttl)
+            : this.systemConfig.behaviours.scale;
+
+        particle.transform.scale = scale;
       }
 
       particle.transform.translation = vec3.add(

@@ -42,11 +42,11 @@ class Sprite extends TActor {
         },
         velocity: () => {
           const angle = Math.random() * Math.PI * 2;
-          const speed = Math.random() * 0.01 + 0.01;
+          const speed = Math.random() * 0.02 + 0.02;
 
           return vec3.fromValues(
-            Math.cos(angle) * speed * 0.25,
-            Math.abs(Math.sin(angle) * speed),
+            Math.cos(angle) * speed * 0.4,
+            Math.abs(Math.sin(angle) * speed) * 0.7,
             0,
           );
         },
@@ -59,6 +59,9 @@ class Sprite extends TActor {
       behaviours: {
         force: () => {
           return vec3.fromValues(0, -0.02, 0);
+        },
+        scale: (ttl) => {
+          return vec3.fromValues(ttl * 0.5, ttl * 0.5, ttl * 0.5);
         },
       },
     });
