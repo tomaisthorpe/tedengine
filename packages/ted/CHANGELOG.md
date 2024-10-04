@@ -1,5 +1,23 @@
 # @tedengine/ted
 
+## 0.11.0
+
+### Minor Changes
+
+- 5c782f1: Move to varying physics timestep
+- b338423: Add linear and angular velocity to scene components
+- eba13e4: Add particle system
+- da766c5: Add color filter to particle system init and behaviours
+- 14cfbb7: Add scale behaviour to particle system
+- a97f15f: Add isDown to controllers
+- 74cd4d5: Add force behaviour to particle system
+- 93312c5: Add instance UV scaling
+- 1ad2c48: Add physics scaling
+
+### Patch Changes
+
+- 542eb7d: Fix physics debug not being added as a render task
+
 ## 0.10.1
 
 ### Patch Changes
