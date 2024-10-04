@@ -1,7 +1,10 @@
 import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import type { TPhysicsBodyOptions } from '../physics/physics-world';
-import type { TSerializedSpriteInstance } from '../renderer/frame-params';
+import type {
+  TSerializedRenderTask,
+  TSerializedSpriteInstance,
+} from '../renderer/frame-params';
 import type { TActorComponentWithOnUpdate } from './actor-component';
 import TSpriteComponent, {
   TOriginPoint,
@@ -70,8 +73,8 @@ export default class TAnimatedSpriteComponent
     }
   }
 
-  public getRenderTask(): TSerializedSpriteInstance | undefined {
-    const task = super.getRenderTask();
+  public getRenderTask(): TSerializedRenderTask | undefined {
+    const task = super.getRenderTask() as TSerializedSpriteInstance;
     if (!task) {
       return undefined;
     }

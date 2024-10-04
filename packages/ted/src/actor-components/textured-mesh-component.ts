@@ -6,7 +6,7 @@ import TTexturedMesh from '../graphics/textured-mesh';
 import type { TPhysicsBodyOptions } from '../physics/physics-world';
 import type {
   TSerializedMeshInstance,
-  TSerializedSpriteInstance,
+  TSerializedRenderTask,
 } from '../renderer/frame-params';
 import { TRenderTask } from '../renderer/frame-params';
 import TSceneComponent from './scene-component';
@@ -27,10 +27,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
   }
 
   // @todo look at how to remove this sprite type
-  public getRenderTask():
-    | TSerializedMeshInstance
-    | TSerializedSpriteInstance
-    | undefined {
+  public getRenderTask(): TSerializedRenderTask | undefined {
     if (!this.mesh || !this.mesh.uuid || !this.texture) {
       return undefined;
     }
@@ -47,7 +44,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
           instanceUVScales: this.instanceUVScales,
         },
       },
-    };
+    } as TSerializedMeshInstance;
   }
 
   public async setMesh(

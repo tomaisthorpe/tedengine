@@ -2,11 +2,7 @@ import type { vec3 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import TTransform from '../math/transform';
 import type { ICollider } from '../physics/colliders';
-import type {
-  TSerializedMeshInstance,
-  TSerializedRenderTask,
-  TSerializedSpriteInstance,
-} from '../renderer/frame-params';
+import type { TSerializedRenderTask } from '../renderer/frame-params';
 import TActorComponent from './actor-component';
 import type {
   TPhysicsBody,
@@ -72,11 +68,7 @@ export default class TSceneComponent extends TActorComponent {
     this.parentComponent = parentComponent;
   }
 
-  public getRenderTask():
-    | TSerializedRenderTask
-    | TSerializedMeshInstance
-    | TSerializedSpriteInstance
-    | undefined {
+  public getRenderTask(): TSerializedRenderTask | undefined {
     return undefined;
   }
 

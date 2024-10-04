@@ -14,6 +14,8 @@ export { default as TTilemapComponent } from './actor-components/tilemap-compone
 export * from './actor-components/tilemap-component';
 export { default as TAnimatedSpriteComponent } from './actor-components/animated-sprite-component';
 export * from './actor-components/animated-sprite-component';
+export { default as TParticlesComponent } from './actor-components/particles-component';
+export * from './actor-components/particles-component';
 
 export { default as TAudio } from './audio/audio';
 export { default as TSound } from './audio/sound';

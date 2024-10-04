@@ -2,7 +2,10 @@ import { vec3 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import TTransform from '../math/transform';
-import type { TSerializedSpriteInstance } from '../renderer/frame-params';
+import type {
+  TSerializedRenderTask,
+  TSerializedSpriteInstance,
+} from '../renderer/frame-params';
 import { TRenderTask } from '../renderer/frame-params';
 import TTexturedMeshComponent from './textured-mesh-component';
 import type { TPhysicsBodyOptions } from '../physics/physics-world';
@@ -61,7 +64,7 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
     this.generateMesh();
   }
 
-  public getRenderTask(): TSerializedSpriteInstance | undefined {
+  public getRenderTask(): TSerializedRenderTask | undefined {
     if (!this.mesh || !this.mesh.uuid || !this.texture) {
       return undefined;
     }
@@ -79,7 +82,7 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
         },
       },
       layer: this.layer,
-    };
+    } as TSerializedSpriteInstance;
   }
 
   public setOrigin(origin: TOriginPoint) {
