@@ -28,7 +28,7 @@ class Sprite extends TActor {
         position: () => {
           // Add slight offset to randomize particle spawn
           const angle = Math.random() * Math.PI * 2;
-          const distance = Math.random() * 0.1 + 0.1;
+          const distance = Math.random() * 0.025 + 0.025;
 
           return vec3.fromValues(
             Math.cos(angle) * distance,
@@ -36,12 +36,16 @@ class Sprite extends TActor {
             0,
           );
         },
+        scale: () => {
+          const randomScale = Math.random() * 0.2 + 0.1;
+          return vec3.fromValues(randomScale, randomScale, randomScale);
+        },
         velocity: () => {
           const angle = Math.random() * Math.PI * 2;
           const speed = Math.random() * 0.01 + 0.01;
 
           return vec3.fromValues(
-            Math.cos(angle) * speed,
+            Math.cos(angle) * speed * 0.25,
             Math.abs(Math.sin(angle) * speed),
             0,
           );

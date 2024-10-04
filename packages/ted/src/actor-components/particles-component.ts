@@ -22,6 +22,7 @@ export interface TParticleInitializers {
   rotation?: TParticleConfigQuat;
   velocity?: TParticleConfigVec3;
   ttl?: TParticleConfigNumber;
+  scale?: TParticleConfigVec3;
 }
 
 export interface TParticleBehaviours {
@@ -166,6 +167,13 @@ export default class TParticlesComponent
         typeof initializers.rotation === 'function'
           ? initializers.rotation()
           : initializers.rotation;
+    }
+
+    if (initializers.scale) {
+      particle.transform.scale =
+        typeof initializers.scale === 'function'
+          ? initializers.scale()
+          : initializers.scale;
     }
 
     if (initializers.velocity) {
