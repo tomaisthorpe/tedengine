@@ -42,7 +42,7 @@ class Sprite extends TActor {
 
           return vec3.fromValues(
             Math.cos(angle) * speed,
-            Math.sin(angle) * speed,
+            Math.abs(Math.sin(angle) * speed),
             0,
           );
         },
@@ -50,6 +50,11 @@ class Sprite extends TActor {
           const randomRotation = Math.random() * Math.PI * 2;
           const randomRotationInDegrees = randomRotation * (180 / Math.PI);
           return quat.fromEuler(quat.create(), 0, 0, randomRotationInDegrees);
+        },
+      },
+      behaviours: {
+        force: () => {
+          return vec3.fromValues(0, -0.02, 0);
         },
       },
     });

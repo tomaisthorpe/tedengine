@@ -13,15 +13,19 @@ import { TSpriteLayer } from './sprite-component';
 import TSpriteComponent, { TOriginPoint } from './sprite-component';
 import type { TActorComponentWithOnUpdate } from './actor-component';
 
-export type TParticleInitializerVec3 = vec3 | (() => vec3);
-export type TParticleInitializerQuat = quat | (() => quat);
-export type TParticleInitializerNumber = number | (() => number);
+export type TParticleConfigVec3 = vec3 | (() => vec3);
+export type TParticleConfigQuat = quat | (() => quat);
+export type TParticleConfigNumber = number | (() => number);
 
 export interface TParticleInitializers {
-  position?: TParticleInitializerVec3;
-  rotation?: TParticleInitializerQuat;
-  velocity?: TParticleInitializerVec3;
-  ttl?: TParticleInitializerNumber;
+  position?: TParticleConfigVec3;
+  rotation?: TParticleConfigQuat;
+  velocity?: TParticleConfigVec3;
+  ttl?: TParticleConfigNumber;
+}
+
+export interface TParticleBehaviours {
+  force?: TParticleConfigVec3;
 }
 
 export interface TEmitterConfig {
@@ -33,6 +37,7 @@ export interface TEmitterConfig {
 export interface TParticleSystemConfig {
   initializers: TParticleInitializers;
   emitter: TEmitterConfig;
+  behaviours?: TParticleBehaviours;
 }
 
 export interface TParticle {
@@ -95,6 +100,19 @@ export default class TParticlesComponent
   public async onUpdate(engine: TEngine, delta: number): Promise<void> {
     // Update existing particles
     for (const particle of this.particles) {
+      if (this.systemConfig.behaviours?.force) {
+        const force = vec3.scale(
+          vec3.create(),
+
+          typeof this.systemConfig.behaviours.force === 'function'
+            ? this.systemConfig.behaviours.force()
+            : this.systemConfig.behaviours.force,
+          delta,
+        );
+
+        particle.velocity = vec3.add(vec3.create(), particle.velocity, force);
+      }
+
       particle.transform.translation = vec3.add(
         vec3.create(),
         particle.transform.translation,
