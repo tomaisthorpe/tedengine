@@ -1,5 +1,12 @@
 # @tedengine/ted
 
+## 0.11.1
+
+### Patch Changes
+
+- 869b95a: Ensure debug panel is always on top
+- 1c461be: Prevent axes getting stuck when changing state
+
 ## 0.11.0
 
 ### Minor Changes
