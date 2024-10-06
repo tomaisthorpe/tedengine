@@ -18,6 +18,7 @@ const Container = styled.div`
   color: white;
   font-size: 0.8rem;
   font-family: sans-serif;
+  z-index: 1000;
 `;
 
 interface Props {
