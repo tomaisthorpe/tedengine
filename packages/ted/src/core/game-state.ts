@@ -4,6 +4,7 @@ import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
 import type TActor from './actor';
 import TEventQueue from './event-queue';
+import { TEventTypesCore } from './events';
 import TWorld from './world';
 import type { TWorldUpdateStats } from './world';
 
@@ -129,6 +130,10 @@ export default class TGameState {
     if (hasOnCreate(this)) {
       await this.onCreate(engine);
     }
+
+    this.events.broadcast({
+      type: TEventTypesCore.GameStateCreated,
+    });
   }
 
   /**
@@ -143,6 +148,10 @@ export default class TGameState {
     if (hasOnEnter(this)) {
       await this.onEnter(engine, ...args);
     }
+
+    this.events.broadcast({
+      type: TEventTypesCore.GameStateEntered,
+    });
   }
 
   /**
@@ -157,6 +166,10 @@ export default class TGameState {
     if (hasOnLeave(this)) {
       await this.onLeave(engine);
     }
+
+    this.events.broadcast({
+      type: TEventTypesCore.GameStateLeft,
+    });
   }
 
   /**
@@ -169,6 +182,10 @@ export default class TGameState {
     if (hasOnResume(this)) {
       await this.onResume(engine, ...args);
     }
+
+    this.events.broadcast({
+      type: TEventTypesCore.GameStateResumed,
+    });
   }
 
   /**

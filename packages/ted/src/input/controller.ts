@@ -1,4 +1,9 @@
 import TEventQueue from '../core/event-queue';
+import type {
+  TGameStateResumedEvent,
+  TGameStateEnteredEvent,
+} from '../core/events';
+import { TEventTypesCore } from '../core/events';
 import type TPawn from '../core/pawn';
 import type TEngine from '../engine/engine';
 import type { TWindowBlurEvent } from '../fred/events';
@@ -37,6 +42,7 @@ export default class TController {
   public pointerLocked = false;
 
   public isDown: { [key: string]: boolean } = {};
+  private isAxisDown: { [key: string]: boolean } = {};
 
   constructor(private inputEventQueue: TEventQueue) {
     this.resetAxisValues = this.resetAxisValues.bind(this);
@@ -45,6 +51,16 @@ export default class TController {
     // This is to prevent axis getting stuck in a pressed state
     inputEventQueue.addListener<TWindowBlurEvent>(
       TEventTypesWindow.Blur,
+      this.resetAxisValues,
+    );
+
+    // Reset all axis values when the game state changes
+    inputEventQueue.addListener<TGameStateResumedEvent>(
+      TEventTypesCore.GameStateResumed,
+      this.resetAxisValues,
+    );
+    inputEventQueue.addListener<TGameStateEnteredEvent>(
+      TEventTypesCore.GameStateEntered,
       this.resetAxisValues,
     );
 
@@ -138,6 +154,7 @@ export default class TController {
       TEventTypesInput.KeyDown,
       key,
       (e) => {
+        this.isAxisDown[key] = true;
         this.axes[axis] += scale;
       },
     );
@@ -146,7 +163,10 @@ export default class TController {
       TEventTypesInput.KeyUp,
       key,
       (e) => {
-        this.axes[axis] -= scale;
+        if (this.isAxisDown[key]) {
+          this.isAxisDown[key] = false;
+          this.axes[axis] -= scale;
+        }
       },
     );
   }
@@ -246,6 +266,10 @@ export default class TController {
     Object.keys(this.isDown).forEach((key) => {
       this.isDown[key] = false;
     });
+
+    Object.keys(this.isAxisDown).forEach((key) => {
+      this.isAxisDown[key] = false;
+    });
   }
 
   /**
@@ -267,6 +291,16 @@ export default class TController {
     this.inputEventQueue.removeListener<TKeyUpEvent>(
       TEventTypesInput.KeyUp,
       this.handleKeyUp,
+    );
+
+    this.inputEventQueue.removeListener<TGameStateResumedEvent>(
+      TEventTypesCore.GameStateResumed,
+      this.resetAxisValues,
+    );
+
+    this.inputEventQueue.removeListener<TGameStateEnteredEvent>(
+      TEventTypesCore.GameStateEntered,
+      this.resetAxisValues,
     );
   }
 }

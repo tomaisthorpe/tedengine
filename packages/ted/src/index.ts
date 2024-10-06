@@ -32,6 +32,8 @@ export { default as TPerspectiveCamera } from './cameras/perspective-camera';
 export { default as TFixedAxisCameraController } from './cameras/fixed-axis-camera-controller';
 export { default as TFollowComponentCameraController } from './cameras/follow-component-camera-controller';
 
+export * from './core/events';
+
 export { default as TActor } from './core/actor';
 export * from './core/actor';
 
