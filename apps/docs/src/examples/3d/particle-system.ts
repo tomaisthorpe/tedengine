@@ -14,10 +14,12 @@ class ManyColors extends TActor {
     textures: [asteroidTexture],
   };
 
+  public particles: TParticlesComponent;
+
   constructor(engine: TEngine) {
     super();
 
-    const box = new TParticlesComponent(engine, this, 0.2, 0.2, {
+    this.particles = new TParticlesComponent(engine, this, 0.2, 0.2, {
       emitter: {
         maxParticles: 1000,
         maxEmitRate: 200,
@@ -82,7 +84,7 @@ class ManyColors extends TActor {
         },
       },
     });
-    box.applyTexture(engine, asteroidTexture);
+    this.particles.applyTexture(engine, asteroidTexture);
 
     this.rootComponent.transform.translation = vec3.fromValues(0.75, -0.5, -3);
   }
@@ -93,10 +95,12 @@ class Fiery extends TActor {
     textures: [asteroidTexture],
   };
 
+  public particles: TParticlesComponent;
+
   constructor(engine: TEngine) {
     super();
 
-    const box = new TParticlesComponent(engine, this, 0.2, 0.2, {
+    this.particles = new TParticlesComponent(engine, this, 0.2, 0.2, {
       emitter: {
         maxParticles: 500,
         maxEmitRate: 200,
@@ -148,7 +152,7 @@ class Fiery extends TActor {
         },
       },
     });
-    box.applyTexture(engine, asteroidTexture);
+    this.particles.applyTexture(engine, asteroidTexture);
 
     this.rootComponent.transform.translation = vec3.fromValues(-0.75, -0.5, -3);
   }
@@ -164,11 +168,38 @@ class SpriteState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const asteroid = new ManyColors(engine);
-    this.addActor(asteroid);
+    const manyColors = new ManyColors(engine);
+    this.addActor(manyColors);
 
     const fiery = new Fiery(engine);
     this.addActor(fiery);
+
+    const section = engine.debugPanel.addSection('Particles', true);
+    section.addButtons('System 1', {
+      label: 'Pause',
+      onClick: (button) => {
+        if (fiery.particles.paused) {
+          fiery.particles.resume();
+          button.label = 'Pause';
+        } else {
+          fiery.particles.pause();
+          button.label = 'Resume';
+        }
+      },
+    });
+
+    section.addButtons('System 2', {
+      label: 'Pause',
+      onClick: (button) => {
+        if (manyColors.particles.paused) {
+          manyColors.particles.resume();
+          button.label = 'Pause';
+        } else {
+          manyColors.particles.pause();
+          button.label = 'Resume';
+        }
+      },
+    });
   }
 }
 

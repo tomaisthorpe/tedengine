@@ -67,6 +67,11 @@ export default class TParticlesComponent
   private particles: TParticle[] = [];
   private systemConfig: TParticleSystemConfig;
   private timeSinceLastEmit = 0;
+  private _paused = false;
+
+  public get paused() {
+    return this._paused;
+  }
 
   constructor(
     engine: TEngine,
@@ -88,6 +93,14 @@ export default class TParticlesComponent
     );
 
     this.systemConfig = systemConfig;
+  }
+
+  public pause() {
+    this._paused = true;
+  }
+
+  public resume() {
+    this._paused = false;
   }
 
   public override getRenderTask(): TSerializedRenderTask | undefined {
@@ -173,18 +186,20 @@ export default class TParticlesComponent
       }
     }
 
-    // Emit new particles
-    this.timeSinceLastEmit += delta;
-    const emitRate = this.getEmitRate();
-    const particlesToEmit = Math.floor(this.timeSinceLastEmit * emitRate);
+    // Emit new particles, if not paused
+    if (!this.paused) {
+      this.timeSinceLastEmit += delta;
+      const emitRate = this.getEmitRate();
+      const particlesToEmit = Math.floor(this.timeSinceLastEmit * emitRate);
 
-    for (let i = 0; i < particlesToEmit; i++) {
-      if (this.particles.length < this.systemConfig.emitter.maxParticles) {
-        this.addParticle();
+      for (let i = 0; i < particlesToEmit; i++) {
+        if (this.particles.length < this.systemConfig.emitter.maxParticles) {
+          this.addParticle();
+        }
       }
-    }
 
-    this.timeSinceLastEmit -= particlesToEmit / emitRate;
+      this.timeSinceLastEmit -= particlesToEmit / emitRate;
+    }
   }
 
   private getEmitRate(): number {
