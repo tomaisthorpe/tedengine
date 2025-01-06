@@ -1,4 +1,4 @@
-import type { vec4 } from 'gl-matrix';
+import type { vec4, vec2 } from 'gl-matrix';
 import type TActor from '../core/actor';
 import type TEngine from '../engine/engine';
 import TTexture from '../graphics/texture';
@@ -17,7 +17,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
 
   public colorFilter?: vec4;
 
-  public instanceUVScales?: [number, number];
+  public instanceUVScales?: vec2;
 
   constructor(actor: TActor, bodyOptions?: TPhysicsBodyOptions) {
     super(actor, bodyOptions);

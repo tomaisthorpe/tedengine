@@ -1,4 +1,4 @@
-import type { mat4 } from 'gl-matrix';
+import type { mat4, vec2 } from 'gl-matrix';
 import { vec4 } from 'gl-matrix';
 import { v4 as uuidv4 } from 'uuid';
 import type TProgram from './program';
@@ -32,7 +32,7 @@ export default class TRenderableTexturedMesh {
     texture: TRenderableTexture,
     m: mat4,
     instanceUVs?: number[],
-    instanceUVScales?: [number, number],
+    instanceUVScales?: vec2,
     colorFilter: vec4 = vec4.fromValues(1, 1, 1, 1),
   ) {
     if (this.positionBuffer === undefined) {
