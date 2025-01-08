@@ -25,7 +25,7 @@ export default class TProbeProgram {
     const gl = this.renderer.context();
     const blockIndex = gl.getUniformBlockIndex(
       this.program!.program!,
-      'Settings'
+      'Global'
     );
 
     const blockSize = gl.getActiveUniformBlockParameter(

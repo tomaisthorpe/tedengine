@@ -5,7 +5,7 @@ in vec4 aVertexColor;
 
 out highp vec4 vColor;
 
-uniform Settings {
+uniform Global {
   mat4 uVPMatrix;
 };
 

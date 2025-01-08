@@ -13,7 +13,7 @@ out highp vec4 vPosition;
 uniform sampler2D uPalette;
 uniform float uPaletteSize;
 
-uniform Settings {
+uniform Global {
   mat4 uVPMatrix;
 };
 
@@ -44,10 +44,10 @@ void main() {
 
   mat4 normalMatrix = transpose(inverse(uMMatrix));
   vec4 normal = normalize(normalMatrix * vNormal);
-  vec4 fragPosition = vec4(uMMatrix * vPosition); 
+  vec4 fragPosition = vec4(uMMatrix * vPosition);
   vec4 surfaceToLight = (lightPosition - fragPosition);
   vec4 color = vColor;
-  
+
   float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal)) * 0.6 + 0.4;
   outputColor = vec4(color.rgb * brightness, 1.0);
 }

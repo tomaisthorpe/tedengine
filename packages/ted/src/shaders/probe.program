@@ -1,6 +1,6 @@
 #version 300 es
 
-uniform Settings {
+uniform Global {
   mat4 uVPMatrix;
 };
 

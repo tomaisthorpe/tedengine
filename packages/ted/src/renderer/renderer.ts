@@ -33,8 +33,8 @@ export default class TRenderer {
   // @todo remove, needed for input atm
   public projectionMatrix?: mat4;
 
-  private settingsBuffer?: WebGLBuffer;
-  private settingsBufferOffsets: {
+  private globalUniformBuffer?: WebGLBuffer;
+  private globalUniformBufferOffsets: {
     vpMatrix: number;
   } = {
     vpMatrix: 0,
@@ -82,14 +82,14 @@ export default class TRenderer {
 
     const blockSize = probeProgram.getBlockSize();
 
-    this.settingsBuffer = gl.createBuffer()!;
-    gl.bindBuffer(gl.UNIFORM_BUFFER, this.settingsBuffer);
+    this.globalUniformBuffer = gl.createBuffer()!;
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer);
 
     // Allocate memory, dynamic used as will change often
     gl.bufferData(gl.UNIFORM_BUFFER, blockSize, gl.DYNAMIC_DRAW);
     gl.bindBuffer(gl.UNIFORM_BUFFER, null);
 
-    gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, this.settingsBuffer);
+    gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, this.globalUniformBuffer);
 
     // Get location of the uniforms
     const uboUniforms = probeProgram.program!.getUniformOffsets(
@@ -97,23 +97,23 @@ export default class TRenderer {
       ['uVPMatrix'],
     );
 
-    this.settingsBufferOffsets.vpMatrix = uboUniforms[0];
+    this.globalUniformBufferOffsets.vpMatrix = uboUniforms[0];
 
     const index = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
-      'Settings',
+      'Global',
     );
     gl.uniformBlockBinding(this.colorProgram.program!.program!, index, 0);
 
     const tIndex = gl.getUniformBlockIndex(
       this.texturedProgram.program!.program!,
-      'Settings',
+      'Global',
     );
     gl.uniformBlockBinding(this.texturedProgram.program!.program!, tIndex, 0);
 
     const pIndex = gl.getUniformBlockIndex(
       this.physicsDebugProgram.program!.program!,
-      'Settings',
+      'Global',
     );
     gl.uniformBlockBinding(
       this.physicsDebugProgram.program!.program!,
@@ -135,11 +135,11 @@ export default class TRenderer {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     this.projectionMatrix = frameParams.projectionMatrix;
-    gl.bindBuffer(gl.UNIFORM_BUFFER, this.settingsBuffer!);
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer!);
 
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
-      this.settingsBufferOffsets.vpMatrix,
+      this.globalUniformBufferOffsets.vpMatrix,
       new Float32Array(frameParams.projectionMatrix),
       0,
     );
@@ -206,7 +206,6 @@ export default class TRenderer {
         );
       }
     }
-
     // @todo figure out how can this can done in 3d.
     const layers: TSerializedSpriteInstance[][] = Object.values(TSpriteLayer)
       .filter((v) => !isNaN(Number(v)))
