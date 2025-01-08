@@ -16,6 +16,7 @@ import type { TRenderingSizeChangedEvent } from './events';
 import { TEventTypesRenderer } from './events';
 import TPhysicsDebugProgram from './physics-debug-program';
 import TPhysicsDebug from './physics-debug';
+import TProbeProgram from './probe-program';
 
 export default class TRenderer {
   private registeredPrograms: { [key: string]: TProgram } = {};
@@ -61,6 +62,10 @@ export default class TRenderer {
 
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
+    // Load probe program so we can determine the size of the UBO
+    const probeProgram = new TProbeProgram(this, this.resourceManager);
+    await probeProgram.load();
+
     this.colorProgram = new TColorProgram(this, this.resourceManager);
     await this.colorProgram.load();
 
@@ -75,16 +80,7 @@ export default class TRenderer {
 
     this.physicsDebug = new TPhysicsDebug();
 
-    const blockIndex = gl.getUniformBlockIndex(
-      this.colorProgram.program!.program!,
-      'Settings',
-    );
-
-    const blockSize = gl.getActiveUniformBlockParameter(
-      this.colorProgram.program!.program!,
-      blockIndex,
-      gl.UNIFORM_BLOCK_DATA_SIZE,
-    );
+    const blockSize = probeProgram.getBlockSize();
 
     this.settingsBuffer = gl.createBuffer()!;
     gl.bindBuffer(gl.UNIFORM_BUFFER, this.settingsBuffer);
@@ -97,11 +93,11 @@ export default class TRenderer {
 
     // Get location of the uniforms
     const uboVariableIndices = gl.getUniformIndices(
-      this.colorProgram.program!.program!,
+      probeProgram.program!.program!,
       ['uVPMatrix'],
     )!;
     const uboVariableOffsets = gl.getActiveUniforms(
-      this.colorProgram.program!.program!,
+      probeProgram.program!.program!,
       uboVariableIndices,
       gl.UNIFORM_OFFSET,
     );
