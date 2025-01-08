@@ -145,4 +145,30 @@ export default class TProgram implements IAsset {
 
     return this.uniformLocations[name];
   }
+
+  public getUniformOffsets(
+    gl: WebGL2RenderingContext,
+    uniforms: string[],
+  ): number[] {
+    const uboVariableIndices = gl.getUniformIndices(
+      this.program!,
+      uniforms,
+    );
+
+    if (!uboVariableIndices) {
+      throw new Error('Could not get uniform indices');
+    }
+
+    const uboVariableOffsets = gl.getActiveUniforms(
+      this.program!,
+      uboVariableIndices,
+      gl.UNIFORM_OFFSET,
+    );
+
+    if (!uboVariableOffsets) {
+      throw new Error('Could not get uniform offsets');
+    }
+
+    return uboVariableOffsets;
+  }
 }

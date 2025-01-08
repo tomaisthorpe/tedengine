@@ -92,17 +92,12 @@ export default class TRenderer {
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, this.settingsBuffer);
 
     // Get location of the uniforms
-    const uboVariableIndices = gl.getUniformIndices(
-      probeProgram.program!.program!,
+    const uboUniforms = probeProgram.program!.getUniformOffsets(
+      gl,
       ['uVPMatrix'],
-    )!;
-    const uboVariableOffsets = gl.getActiveUniforms(
-      probeProgram.program!.program!,
-      uboVariableIndices,
-      gl.UNIFORM_OFFSET,
     );
 
-    this.settingsBufferOffsets.vpMatrix = uboVariableOffsets[0];
+    this.settingsBufferOffsets.vpMatrix = uboUniforms[0];
 
     const index = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
