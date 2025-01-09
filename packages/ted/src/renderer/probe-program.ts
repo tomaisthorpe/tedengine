@@ -1,7 +1,8 @@
 import type TResourceManager from '../core/resource-manager';
-import probeShader from '../shaders/probe.program';
 import TProgram from './program';
 import type TRenderer from './renderer';
+import mainBase from '../shaders/bases/main';
+import { generateShader } from '../shaders/chunked-shader';
 
 export default class TProbeProgram {
   public program?: TProgram;
@@ -12,10 +13,8 @@ export default class TProbeProgram {
   ) {}
 
   public async load() {
-    this.program = await this.resourceManager.load<TProgram>(
-      TProgram,
-      probeShader
-    );
+    const probeShader = generateShader(mainBase, []);
+    this.program = TProgram.from(probeShader);
 
     const gl = this.renderer.context();
     this.program.compile(gl);

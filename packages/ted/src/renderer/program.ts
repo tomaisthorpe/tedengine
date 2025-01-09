@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { IAsset } from '../core/resource-manager';
+import type { TShader } from '../shaders/chunked-shader';
 
 const compileShader = (
   gl: WebGL2RenderingContext,
@@ -54,6 +55,13 @@ export default class TProgram implements IAsset {
 
   // Renderer will use uuid to check if it already has this program
   public uuid?: string;
+
+  public static from(shader: TShader) {
+    const program = new TProgram();
+    program.vertexShaderSource = shader.vertexShader;
+    program.fragmentShaderSource = shader.fragmentShader;
+    return program;
+  }
 
   public async load(response: Response): Promise<void> {
     this.uuid = uuidv4();
