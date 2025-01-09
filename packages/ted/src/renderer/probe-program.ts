@@ -1,4 +1,3 @@
-import type TResourceManager from '../core/resource-manager';
 import TProgram from './program';
 import type TRenderer from './renderer';
 import mainBase from '../shaders/bases/main';
@@ -9,7 +8,6 @@ export default class TProbeProgram {
 
   constructor(
     private renderer: TRenderer,
-    private resourceManager: TResourceManager
   ) {}
 
   public async load() {

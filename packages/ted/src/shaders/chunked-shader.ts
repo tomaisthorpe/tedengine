@@ -4,9 +4,16 @@ export interface TBaseShader {
 }
 
 export interface TShaderChunk {
-  before: string;
-  main: string;
-  after: string;
+  vertex?: {
+    before?: string;
+    main?: string;
+    after?: string;
+  };
+  fragment?: {
+    before?: string;
+    main?: string;
+    after?: string;
+  };
 }
 
 export interface TShader {
@@ -17,14 +24,14 @@ export interface TShader {
 export const generateShader = (b: TBaseShader, c: TShaderChunk[]): TShader => {
   return {
     vertexShader: b.vertexShader(
-      c.map((chunk) => chunk.before).join('\n'),
-      c.map((chunk) => chunk.main).join('\n'),
-      c.map((chunk) => chunk.after).join('\n'),
+      c.map((chunk) => chunk.vertex?.before).join('\n'),
+      c.map((chunk) => chunk.vertex?.main).join('\n'),
+      c.map((chunk) => chunk.vertex?.after).join('\n'),
     ),
     fragmentShader: b.fragmentShader(
-      c.map((chunk) => chunk.before).join('\n'),
-      c.map((chunk) => chunk.main).join('\n'),
-      c.map((chunk) => chunk.after).join('\n'),
+      c.map((chunk) => chunk.fragment?.before).join('\n'),
+      c.map((chunk) => chunk.fragment?.main).join('\n'),
+      c.map((chunk) => chunk.fragment?.after).join('\n'),
     ),
   };
 };

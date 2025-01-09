@@ -63,10 +63,10 @@ export default class TRenderer {
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
     // Load probe program so we can determine the size of the UBO
-    const probeProgram = new TProbeProgram(this, this.resourceManager);
+    const probeProgram = new TProbeProgram(this);
     await probeProgram.load();
 
-    this.colorProgram = new TColorProgram(this, this.resourceManager);
+    this.colorProgram = new TColorProgram(this);
     await this.colorProgram.load();
 
     this.texturedProgram = new TTexturedProgram(this, this.resourceManager);
