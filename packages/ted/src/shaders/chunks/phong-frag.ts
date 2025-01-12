@@ -10,15 +10,11 @@ export default {
         out vec4 outputColor;
         `,
     main: `
-        vec4 lightPosition = vec4(50, 0, 0, 0);
-
-        mat4 normalMatrix = transpose(inverse(uMMatrix));
-        vec4 normal = normalize(normalMatrix * vNormal);
-        vec4 fragPosition = vec4(uMMatrix * vPosition);
-        vec4 surfaceToLight = (lightPosition - fragPosition);
+        vec4 normal = normalize(uMMatrix * vec4(vNormal.xyz, 0.0));
+        float light = dot(vec3(normal.xyz), normalize(-vec3(uLightDirection.xyz)));
         vec4 color = vColor;
 
-        float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal)) * 0.6 + 0.4;
+        float brightness = light * (0.7 - uAmbientLight) + uAmbientLight;
         outputColor = vec4(color.rgb * brightness, 1.0);
         `,
   },

@@ -40,6 +40,15 @@ export default class TRenderer {
     vpMatrix: 0,
   };
 
+  private lightingUniformBuffer?: WebGLBuffer;
+  private lightingUniformBufferOffsets: {
+    ambientLight: number;
+    lightDirection: number;
+  } = {
+    ambientLight: 0,
+    lightDirection: 0,
+  };
+
   constructor(
     private canvas: HTMLCanvasElement,
     private resourceManager: TResourceManager,
@@ -91,19 +100,32 @@ export default class TRenderer {
 
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, this.globalUniformBuffer);
 
+    this.lightingUniformBuffer = gl.createBuffer()!;
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.lightingUniformBuffer);
+    gl.bufferData(gl.UNIFORM_BUFFER, blockSize, gl.DYNAMIC_DRAW);
+    gl.bindBuffer(gl.UNIFORM_BUFFER, null);
+    gl.bindBufferBase(gl.UNIFORM_BUFFER, 1, this.lightingUniformBuffer);
+
     // Get location of the uniforms
     const uboUniforms = probeProgram.program!.getUniformOffsets(
       gl,
-      ['uVPMatrix'],
+      ['uVPMatrix', 'uAmbientLight', 'uLightDirection'],
     );
 
     this.globalUniformBufferOffsets.vpMatrix = uboUniforms[0];
-
+    this.lightingUniformBufferOffsets.ambientLight = uboUniforms[1];
+    this.lightingUniformBufferOffsets.lightDirection = uboUniforms[2];
     const index = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
       'Global',
     );
     gl.uniformBlockBinding(this.colorProgram.program!.program!, index, 0);
+
+    const lcIndex = gl.getUniformBlockIndex(
+      this.colorProgram.program!.program!,
+      'Lighting',
+    );
+    gl.uniformBlockBinding(this.colorProgram.program!.program!, lcIndex, 1);
 
     const tIndex = gl.getUniformBlockIndex(
       this.texturedProgram.program!.program!,
@@ -141,6 +163,21 @@ export default class TRenderer {
       gl.UNIFORM_BUFFER,
       this.globalUniformBufferOffsets.vpMatrix,
       new Float32Array(frameParams.projectionMatrix),
+      0,
+    );
+
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.lightingUniformBuffer!);
+    gl.bufferSubData(
+      gl.UNIFORM_BUFFER,
+      this.lightingUniformBufferOffsets.ambientLight,
+    new Float32Array([0.3]),
+      0,
+    );
+
+    gl.bufferSubData(
+      gl.UNIFORM_BUFFER,
+      this.lightingUniformBufferOffsets.lightDirection,
+      new Float32Array([-0.5, -1, -0.5, 0]),
       0,
     );
 

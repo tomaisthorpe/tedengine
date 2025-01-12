@@ -25,6 +25,11 @@ precision mediump float;
 
 ${before}
 
+uniform Lighting {
+  float uAmbientLight;
+  vec4 uLightDirection;
+};
+
 void main() {
   ${main}
 }
