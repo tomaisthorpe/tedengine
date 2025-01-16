@@ -62,6 +62,11 @@ class MeshState extends TGameState {
   public onReady(engine: TEngine) {
     const landscape = new Landscape(engine);
     this.addActor(landscape);
+
+    this.world.config.lighting = {
+      ambientLight: 0.1,
+      directionalLight: vec3.fromValues(-0.5, 0.7, 0.2),
+    };
   }
 }
 

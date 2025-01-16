@@ -1,5 +1,5 @@
 // @todo has limited error handling
-import type { mat4 } from 'gl-matrix';
+import { vec3, type mat4 } from 'gl-matrix';
 import { TSpriteLayer } from '../actor-components/sprite-component';
 import type TResourceManager from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
@@ -107,10 +107,11 @@ export default class TRenderer {
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 1, this.lightingUniformBuffer);
 
     // Get location of the uniforms
-    const uboUniforms = probeProgram.program!.getUniformOffsets(
-      gl,
-      ['uVPMatrix', 'uAmbientLight', 'uLightDirection'],
-    );
+    const uboUniforms = probeProgram.program!.getUniformOffsets(gl, [
+      'uVPMatrix',
+      'uAmbientLight',
+      'uLightDirection',
+    ]);
 
     this.globalUniformBufferOffsets.vpMatrix = uboUniforms[0];
     this.lightingUniformBufferOffsets.ambientLight = uboUniforms[1];
@@ -170,14 +171,23 @@ export default class TRenderer {
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
       this.lightingUniformBufferOffsets.ambientLight,
-    new Float32Array([0.3]),
+      new Float32Array([
+        frameParams.lighting.ambientLight !== undefined
+          ? frameParams.lighting.ambientLight
+          : 1.0,
+      ]),
       0,
+    );
+
+    const directionalLight = vec3.normalize(
+      vec3.create(),
+      frameParams.lighting.directionalLight || [0, 0, 0],
     );
 
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
       this.lightingUniformBufferOffsets.lightDirection,
-      new Float32Array([-0.5, -1, -0.5, 0]),
+      new Float32Array(directionalLight),
       0,
     );
 

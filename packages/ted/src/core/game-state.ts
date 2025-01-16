@@ -2,6 +2,7 @@ import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
+import type { TSerializedLighting } from '../renderer/frame-params';
 import type TActor from './actor';
 import TEventQueue from './event-queue';
 import { TEventTypesCore } from './events';
@@ -110,6 +111,10 @@ export default class TGameState {
 
   public getRenderTasks() {
     return this.world?.getRenderTasks() || [];
+  }
+
+  public getLighting(): TSerializedLighting {
+    return this.world?.getLighting() || {};
   }
 
   /**

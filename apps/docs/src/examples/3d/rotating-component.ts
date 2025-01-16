@@ -28,6 +28,11 @@ class BoxState extends TGameState {
   public onReady(engine: TEngine) {
     const box = new Actor(engine);
     this.addActor(box);
+
+    this.world.config.lighting = {
+      ambientLight: 0.5,
+      directionalLight: vec3.fromValues(0, 1, 0),
+    };
   }
 }
 

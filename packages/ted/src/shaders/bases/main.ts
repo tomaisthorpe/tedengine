@@ -27,7 +27,7 @@ ${before}
 
 uniform Lighting {
   float uAmbientLight;
-  vec4 uLightDirection;
+  vec3 uLightDirection;
 };
 
 void main() {

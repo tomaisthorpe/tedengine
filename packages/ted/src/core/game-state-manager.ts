@@ -1,11 +1,14 @@
 import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
-import type { TSerializedRenderTask } from '../renderer/frame-params';
+import type {
+  TSerializedLighting,
+  TSerializedRenderTask,
+} from '../renderer/frame-params';
 import type TGameState from './game-state';
 import type { TWorldUpdateStats } from './world';
 
 export interface TGameStateType {
-  new(engine: TEngine): TGameState;
+  new (engine: TEngine): TGameState;
 }
 
 export default class TGameStateManager {
@@ -14,7 +17,7 @@ export default class TGameStateManager {
   private stack: TGameState[] = [];
   private loading = false;
 
-  public constructor(private engine: TEngine) { }
+  public constructor(private engine: TEngine) {}
 
   /**
    * Register new state type with the manager.
@@ -121,6 +124,10 @@ export default class TGameStateManager {
     if (!current) return [];
 
     return current.getRenderTasks();
+  }
+
+  public getLighting(): TSerializedLighting {
+    return this.current()?.getLighting() || {};
   }
 
   public getActiveCamera(): ICamera | undefined {

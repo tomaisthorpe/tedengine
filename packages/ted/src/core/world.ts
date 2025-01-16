@@ -9,6 +9,7 @@ import type {
   TPhysicsQueryAreaResult,
   TPhysicsWorldDebug,
 } from '../physics/physics-world';
+import type { TSerializedLighting } from '../renderer/frame-params';
 import {
   TRenderTask,
   type TSerializedRenderTask,
@@ -52,6 +53,7 @@ export interface TWorldConfig {
   defaultCollisionClass: string;
   collisionClasses: TCollisionClass[];
   physicsScale?: number;
+  lighting?: TSerializedLighting;
 }
 
 export type TPhysicsMode = '2d' | '3d';
@@ -263,6 +265,10 @@ export default class TWorld {
     );
 
     return stats;
+  }
+
+  public getLighting(): TSerializedLighting {
+    return this.config.lighting || {};
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {

@@ -1,0 +1,24 @@
+# Lighting
+
+Example showing ambient and directional lighting.
+Use the sliders to adjust strength of the ambient light, and the direction of the directional light.
+
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useIsBrowser();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      aspectRatio="auto"
+      game={
+        new Worker(new URL('@examples/3d/lighting.ts', import.meta.url))
+      }
+    />
+  );
+};
+
+<Game />

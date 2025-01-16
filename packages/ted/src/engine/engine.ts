@@ -203,6 +203,7 @@ export default class TEngine {
 
     const params: TFrameParams = {
       frameNumber: this.frameNumber,
+      lighting: this.gameState.getLighting(),
       renderTasks: this.gameState.getRenderTasks(),
       cameraView: camera.getView(),
       projectionMatrix: camera.getProjectionMatrix(

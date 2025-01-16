@@ -11,10 +11,10 @@ export default {
         `,
     main: `
         vec4 normal = normalize(uMMatrix * vec4(vNormal.xyz, 0.0));
-        float light = dot(vec3(normal.xyz), normalize(-vec3(uLightDirection.xyz)));
+        float light = dot(vec3(normal.xyz), uLightDirection);
         vec4 color = vColor;
 
-        float brightness = light * (0.7 - uAmbientLight) + uAmbientLight;
+        float brightness = min(1.0, max(0.0, light) + uAmbientLight);
         outputColor = vec4(color.rgb * brightness, 1.0);
         `,
   },

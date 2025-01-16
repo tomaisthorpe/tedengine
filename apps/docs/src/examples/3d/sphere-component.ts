@@ -30,6 +30,11 @@ class SphereState extends TGameState {
     this.addActor(orbitCamera);
 
     this.activeCamera = orbitCamera;
+
+    this.world.config.lighting = {
+      ambientLight: 0.1,
+      directionalLight: vec3.fromValues(-0.5, 0.7, 0.2),
+    };
   }
 }
 

@@ -1,5 +1,5 @@
 // TFrameParams is used to tell the rendered how to render a frame.
-import type { mat4, vec4, vec2 } from 'gl-matrix';
+import type { mat4, vec4, vec2, vec3 } from 'gl-matrix';
 import type { TSpriteLayer } from '../actor-components/sprite-component';
 import type { TCameraView } from '../cameras/camera-view';
 import type { TPalette } from '../graphics/color-material';
@@ -7,6 +7,7 @@ import type { TPalette } from '../graphics/color-material';
 // It must be only made up of only transferable objects.
 export interface TFrameParams {
   frameNumber: number;
+  lighting: TSerializedLighting;
   renderTasks: TSerializedRenderTask[];
   cameraView: TCameraView;
   projectionMatrix: mat4;
@@ -14,6 +15,11 @@ export interface TFrameParams {
 
 export interface TSerializedShader {
   uuid: string;
+}
+
+export interface TSerializedLighting {
+  ambientLight?: number;
+  directionalLight?: vec3;
 }
 
 export type TSerializedRenderTask =
