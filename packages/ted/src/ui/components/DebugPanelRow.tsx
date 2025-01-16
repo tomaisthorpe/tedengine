@@ -62,10 +62,11 @@ const RowInput = styled.input`
 
 const RowInputValueBubble = styled.div`
   position: absolute;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(25, 25, 25);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 2px 4px;
   display: none;
+  z-index: 1001;
 `;
 
 const RowInputContainer = styled.div`
