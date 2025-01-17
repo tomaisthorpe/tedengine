@@ -27,7 +27,8 @@ ${before}
 
 uniform Lighting {
   vec4 uAmbientLight;
-  vec3 uLightDirection;
+  vec3 uDirectionalLightDir;
+  vec4 uDirectionalLight;
 };
 
 void main() {

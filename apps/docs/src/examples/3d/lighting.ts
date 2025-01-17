@@ -48,7 +48,10 @@ class MeshState extends TGameState {
 
     this.world.config.lighting = {
       ambientLightIntensity: 0.1,
-      directionalLight: vec3.fromValues(-0.5, 0.7, 0.2),
+      directionalLight: {
+        direction: vec3.fromValues(-0.5, 0.7, 0.2),
+        intensity: 1,
+      },
     };
 
     const section = engine.debugPanel.addSection('Lighting', true);
@@ -70,9 +73,10 @@ class MeshState extends TGameState {
     section.addInput(
       'Directional Light [x]',
       'range',
-      this.world.config.lighting.directionalLight[0].toString(),
+      this.world.config.lighting.directionalLight.direction[0].toString(),
       (value) => {
-        this.world.config.lighting.directionalLight[0] = parseFloat(value);
+        this.world.config.lighting.directionalLight.direction[0] =
+          parseFloat(value);
       },
       {
         min: -1,
@@ -85,9 +89,10 @@ class MeshState extends TGameState {
     section.addInput(
       'Directional Light [y]',
       'range',
-      this.world.config.lighting.directionalLight[1].toString(),
+      this.world.config.lighting.directionalLight.direction[1].toString(),
       (value) => {
-        this.world.config.lighting.directionalLight[1] = parseFloat(value);
+        this.world.config.lighting.directionalLight.direction[1] =
+          parseFloat(value);
       },
       {
         min: -1,
@@ -100,12 +105,29 @@ class MeshState extends TGameState {
     section.addInput(
       'Directional Light [z]',
       'range',
-      this.world.config.lighting.directionalLight[2].toString(),
+      this.world.config.lighting.directionalLight.direction[2].toString(),
       (value) => {
-        this.world.config.lighting.directionalLight[2] = parseFloat(value);
+        this.world.config.lighting.directionalLight.direction[2] =
+          parseFloat(value);
       },
       {
         min: -1,
+        max: 1,
+        step: 0.1,
+        showValueBubble: true,
+      },
+    );
+
+    section.addInput(
+      'Directional Light Intensity',
+      'range',
+      this.world.config.lighting.directionalLight.intensity.toString(),
+      (value) => {
+        this.world.config.lighting.directionalLight.intensity =
+          parseFloat(value);
+      },
+      {
+        min: 0,
         max: 1,
         step: 0.1,
         showValueBubble: true,

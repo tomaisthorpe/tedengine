@@ -43,10 +43,12 @@ export default class TRenderer {
   private lightingUniformBuffer?: WebGLBuffer;
   private lightingUniformBufferOffsets: {
     ambientLight: number;
-    lightDirection: number;
+    directionalLightDir: number;
+    directionalLight: number;
   } = {
     ambientLight: 0,
-    lightDirection: 0,
+    directionalLightDir: 0,
+    directionalLight: 0,
   };
 
   constructor(
@@ -110,12 +112,15 @@ export default class TRenderer {
     const uboUniforms = probeProgram.program!.getUniformOffsets(gl, [
       'uVPMatrix',
       'uAmbientLight',
-      'uLightDirection',
+      'uDirectionalLightDir',
+      'uDirectionalLight',
     ]);
 
     this.globalUniformBufferOffsets.vpMatrix = uboUniforms[0];
     this.lightingUniformBufferOffsets.ambientLight = uboUniforms[1];
-    this.lightingUniformBufferOffsets.lightDirection = uboUniforms[2];
+    this.lightingUniformBufferOffsets.directionalLightDir = uboUniforms[2];
+    this.lightingUniformBufferOffsets.directionalLight = uboUniforms[3];
+
     const index = gl.getUniformBlockIndex(
       this.colorProgram.program!.program!,
       'Global',
@@ -185,17 +190,48 @@ export default class TRenderer {
       0,
     );
 
-    const directionalLight = vec3.normalize(
-      vec3.create(),
-      frameParams.lighting.directionalLight || [0, 0, 0],
-    );
+    const directionalLight = frameParams.lighting.directionalLight;
+    if (directionalLight) {
+      const directionalLightDir = vec3.normalize(
+        vec3.create(),
+        directionalLight.direction,
+      );
 
-    gl.bufferSubData(
-      gl.UNIFORM_BUFFER,
-      this.lightingUniformBufferOffsets.lightDirection,
-      new Float32Array(directionalLight),
-      0,
-    );
+      gl.bufferSubData(
+        gl.UNIFORM_BUFFER,
+        this.lightingUniformBufferOffsets.directionalLightDir,
+        new Float32Array(directionalLightDir),
+        0,
+      );
+
+      const directionalLightColor =
+        directionalLight.color || vec3.fromValues(1, 1, 1);
+      gl.bufferSubData(
+        gl.UNIFORM_BUFFER,
+        this.lightingUniformBufferOffsets.directionalLight,
+        new Float32Array([
+          directionalLightColor[0],
+          directionalLightColor[1],
+          directionalLightColor[2],
+          directionalLight.intensity,
+        ]),
+        0,
+      );
+    } else {
+      gl.bufferSubData(
+        gl.UNIFORM_BUFFER,
+        this.lightingUniformBufferOffsets.directionalLightDir,
+        new Float32Array([0, 0, 0]),
+        0,
+      );
+
+      gl.bufferSubData(
+        gl.UNIFORM_BUFFER,
+        this.lightingUniformBufferOffsets.directionalLight,
+        new Float32Array([0, 0, 0, 0]),
+        0,
+      );
+    }
 
     gl.bindBuffer(gl.UNIFORM_BUFFER, null);
 
