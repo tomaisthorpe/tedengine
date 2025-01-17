@@ -5,6 +5,7 @@ import type { TDebugPanelRowSerializedData } from '../../debug/debug-panel-row';
 import type { TDebugActionEvent } from '../../debug/events';
 import { TEventTypesDebug } from '../../debug/events';
 import type { TFredStats } from '../../fred/fred';
+import DebugPanelColorPickerRow from './DebugPanelColorPickerRow';
 
 interface Props {
   row: TDebugPanelRowSerializedData;
@@ -239,6 +240,26 @@ const SelectRow = ({
   </RowSelect>
 );
 
+const ColorPickerRow = ({
+  row,
+  events,
+}: {
+  row: TDebugPanelRowSerializedData;
+  events: TEventQueue;
+}) => (
+  <DebugPanelColorPickerRow
+    color={row.data.value}
+    onChange={(color) => {
+      const event: TDebugActionEvent = {
+        type: TEventTypesDebug.Action,
+        subType: row.uuid,
+        data: color,
+      };
+      events.broadcast(event);
+    }}
+  />
+);
+
 const typeToComponent: {
   [key: string]: ({
     row,
@@ -255,6 +276,7 @@ const typeToComponent: {
   checkbox: CheckboxRow,
   select: SelectRow,
   fredValue: FredValueRow,
+  colorPicker: ColorPickerRow,
 };
 
 export default function DebugPanelRow({ row, events, fredValues }: Props) {

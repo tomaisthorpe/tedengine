@@ -15,6 +15,8 @@ import type { TDebugSelectOption } from './debug-panel-select';
 import TDebugPanelSelect from './debug-panel-select';
 import TDebugPanelValue from './debug-panel-value';
 import type { TUpdateFunction } from './debug-panel-value';
+import TDebugPanelColorPicker from './debug-panel-color-picker';
+import type { vec3 } from 'gl-matrix';
 
 export interface TDebugPanelSectionSerializedData {
   uuid: string;
@@ -31,7 +33,7 @@ export default class TDebugPanelSection {
   constructor(
     protected events: TEventQueue,
     public name: string,
-    public startOpen: boolean
+    public startOpen: boolean,
   ) {
     this.uuid = uuid();
   }
@@ -53,7 +55,7 @@ export default class TDebugPanelSection {
   public addValue(
     label: string,
     updateFunction: TUpdateFunction,
-    indentLevel = 0
+    indentLevel = 0,
   ): TDebugPanelValue {
     const row = new TDebugPanelValue(label, updateFunction, indentLevel);
     this.rows.push(row);
@@ -92,7 +94,7 @@ export default class TDebugPanelSection {
     inputType: TDebugInputTypes,
     startingValue: string,
     onChange: (value: string) => void,
-    inputProps?: TDebugInputProps
+    inputProps?: TDebugInputProps,
   ): TDebugPanelInput {
     const row = new TDebugPanelInput(
       this.events,
@@ -100,7 +102,7 @@ export default class TDebugPanelSection {
       inputType,
       startingValue,
       onChange,
-      inputProps
+      inputProps,
     );
     this.rows.push(row);
 
@@ -113,13 +115,13 @@ export default class TDebugPanelSection {
   public addCheckbox(
     label: string,
     startingValue: boolean,
-    onChange: (value: boolean) => void
+    onChange: (value: boolean) => void,
   ): TDebugPanelCheckbox {
     const row = new TDebugPanelCheckbox(
       this.events,
       label,
       startingValue,
-      onChange
+      onChange,
     );
     this.rows.push(row);
 
@@ -133,14 +135,30 @@ export default class TDebugPanelSection {
     label: string,
     options: TDebugSelectOption[],
     startingValue: string,
-    onChange: (value: string) => void
+    onChange: (value: string) => void,
   ) {
     const row = new TDebugPanelSelect(
       this.events,
       label,
       options,
       startingValue,
-      onChange
+      onChange,
+    );
+    this.rows.push(row);
+
+    return row;
+  }
+
+  public addColorPicker(
+    label: string,
+    startingValue: vec3,
+    onChange: (value: vec3) => void,
+  ): TDebugPanelColorPicker {
+    const row = new TDebugPanelColorPicker(
+      this.events,
+      label,
+      startingValue,
+      onChange,
     );
     this.rows.push(row);
 

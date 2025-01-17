@@ -65,7 +65,10 @@ class MeshState extends TGameState {
 
     this.world.config.lighting = {
       ambientLightIntensity: 0.1,
-      directionalLight: vec3.fromValues(-0.5, 0.7, 0.2),
+      directionalLight: {
+        direction: vec3.fromValues(-0.5, 0.7, 0.2),
+        intensity: 1,
+      },
     };
   }
 }

@@ -31,7 +31,10 @@ class BoxState extends TGameState {
 
     this.world.config.lighting = {
       ambientLightIntensity: 0.5,
-      directionalLight: vec3.fromValues(0, 1, 0),
+      directionalLight: {
+        direction: vec3.fromValues(0, 1, 0),
+        intensity: 1,
+      },
     };
   }
 }
