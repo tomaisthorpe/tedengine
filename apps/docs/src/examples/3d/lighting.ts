@@ -47,8 +47,10 @@ class MeshState extends TGameState {
     this.activeCamera = orbitCamera;
 
     this.world.config.lighting = {
-      ambientLightIntensity: 0.1,
-      ambientLightColor: vec3.fromValues(1, 1, 1),
+      ambientLight: {
+        intensity: 0.1,
+        color: vec3.fromValues(1, 1, 1),
+      },
       directionalLight: {
         direction: vec3.fromValues(-0.5, 0.7, 0.2),
         intensity: 1,
@@ -60,9 +62,9 @@ class MeshState extends TGameState {
     section.addInput(
       'Ambient Light Intensity',
       'range',
-      this.world.config.lighting.ambientLightIntensity.toString(),
+      this.world.config.lighting.ambientLight.intensity.toString(),
       (value) => {
-        this.world.config.lighting.ambientLightIntensity = parseFloat(value);
+        this.world.config.lighting.ambientLight.intensity = parseFloat(value);
       },
       {
         min: 0,
@@ -74,9 +76,9 @@ class MeshState extends TGameState {
 
     section.addColorPicker(
       'Ambient Light Color',
-      this.world.config.lighting.ambientLightColor,
+      this.world.config.lighting.ambientLight.color,
       (value) => {
-        this.world.config.lighting.ambientLightColor = value;
+        this.world.config.lighting.ambientLight.color = value;
       },
     );
 
@@ -145,7 +147,7 @@ class MeshState extends TGameState {
     );
 
     section.addColorPicker(
-      'Directional Light Color [r]',
+      'Directional Light Color',
       this.world.config.lighting.directionalLight.color,
       (value) => {
         this.world.config.lighting.directionalLight.color = value;
