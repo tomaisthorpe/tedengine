@@ -167,13 +167,19 @@ export default class TRenderer {
       0,
     );
 
+    const ambientLightColor =
+      frameParams.lighting.ambientLightColor || vec3.fromValues(1, 1, 1);
+
     gl.bindBuffer(gl.UNIFORM_BUFFER, this.lightingUniformBuffer!);
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
       this.lightingUniformBufferOffsets.ambientLight,
       new Float32Array([
-        frameParams.lighting.ambientLight !== undefined
-          ? frameParams.lighting.ambientLight
+        ambientLightColor[0],
+        ambientLightColor[1],
+        ambientLightColor[2],
+        frameParams.lighting.ambientLightIntensity !== undefined
+          ? frameParams.lighting.ambientLightIntensity
           : 1.0,
       ]),
       0,

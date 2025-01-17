@@ -26,7 +26,7 @@ precision mediump float;
 ${before}
 
 uniform Lighting {
-  float uAmbientLight;
+  vec4 uAmbientLight;
   vec3 uLightDirection;
 };
 

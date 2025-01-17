@@ -18,7 +18,8 @@ export interface TSerializedShader {
 }
 
 export interface TSerializedLighting {
-  ambientLight?: number;
+  ambientLightIntensity?: number;
+  ambientLightColor?: vec3;
   directionalLight?: vec3;
 }
 
