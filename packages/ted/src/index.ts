@@ -80,6 +80,9 @@ export { default as TMesh } from './graphics/mesh';
 export { default as TTexture } from './graphics/texture';
 export * from './graphics/texture';
 
+export * from './renderer/frame-buffer';
+export { default as TFrameBuffer } from './renderer/frame-buffer';
+
 export { default as TTilemap } from './graphics/tilemap';
 export * from './graphics/tilemap';
 
