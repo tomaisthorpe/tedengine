@@ -42,7 +42,7 @@ export default class TRenderableMesh implements IAsset {
     gl: WebGL2RenderingContext,
     colorProgram: TColorProgram,
     palette: TPalette,
-    m: mat4
+    m: mat4,
   ) {
     if (this.positionBuffer === undefined) {
       this.createBuffers(gl);
@@ -67,19 +67,20 @@ export default class TRenderableMesh implements IAsset {
     // Bind the index buffer
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
+    gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.uniform1i(colorProgram.getPaletteUniformLocation(gl)!, 0);
 
     gl.uniform1f(
       colorProgram.getPaletteSizeUniformLocation(gl)!,
-      this.paletteSize
+      this.paletteSize,
     );
 
     // Send the m
     gl.uniformMatrix4fv(
       colorProgram.program!.uniformLocations.mMatrix,
       false,
-      m
+      m,
     );
 
     const vertexCount = this.indexes.length;
@@ -92,7 +93,7 @@ export default class TRenderableMesh implements IAsset {
   private createVAO(
     gl: WebGL2RenderingContext,
     program: TProgram,
-    palette: TPalette
+    palette: TPalette,
   ) {
     const { vertexPosition, normalPosition, colorPosition } =
       program.attribLocations;
@@ -114,7 +115,7 @@ export default class TRenderableMesh implements IAsset {
         type,
         normalize,
         stride,
-        offset
+        offset,
       );
 
       gl.enableVertexAttribArray(vertexPosition);
@@ -135,7 +136,7 @@ export default class TRenderableMesh implements IAsset {
         type,
         normalize,
         stride,
-        offset
+        offset,
       );
 
       gl.enableVertexAttribArray(normalPosition);
@@ -156,7 +157,7 @@ export default class TRenderableMesh implements IAsset {
         type,
         normalize,
         stride,
-        offset
+        offset,
       );
 
       gl.enableVertexAttribArray(colorPosition);
@@ -204,7 +205,7 @@ export default class TRenderableMesh implements IAsset {
         border,
         format,
         type,
-        data
+        data,
       );
     }
 
@@ -229,7 +230,7 @@ export default class TRenderableMesh implements IAsset {
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array(this.positions),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     this.normalBuffer = gl.createBuffer()!;
@@ -237,7 +238,7 @@ export default class TRenderableMesh implements IAsset {
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array(this.normals),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     this.indexBuffer = gl.createBuffer()!;
@@ -245,7 +246,7 @@ export default class TRenderableMesh implements IAsset {
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
       new Uint16Array(this.indexes),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     this.colorBuffer = gl.createBuffer()!;
@@ -253,7 +254,7 @@ export default class TRenderableMesh implements IAsset {
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array(this.colors),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
   }
 

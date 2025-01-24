@@ -47,6 +47,9 @@ class MeshState extends TGameState {
     this.activeCamera = orbitCamera;
 
     this.world.config.lighting = {
+      shadows: {
+        enabled: true,
+      },
       ambientLight: {
         intensity: 0.1,
         color: vec3.fromValues(1, 1, 1),
@@ -151,6 +154,14 @@ class MeshState extends TGameState {
       this.world.config.lighting.directionalLight.color,
       (value) => {
         this.world.config.lighting.directionalLight.color = value;
+      },
+    );
+
+    section.addCheckbox(
+      'Shadows Enabled',
+      this.world.config.lighting.shadows?.enabled,
+      (value) => {
+        this.world.config.lighting.shadows.enabled = value;
       },
     );
   }

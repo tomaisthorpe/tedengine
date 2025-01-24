@@ -8,9 +8,7 @@ import phongFrag from '../shaders/chunks/phong-frag';
 export default class TColorProgram {
   public program?: TProgram;
 
-  constructor(
-    private renderer: TRenderer,
-  ) {}
+  constructor(private renderer: TRenderer) {}
 
   public async load() {
     const paletteShader = generateShader(mainBase, [paletteChunk, phongFrag]);
@@ -21,14 +19,32 @@ export default class TColorProgram {
   }
 
   public getPaletteUniformLocation(
-    gl: WebGL2RenderingContext
+    gl: WebGL2RenderingContext,
   ): WebGLUniformLocation | undefined {
     return this.program?.getUniformLocation(gl, 'uPalette');
   }
 
+  public getDepthTextureUniformLocation(
+    gl: WebGL2RenderingContext,
+  ): WebGLUniformLocation | undefined {
+    return this.program?.getUniformLocation(gl, 'uDepthTexture');
+  }
+
   public getPaletteSizeUniformLocation(
-    gl: WebGL2RenderingContext
+    gl: WebGL2RenderingContext,
   ): WebGLUniformLocation | undefined {
     return this.program?.getUniformLocation(gl, 'uPaletteSize');
+  }
+
+  public getDepthMatrixUniformLocation(
+    gl: WebGL2RenderingContext,
+  ): WebGLUniformLocation | undefined {
+    return this.program?.getUniformLocation(gl, 'uDepthMatrix');
+  }
+
+  public getShadowsEnabledUniformLocation(
+    gl: WebGL2RenderingContext,
+  ): WebGLUniformLocation | undefined {
+    return this.program?.getUniformLocation(gl, 'uShadowsEnabled');
   }
 }

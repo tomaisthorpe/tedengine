@@ -118,19 +118,20 @@ export default class TProgram implements IAsset {
       this.program,
       'uMMatrix',
     );
+
     this.uniformLocations.uPalette = gl.getUniformLocation(
       this.program,
       'uPalette',
     );
 
-    this.uniformLocations.uInstanceUVScale = gl.getUniformLocation(
-      this.program,
-      'uInstanceUVScale',
-    );
-
     this.uniformLocations.uEnableInstanceUVs = gl.getUniformLocation(
       this.program,
       'uEnableInstanceUVs',
+    );
+
+    this.uniformLocations.uTexture = gl.getUniformLocation(
+      this.program,
+      'uDepthTexture',
     );
   }
 
@@ -158,10 +159,7 @@ export default class TProgram implements IAsset {
     gl: WebGL2RenderingContext,
     uniforms: string[],
   ): number[] {
-    const uboVariableIndices = gl.getUniformIndices(
-      this.program!,
-      uniforms,
-    );
+    const uboVariableIndices = gl.getUniformIndices(this.program!, uniforms);
 
     if (!uboVariableIndices) {
       throw new Error('Could not get uniform indices');

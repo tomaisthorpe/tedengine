@@ -18,6 +18,9 @@ export interface TSerializedShader {
 }
 
 export interface TSerializedLighting {
+  shadows?: {
+    enabled?: boolean;
+  };
   ambientLight?: {
     intensity: number;
     color?: vec3;

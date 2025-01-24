@@ -248,7 +248,7 @@ export default class MTLFile {
   _parseKa(lineItems: string[]) {
     if (lineItems.length !== 4) {
       this._notImplemented(
-        'Ka statements must have exactly 3 arguments (only Ka R G B syntax is supported'
+        'Ka statements must have exactly 3 arguments (only Ka R G B syntax is supported',
       );
       return;
     }
@@ -267,7 +267,7 @@ export default class MTLFile {
   _parseKd(lineItems: string[]) {
     if (lineItems.length !== 4) {
       this._notImplemented(
-        'Kd statements must have exactly 3 arguments (only Kd R G B syntax is supported'
+        'Kd statements must have exactly 3 arguments (only Kd R G B syntax is supported',
       );
       return;
     }
@@ -286,7 +286,7 @@ export default class MTLFile {
   _parseKs(lineItems: string[]) {
     if (lineItems.length !== 4) {
       this._notImplemented(
-        'Ks statements must have exactly 3 arguments (only Ks R G B syntax is supported'
+        'Ks statements must have exactly 3 arguments (only Ks R G B syntax is supported',
       );
       return;
     }
@@ -303,7 +303,7 @@ export default class MTLFile {
   _parseKStatementRGB(lineItems: string[]) {
     if (lineItems.length < 4) {
       this._fileError(
-        'to few arguments, expected: Ka/Kd/Ks keyword followed by: r g b values'
+        'to few arguments, expected: Ka/Kd/Ks keyword followed by: r g b values',
       );
     }
     if (lineItems[1].toLowerCase() === 'spectral') {
@@ -426,7 +426,7 @@ export default class MTLFile {
   }
 
   _notImplemented(message: string) {
-    console.warn(`MTL file statement not implemented: ${message}`);
+    console.debug(`MTL file statement not implemented: ${message}`);
   }
 
   _fileError(message: string) {

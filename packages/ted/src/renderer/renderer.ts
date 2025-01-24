@@ -1,5 +1,5 @@
 // @todo has limited error handling
-import { vec3, type mat4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 import { TSpriteLayer } from '../actor-components/sprite-component';
 import type TResourceManager from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
@@ -17,6 +17,7 @@ import { TEventTypesRenderer } from './events';
 import TPhysicsDebugProgram from './physics-debug-program';
 import TPhysicsDebug from './physics-debug';
 import TProbeProgram from './probe-program';
+import TFrameBuffer from './frame-buffer';
 
 export default class TRenderer {
   private registeredPrograms: { [key: string]: TProgram } = {};
@@ -29,6 +30,8 @@ export default class TRenderer {
   private physicsDebugProgram?: TPhysicsDebugProgram;
 
   private physicsDebug?: TPhysicsDebug;
+
+  private shadowMap?: TFrameBuffer;
 
   // @todo remove, needed for input atm
   public projectionMatrix?: mat4;
@@ -69,9 +72,7 @@ export default class TRenderer {
     gl.clearColor(0.2, 0.2, 0.4, 1);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-
-    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    // gl.depthFunc(gl.LEQUAL);
 
     // Load probe program so we can determine the size of the UBO
     const probeProgram = new TProbeProgram(this);
@@ -148,6 +149,13 @@ export default class TRenderer {
       pIndex,
       0,
     );
+
+    // Create shadow map buffers
+    // This will only be used if shadows are enabled
+    this.shadowMap = new TFrameBuffer(gl, {
+      width: 1024,
+      height: 1024,
+    });
   }
 
   public context(): WebGL2RenderingContext {
@@ -156,8 +164,100 @@ export default class TRenderer {
     })!;
   }
 
+  private renderShadowMap(
+    gl: WebGL2RenderingContext,
+    frameParams: TFrameParams,
+  ): {
+    depthTexture?: WebGLTexture;
+    depthProjectionMatrix?: mat4;
+    depthViewMatrix?: mat4;
+  } {
+    // Currently only directional light is supported
+    // So if shadows are not enabled or there is no directional light, we can skip the shadow map
+    if (
+      !frameParams.lighting.shadows?.enabled ||
+      !frameParams.lighting.directionalLight
+    ) {
+      return {};
+    }
+
+    this.shadowMap?.bind();
+
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer!);
+
+    // shadow map uses a projection map that is based on directional light
+    const directionalLight = frameParams.lighting.directionalLight!;
+    const directionalLightDir = vec3.normalize(
+      vec3.create(),
+      directionalLight.direction,
+    );
+
+    // Create a projection
+    // Not sure what these values should be
+    const projectionMatrix = mat4.perspective(
+      mat4.create(),
+      (45 * Math.PI) / 180,
+      1,
+      2,
+      100,
+    );
+    // Light position, based on directional light
+    const lightPosition = vec3.scale(vec3.create(), directionalLightDir, 4);
+    const viewMatrix = mat4.lookAt(
+      mat4.create(),
+      lightPosition,
+      vec3.create(),
+      vec3.fromValues(0, 1, 0),
+    );
+
+    const vpMatrix = mat4.multiply(mat4.create(), projectionMatrix, viewMatrix);
+
+    gl.bufferSubData(
+      gl.UNIFORM_BUFFER,
+      this.globalUniformBufferOffsets.vpMatrix,
+      new Float32Array(vpMatrix),
+      0,
+    );
+
+    gl.bindBuffer(gl.UNIFORM_BUFFER, null);
+
+    for (const task of frameParams.renderTasks) {
+      if (
+        task.type === TRenderTask.MeshInstance &&
+        task.material.type === 'color'
+      ) {
+        gl.useProgram(this.colorProgram!.program!.program!);
+
+        const mesh = this.registeredMeshes[task.uuid];
+        mesh.render(
+          gl,
+          this.colorProgram!,
+          task.material.options['palette'] as TPalette,
+          task.transform,
+        );
+      }
+    }
+
+    this.shadowMap?.unbind();
+
+    return {
+      depthTexture: this.shadowMap!.depthTexture,
+      depthProjectionMatrix: projectionMatrix,
+      depthViewMatrix: viewMatrix,
+    };
+  }
+
   public render(frameParams: TFrameParams) {
     const gl = this.context();
+
+    const { depthProjectionMatrix, depthViewMatrix } = this.renderShadowMap(
+      gl,
+      frameParams,
+    );
+
+    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
     // Clear the scene
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -270,6 +370,58 @@ export default class TRenderer {
       if (task.material.type === 'color') {
         gl.useProgram(this.colorProgram!.program!.program!);
 
+        if (depthProjectionMatrix && depthViewMatrix) {
+          const depthTexture = this.shadowMap?.depthTexture;
+          const textureUniformLocation =
+            this.colorProgram?.getDepthTextureUniformLocation(gl);
+          if (textureUniformLocation && depthTexture) {
+            gl.uniform1i(textureUniformLocation, 1);
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+
+            const depthMatrixUniformLocation =
+              this.colorProgram?.getDepthMatrixUniformLocation(gl);
+            if (depthMatrixUniformLocation) {
+              let depthTextureMatrix = mat4.identity(mat4.create());
+
+              depthTextureMatrix = mat4.multiply(
+                depthTextureMatrix,
+                depthTextureMatrix,
+                depthProjectionMatrix,
+              );
+              depthTextureMatrix = mat4.multiply(
+                depthTextureMatrix,
+                depthTextureMatrix,
+                depthViewMatrix,
+              );
+
+              gl.uniformMatrix4fv(
+                depthMatrixUniformLocation,
+                false,
+                depthTextureMatrix,
+              );
+
+              const shadowsEnabledUniformLocation =
+                this.colorProgram?.getShadowsEnabledUniformLocation(gl);
+              if (shadowsEnabledUniformLocation) {
+                gl.uniform1f(shadowsEnabledUniformLocation, 1);
+              }
+            }
+          } else {
+            const shadowsEnabledUniformLocation =
+              this.colorProgram?.getShadowsEnabledUniformLocation(gl);
+            if (shadowsEnabledUniformLocation) {
+              gl.uniform1f(shadowsEnabledUniformLocation, 0);
+            }
+          }
+        } else {
+          const shadowsEnabledUniformLocation =
+            this.colorProgram?.getShadowsEnabledUniformLocation(gl);
+          if (shadowsEnabledUniformLocation) {
+            gl.uniform1f(shadowsEnabledUniformLocation, 0);
+          }
+        }
+
         const mesh = this.registeredMeshes[task.uuid];
         mesh.render(
           gl,
@@ -277,6 +429,11 @@ export default class TRenderer {
           task.material.options['palette'] as TPalette,
           task.transform,
         );
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        // gl.bindTexture(gl.TEXTURE_2D, null);
       } else if (task.material.type === 'textured') {
         gl.useProgram(this.texturedProgram!.program!.program!);
 
