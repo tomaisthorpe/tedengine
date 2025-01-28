@@ -119,19 +119,9 @@ export default class TProgram implements IAsset {
       'uMMatrix',
     );
 
-    this.uniformLocations.uPalette = gl.getUniformLocation(
-      this.program,
-      'uPalette',
-    );
-
     this.uniformLocations.uEnableInstanceUVs = gl.getUniformLocation(
       this.program,
       'uEnableInstanceUVs',
-    );
-
-    this.uniformLocations.uTexture = gl.getUniformLocation(
-      this.program,
-      'uDepthTexture',
     );
   }
 

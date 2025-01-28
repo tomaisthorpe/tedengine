@@ -373,14 +373,14 @@ export default class TRenderer {
         if (depthProjectionMatrix && depthViewMatrix) {
           const depthTexture = this.shadowMap?.depthTexture;
           const textureUniformLocation =
-            this.colorProgram?.getDepthTextureUniformLocation(gl);
+            this.colorProgram?.uniforms?.uDepthTexture;
           if (textureUniformLocation && depthTexture) {
             gl.uniform1i(textureUniformLocation, 1);
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, depthTexture);
 
             const depthMatrixUniformLocation =
-              this.colorProgram?.getDepthMatrixUniformLocation(gl);
+              this.colorProgram?.uniforms?.uDepthMatrix;
             if (depthMatrixUniformLocation) {
               let depthTextureMatrix = mat4.identity(mat4.create());
 
@@ -402,21 +402,21 @@ export default class TRenderer {
               );
 
               const shadowsEnabledUniformLocation =
-                this.colorProgram?.getShadowsEnabledUniformLocation(gl);
+                this.colorProgram?.uniforms?.uShadowsEnabled;
               if (shadowsEnabledUniformLocation) {
                 gl.uniform1f(shadowsEnabledUniformLocation, 1);
               }
             }
           } else {
             const shadowsEnabledUniformLocation =
-              this.colorProgram?.getShadowsEnabledUniformLocation(gl);
+              this.colorProgram?.uniforms?.uShadowsEnabled;
             if (shadowsEnabledUniformLocation) {
               gl.uniform1f(shadowsEnabledUniformLocation, 0);
             }
           }
         } else {
           const shadowsEnabledUniformLocation =
-            this.colorProgram?.getShadowsEnabledUniformLocation(gl);
+            this.colorProgram?.uniforms?.uShadowsEnabled;
           if (shadowsEnabledUniformLocation) {
             gl.uniform1f(shadowsEnabledUniformLocation, 0);
           }

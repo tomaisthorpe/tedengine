@@ -69,19 +69,12 @@ export default class TRenderableMesh implements IAsset {
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    gl.uniform1i(colorProgram.getPaletteUniformLocation(gl)!, 0);
+    gl.uniform1i(colorProgram.uniforms?.uPalette!, 0);
 
-    gl.uniform1f(
-      colorProgram.getPaletteSizeUniformLocation(gl)!,
-      this.paletteSize,
-    );
+    gl.uniform1f(colorProgram.uniforms?.uPaletteSize!, this.paletteSize);
 
     // Send the m
-    gl.uniformMatrix4fv(
-      colorProgram.program!.uniformLocations.mMatrix,
-      false,
-      m,
-    );
+    gl.uniformMatrix4fv(colorProgram.uniforms?.uMMatrix!, false, m);
 
     const vertexCount = this.indexes.length;
     const type = gl.UNSIGNED_SHORT;

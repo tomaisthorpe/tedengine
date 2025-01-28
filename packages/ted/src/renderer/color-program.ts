@@ -7,6 +7,14 @@ import phongFrag from '../shaders/chunks/phong-frag';
 
 export default class TColorProgram {
   public program?: TProgram;
+  public uniforms?: {
+    uPalette: WebGLUniformLocation | undefined;
+    uDepthTexture: WebGLUniformLocation | undefined;
+    uPaletteSize: WebGLUniformLocation | undefined;
+    uDepthMatrix: WebGLUniformLocation | undefined;
+    uShadowsEnabled: WebGLUniformLocation | undefined;
+    uMMatrix: WebGLUniformLocation | undefined;
+  };
 
   constructor(private renderer: TRenderer) {}
 
@@ -16,35 +24,14 @@ export default class TColorProgram {
 
     const gl = this.renderer.context();
     this.program.compile(gl);
-  }
 
-  public getPaletteUniformLocation(
-    gl: WebGL2RenderingContext,
-  ): WebGLUniformLocation | undefined {
-    return this.program?.getUniformLocation(gl, 'uPalette');
-  }
-
-  public getDepthTextureUniformLocation(
-    gl: WebGL2RenderingContext,
-  ): WebGLUniformLocation | undefined {
-    return this.program?.getUniformLocation(gl, 'uDepthTexture');
-  }
-
-  public getPaletteSizeUniformLocation(
-    gl: WebGL2RenderingContext,
-  ): WebGLUniformLocation | undefined {
-    return this.program?.getUniformLocation(gl, 'uPaletteSize');
-  }
-
-  public getDepthMatrixUniformLocation(
-    gl: WebGL2RenderingContext,
-  ): WebGLUniformLocation | undefined {
-    return this.program?.getUniformLocation(gl, 'uDepthMatrix');
-  }
-
-  public getShadowsEnabledUniformLocation(
-    gl: WebGL2RenderingContext,
-  ): WebGLUniformLocation | undefined {
-    return this.program?.getUniformLocation(gl, 'uShadowsEnabled');
+    this.uniforms = {
+      uPalette: this.program.getUniformLocation(gl, 'uPalette'),
+      uDepthTexture: this.program.getUniformLocation(gl, 'uDepthTexture'),
+      uPaletteSize: this.program.getUniformLocation(gl, 'uPaletteSize'),
+      uDepthMatrix: this.program.getUniformLocation(gl, 'uDepthMatrix'),
+      uShadowsEnabled: this.program.getUniformLocation(gl, 'uShadowsEnabled'),
+      uMMatrix: this.program.getUniformLocation(gl, 'uMMatrix'),
+    };
   }
 }
