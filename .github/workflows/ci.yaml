@@ -36,7 +36,7 @@ jobs:
       - run: npm ci
       - run: npx nx test ted --coverage
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
           path: coverage/packages/ted/
