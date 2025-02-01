@@ -62,6 +62,21 @@ export const RendererJobs: TJobConfigs = {
       return mesh.uuid;
     },
   },
+  load_textured_mesh_from_url: {
+    requiredContext: TJobContextTypes.Renderer,
+    func: async (ctx: TRenderJobContext, meshLocation: string) => {
+      const mesh = await ctx.resourceManager.load<TRenderableTexturedMesh>(
+        TRenderableTexturedMesh,
+        meshLocation,
+      );
+
+      if (!ctx.renderer.hasTexturedMesh(mesh.uuid)) {
+        ctx.renderer.registerTexturedMesh(mesh);
+      }
+
+      return mesh.uuid;
+    },
+  },
   load_textured_mesh: {
     requiredContext: TJobContextTypes.Renderer,
     func: async (

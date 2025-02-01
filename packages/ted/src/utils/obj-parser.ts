@@ -6,10 +6,18 @@ interface Vertex {
   z: number;
 }
 
+interface UV {
+  u: number;
+  v: number;
+  w: number;
+}
+
 export default class OBJParser {
   public static parse(content: string) {
     let vertices: Vertex[] = [];
     let normals: Vertex[] = [];
+    let uvs: UV[] = [];
+
     const unpacked: {
       colors: number[];
       index: number;
@@ -18,6 +26,7 @@ export default class OBJParser {
       normals: number[];
       vertices: number[];
       palette: { [key: string]: number };
+      uvs: number[];
     } = {
       palette: {},
       colors: [],
@@ -26,6 +35,7 @@ export default class OBJParser {
       indicesLookup: {},
       normals: [],
       vertices: [],
+      uvs: [],
     };
 
     let paletteCount = 0;
@@ -34,6 +44,7 @@ export default class OBJParser {
     for (const model of obj.models) {
       vertices = vertices.concat(model.vertices);
       normals = normals.concat(model.vertexNormals);
+      uvs = uvs.concat(model.textureCoords);
 
       for (const face of model.faces) {
         let color = paletteCount;
@@ -60,6 +71,7 @@ export default class OBJParser {
             // Get vertex and normal
             const vert = vertices[vertex.vertexIndex - 1];
             const normal = normals[vertex.vertexNormalIndex - 1];
+            const uv = uvs[vertex.textureCoordsIndex - 1];
 
             unpacked.vertices.push(vert.x as number);
             unpacked.vertices.push(vert.y as number);
@@ -69,6 +81,11 @@ export default class OBJParser {
             unpacked.normals.push(normal.z as number);
             unpacked.indices.push(unpacked.index);
             unpacked.colors.push(color);
+
+            if (uv) {
+              unpacked.uvs.push(uv.u as number);
+              unpacked.uvs.push(uv.v as number);
+            }
 
             unpacked.indicesLookup[hash] = unpacked.index;
             unpacked.index += 1;
@@ -83,6 +100,7 @@ export default class OBJParser {
       indices: unpacked.indices,
       normals: unpacked.normals,
       vertices: unpacked.vertices,
+      uvs: unpacked.uvs,
     };
   }
 }

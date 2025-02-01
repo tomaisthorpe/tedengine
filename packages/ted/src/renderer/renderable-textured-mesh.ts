@@ -4,15 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import type TProgram from './program';
 import type TRenderableTexture from './renderable-texture';
 import type TTexturedProgram from './textured-program';
+import type { IAsset } from '../core/resource-manager';
+import OBJParser from '../utils/obj-parser';
 
-export default class TRenderableTexturedMesh {
+export default class TRenderableTexturedMesh implements IAsset {
   public uuid: string = uuidv4();
 
   public positions: number[] = [];
   public normals: number[] = [];
   public indexes: number[] = [];
   public uvs: number[] = [];
-  public loaded = false;
 
   // Buffers
   private positionBuffer?: WebGLBuffer;
@@ -24,7 +25,15 @@ export default class TRenderableTexturedMesh {
   private instanceUVBuffer?: WebGLBuffer;
   private colorFilterUniformLocation?: WebGLUniformLocation;
 
+  private source?: string;
+
   private vao?: WebGLVertexArrayObject;
+
+  public async load(response: Response): Promise<void> {
+    this.source = await response.text();
+
+    this.parseModel();
+  }
 
   public render(
     gl: WebGL2RenderingContext,
@@ -239,5 +248,14 @@ export default class TRenderableTexturedMesh {
 
     // Data will be buffered at render time if provided
     this.instanceUVBuffer = gl.createBuffer()!;
+  }
+
+  private parseModel() {
+    const obj = OBJParser.parse(this.source!);
+
+    this.positions = obj.vertices;
+    this.normals = obj.normals;
+    this.indexes = obj.indices;
+    this.uvs = obj.uvs;
   }
 }

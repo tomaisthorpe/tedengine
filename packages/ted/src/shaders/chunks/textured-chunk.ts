@@ -23,7 +23,7 @@ export default {
       out vec4 outputColor;
     `,
     main: `
-      vec4 textureColor = texture(uTexture, vUV);
+      vec4 textureColor = texture(uTexture, vec2(vUV.x, 1.0 - vUV.y));
       outputColor = textureColor * uColorFilter;
     `,
   },

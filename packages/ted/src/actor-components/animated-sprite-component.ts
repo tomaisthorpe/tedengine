@@ -84,13 +84,13 @@ export default class TAnimatedSpriteComponent
 
     task.material.options.instanceUVs = [
       startX,
-      0,
+      1,
       startX,
-      1,
-      endX,
       0,
       endX,
       1,
+      endX,
+      0,
     ];
 
     return task;

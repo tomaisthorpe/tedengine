@@ -159,7 +159,7 @@ export default class TSpriteComponent extends TTexturedMeshComponent {
 
     const index = [0, 1, 2, 1, 3, 2];
 
-    const faceUVs = [0, 0, 0, 1, 1, 0, 1, 1];
+    const faceUVs = [0, 1, 0, 0, 1, 1, 1, 0];
 
     this.setMesh(this.engine, positions, normals, index, faceUVs);
   }

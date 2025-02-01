@@ -47,6 +47,15 @@ export default class TTexturedMeshComponent extends TSceneComponent {
     } as TSerializedMeshInstance;
   }
 
+  public async applyMesh(engine: TEngine, path: string) {
+    const mesh = engine.resources.get<TTexturedMesh>(path);
+
+    // @todo handle error if mesh is not found
+    if (mesh) {
+      this.mesh = mesh;
+    }
+  }
+
   public async setMesh(
     engine: TEngine,
     positions: number[],
@@ -54,6 +63,7 @@ export default class TTexturedMeshComponent extends TSceneComponent {
     indexes: number[],
     uvs: number[],
   ) {
+    console.log('set mesh');
     const mesh = new TTexturedMesh();
 
     // Load geometry on GPU

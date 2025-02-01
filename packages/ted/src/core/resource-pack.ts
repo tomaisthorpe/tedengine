@@ -4,6 +4,7 @@ import TColorMaterial from '../graphics/color-material';
 import TImage from '../graphics/image';
 import TMesh from '../graphics/mesh';
 import TTexture from '../graphics/texture';
+import TTexturedMesh from '../graphics/textured-mesh';
 import TTilemap from '../graphics/tilemap';
 import type { IAsset, IJobAsset } from './resource-manager';
 
@@ -16,6 +17,7 @@ export type TResource = string | TResourceWithConfig;
 
 export interface TResourcePackConfig {
   meshes?: TResource[];
+  texturedMeshes?: TResource[];
   materials?: TResource[];
   images?: TResource[];
   textures?: TResource[];
@@ -35,6 +37,10 @@ export default class TResourcePack {
       (reducedConfig, config) => {
         if (config.meshes) {
           reducedConfig.meshes!.push(...config.meshes);
+        }
+
+        if (config.texturedMeshes) {
+          reducedConfig.texturedMeshes!.push(...config.texturedMeshes);
         }
 
         if (config.materials) {
@@ -61,6 +67,7 @@ export default class TResourcePack {
       },
       {
         meshes: [],
+        texturedMeshes: [],
         materials: [],
         images: [],
         textures: [],
@@ -78,6 +85,7 @@ export default class TResourcePack {
       [key: string]: { new (): IJobAsset | IAsset };
     } = {
       meshes: TMesh,
+      texturedMeshes: TTexturedMesh,
       materials: TColorMaterial,
       images: TImage,
       textures: TTexture,
