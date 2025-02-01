@@ -1,21 +1,17 @@
-import type TResourceManager from '../core/resource-manager';
-import basicShader from '../shaders/textured.program';
+import { generateShader } from '../shaders/chunked-shader';
+import texturedChunk from '../shaders/chunks/textured-chunk';
+import mainBase from '../shaders/bases/main';
+
 import TProgram from './program';
 import type TRenderer from './renderer';
 
 export default class TTexturedProgram {
   public program?: TProgram;
 
-  constructor(
-    private renderer: TRenderer,
-    private resourceManager: TResourceManager,
-  ) {}
+  constructor(private renderer: TRenderer) {}
 
   public async load() {
-    this.program = await this.resourceManager.load<TProgram>(
-      TProgram,
-      basicShader,
-    );
+    this.program = TProgram.from(generateShader(mainBase, [texturedChunk]));
 
     const gl = this.renderer.context();
     this.program.compile(gl);
