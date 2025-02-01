@@ -84,10 +84,7 @@ export default class TRenderer {
     this.texturedProgram = new TTexturedProgram(this, this.resourceManager);
     await this.texturedProgram.load();
 
-    this.physicsDebugProgram = new TPhysicsDebugProgram(
-      this,
-      this.resourceManager,
-    );
+    this.physicsDebugProgram = new TPhysicsDebugProgram(this);
     await this.physicsDebugProgram.load();
 
     this.physicsDebug = new TPhysicsDebug();

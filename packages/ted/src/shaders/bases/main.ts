@@ -11,7 +11,6 @@ uniform Global {
 };
 
 void main() {
-
   gl_Position = uVPMatrix * uMMatrix * aVertexPosition;
   ${main}
 }

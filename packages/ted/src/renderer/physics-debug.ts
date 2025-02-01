@@ -1,3 +1,4 @@
+import { mat4 } from 'gl-matrix';
 import type TPhysicsDebugProgram from './physics-debug-program';
 import type TProgram from './program';
 
@@ -21,7 +22,7 @@ export default class TPhysicsDebug {
       this.createVAO(gl, program.program!);
     }
 
-    if (!this.vao) {
+    if (!this.vao || !program.program) {
       return;
     }
 
@@ -43,6 +44,14 @@ export default class TPhysicsDebug {
     } else {
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, colors);
     }
+
+    // Base shader expects a model matrix
+    // @todo: use a different base shader
+    gl.uniformMatrix4fv(
+      program.program.getUniformLocation(gl, 'uMMatrix')!,
+      false,
+      mat4.identity(mat4.create()),
+    );
 
     gl.drawArrays(gl.LINES, 0, vertices.length / 3);
   }
