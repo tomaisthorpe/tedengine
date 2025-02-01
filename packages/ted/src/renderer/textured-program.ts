@@ -32,4 +32,10 @@ export default class TTexturedProgram {
   ): WebGLUniformLocation | undefined {
     return this.program?.getUniformLocation(gl, 'uColorFilter');
   }
+
+  public getInstanceUVScaleUniformLocation(
+    gl: WebGL2RenderingContext,
+  ): WebGLUniformLocation | undefined {
+    return this.program?.getUniformLocation(gl, 'uInstanceUVScale');
+  }
 }

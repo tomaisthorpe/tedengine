@@ -97,12 +97,12 @@ export default class TRenderableTexturedMesh {
 
     if (instanceUVScales) {
       gl.uniform2fv(
-        texturedProgram.program!.uniformLocations.uInstanceUVScale,
+        texturedProgram.getInstanceUVScaleUniformLocation(gl)!,
         new Float32Array(instanceUVScales),
       );
     } else {
       gl.uniform2fv(
-        texturedProgram.program!.uniformLocations.uInstanceUVScale,
+        texturedProgram.getInstanceUVScaleUniformLocation(gl)!,
         new Float32Array([1, 1]),
       );
     }
