@@ -3,6 +3,25 @@ import type { IAsset } from '../core/resource-manager';
 import type { TShader } from '../shaders/chunked-shader';
 import { TUniformManager } from './uniform-manager';
 
+export interface TAttributeBuffer {
+  buffer: WebGLBuffer;
+  size: number;
+  type: number;
+  normalized: boolean;
+}
+
+export interface TAttributeDefinition {
+  name: string;
+  size: number;
+  type: number;
+  normalized: boolean;
+}
+
+export interface TShaderAttributes {
+  required: TAttributeDefinition[];
+  optional: TAttributeDefinition[];
+}
+
 const compileShader = (
   gl: WebGL2RenderingContext,
   shaderSource: string,
@@ -94,33 +113,36 @@ export default class TProgram implements IAsset {
     this.compiled = true;
 
     this.uniformManager = new TUniformManager(gl, this.program);
-
-    this.attribLocations.vertexPosition = gl.getAttribLocation(
-      this.program,
-      'aVertexPosition',
-    );
-    this.attribLocations.normalPosition = gl.getAttribLocation(
-      this.program,
-      'aVertexNormal',
-    );
-    this.attribLocations.colorPosition = gl.getAttribLocation(
-      this.program,
-      'aVertexColor',
-    );
-    this.attribLocations.uvPosition = gl.getAttribLocation(
-      this.program,
-      'aVertexUV',
-    );
-    this.attribLocations.instanceUVPosition = gl.getAttribLocation(
-      this.program,
-      'aVertexInstanceUV',
-    );
   }
 
-  public getUniformLocation(
+  /**
+   * Set up attribute locations for this program
+   */
+  public setupAttributes(
     gl: WebGL2RenderingContext,
-    name: string,
-  ): WebGLUniformLocation | null {
+    attributes: TShaderAttributes,
+  ) {
+    if (!this.program) {
+      throw new Error('Program must be compiled before setting up attributes');
+    }
+
+    for (const attr of attributes.required) {
+      const location = gl.getAttribLocation(this.program, attr.name);
+      if (location === -1) {
+        throw new Error(
+          `Required attribute ${attr.name} not found in shader program`,
+        );
+      }
+      this.attribLocations[attr.name] = location;
+    }
+
+    for (const attr of attributes.optional) {
+      const location = gl.getAttribLocation(this.program, attr.name);
+      this.attribLocations[attr.name] = location;
+    }
+  }
+
+  public getUniformLocation(name: string): WebGLUniformLocation | null {
     if (!this.uniformManager) {
       throw new Error('Program not compiled');
     }

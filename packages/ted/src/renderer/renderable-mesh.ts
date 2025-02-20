@@ -6,10 +6,12 @@ import type { TPalette } from '../graphics/color-material';
 import OBJParser from '../utils/obj-parser';
 import type TColorProgram from './color-program';
 import type TProgram from './program';
+import type { TAttributeBuffer } from './program';
 
 export interface TPaletteIndex {
   [key: string]: number;
 }
+
 export default class TRenderableMesh implements IAsset {
   public uuid: string = uuidv4();
 
@@ -91,72 +93,44 @@ export default class TRenderableMesh implements IAsset {
     program: TProgram,
     palette: TPalette,
   ) {
-    const { vertexPosition, normalPosition, colorPosition } =
-      program.attribLocations;
-
     this.vao = gl.createVertexArray()!;
     gl.bindVertexArray(this.vao!);
 
-    // Position buffer
-    {
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer!);
-      gl.vertexAttribPointer(
-        vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
+    const buffers: { [key: string]: TAttributeBuffer } = {
+      aVertexPosition: {
+        buffer: this.positionBuffer!,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexNormal: {
+        buffer: this.normalBuffer!,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexColor: {
+        buffer: this.colorBuffer!,
+        size: 1,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+    };
 
-      gl.enableVertexAttribArray(vertexPosition);
-    }
-
-    if (normalPosition !== -1) {
-      // Normal buffer
-
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer!);
-      gl.vertexAttribPointer(
-        normalPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
-
-      gl.enableVertexAttribArray(normalPosition);
-    }
-
-    if (colorPosition !== -1) {
-      // Color buffer
-
-      const numComponents = 1;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer!);
-      gl.vertexAttribPointer(
-        colorPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
-
-      gl.enableVertexAttribArray(colorPosition);
+    for (const [name, location] of Object.entries(program.attribLocations)) {
+      if (location !== -1 && buffers[name]) {
+        const buffer = buffers[name];
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+        gl.vertexAttribPointer(
+          location,
+          buffer.size,
+          buffer.type,
+          buffer.normalized,
+          0,
+          0,
+        );
+        gl.enableVertexAttribArray(location);
+      }
     }
 
     // Create a texture.
@@ -213,12 +187,7 @@ export default class TRenderableMesh implements IAsset {
   }
 
   /**
-   * Creates the buffers and transfers trces.get<TMesh>(path);
-  }
-
-  public async applyMaterial(engine: TEngine, path: string) {
-    this.material = engine.resources.get<TColorMaterial>(path);
-  }he data
+   * Creates the buffers and transfers the data
    */
   private createBuffers(gl: WebGL2RenderingContext): void {
     this.positionBuffer = gl.createBuffer()!;

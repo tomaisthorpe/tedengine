@@ -1,3 +1,4 @@
+import type { TShaderAttributes } from './program';
 import TProgram from './program';
 import type TRenderer from './renderer';
 import mainBase from '../shaders/bases/main';
@@ -26,6 +27,18 @@ export default class TProbeProgram {
   public program?: TProgram;
   public uniforms?: ProbeProgramUniforms;
 
+  private static readonly ATTRIBUTES: TShaderAttributes = {
+    required: [
+      {
+        name: 'aVertexPosition',
+        size: 3,
+        type: WebGL2RenderingContext.FLOAT,
+        normalized: false,
+      },
+    ],
+    optional: [],
+  };
+
   constructor(private renderer: TRenderer) {}
 
   public async load() {
@@ -34,6 +47,8 @@ export default class TProbeProgram {
 
     const gl = this.renderer.context();
     this.program.compile(gl);
+
+    this.program.setupAttributes(gl, TProbeProgram.ATTRIBUTES);
 
     const globalBlock = this.program.setupUniformBlock(
       'Global',

@@ -1,11 +1,12 @@
 import type { mat4, vec2 } from 'gl-matrix';
 import { vec4 } from 'gl-matrix';
 import { v4 as uuidv4 } from 'uuid';
-import type TProgram from './program';
-import type TRenderableTexture from './renderable-texture';
-import type TTexturedProgram from './textured-program';
 import type { IAsset } from '../core/resource-manager';
 import OBJParser from '../utils/obj-parser';
+import type TProgram from './program';
+import type { TAttributeBuffer } from './program';
+import type TRenderableTexture from './renderable-texture';
+import type TTexturedProgram from './textured-program';
 
 export default class TRenderableTexturedMesh implements IAsset {
   public uuid: string = uuidv4();
@@ -15,18 +16,17 @@ export default class TRenderableTexturedMesh implements IAsset {
   public indexes: number[] = [];
   public uvs: number[] = [];
 
+  public loaded = false;
   // Buffers
   private positionBuffer?: WebGLBuffer;
   private normalBuffer?: WebGLBuffer;
   private indexBuffer?: WebGLBuffer;
   private uvBuffer?: WebGLBuffer;
-
-  // Instance buffers, used to override the UVs of the mesh
   private instanceUVBuffer?: WebGLBuffer;
 
-  private source?: string;
-
   private vao?: WebGLVertexArrayObject;
+
+  private source?: string;
 
   public async load(response: Response): Promise<void> {
     this.source = await response.text();
@@ -120,99 +120,54 @@ export default class TRenderableTexturedMesh implements IAsset {
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
-    const { vertexPosition, normalPosition, uvPosition, instanceUVPosition } =
-      program.attribLocations;
-
     this.vao = gl.createVertexArray()!;
     gl.bindVertexArray(this.vao);
 
-    // Position buffer
-    {
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer!);
-      gl.vertexAttribPointer(
-        vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
+    const buffers: { [key: string]: TAttributeBuffer } = {
+      aVertexPosition: {
+        buffer: this.positionBuffer!,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexNormal: {
+        buffer: this.normalBuffer!,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexUV: {
+        buffer: this.uvBuffer!,
+        size: 2,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexInstanceUV: {
+        buffer: this.instanceUVBuffer!,
+        size: 2,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+    };
 
-      gl.enableVertexAttribArray(vertexPosition);
-    }
-
-    if (normalPosition !== -1) {
-      // Normal buffer
-
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer!);
-      gl.vertexAttribPointer(
-        normalPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
-
-      gl.enableVertexAttribArray(normalPosition);
-    }
-
-    if (uvPosition !== -1) {
-      // UV buffer
-
-      const numComponents = 2;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer!);
-      gl.vertexAttribPointer(
-        uvPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
-
-      gl.enableVertexAttribArray(uvPosition);
-    }
-
-    if (instanceUVPosition !== -1) {
-      // Instance UV buffer
-
-      const numComponents = 2;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer!);
-      gl.vertexAttribPointer(
-        instanceUVPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
-
-      gl.enableVertexAttribArray(instanceUVPosition);
+    // Set up attributes based on program's attribute locations
+    for (const [name, location] of Object.entries(program.attribLocations)) {
+      if (location !== -1 && buffers[name]) {
+        const buffer = buffers[name];
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+        gl.vertexAttribPointer(
+          location,
+          buffer.size,
+          buffer.type,
+          buffer.normalized,
+          0,
+          0,
+        );
+        gl.enableVertexAttribArray(location);
+      }
     }
   }
 
-  /**
-   * Creates the buffers and transfers the data
-   */
   private createBuffers(gl: WebGL2RenderingContext): void {
     this.positionBuffer = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
@@ -242,8 +197,9 @@ export default class TRenderableTexturedMesh implements IAsset {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.uvs), gl.STATIC_DRAW);
 
-    // Data will be buffered at render time if provided
     this.instanceUVBuffer = gl.createBuffer()!;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.uvs), gl.STATIC_DRAW);
   }
 
   private parseModel() {
@@ -253,5 +209,7 @@ export default class TRenderableTexturedMesh implements IAsset {
     this.normals = obj.normals;
     this.indexes = obj.indices;
     this.uvs = obj.uvs;
+
+    this.loaded = true;
   }
 }

@@ -1,6 +1,7 @@
 import { generateShader } from '../shaders/chunked-shader';
 import texturedChunk from '../shaders/chunks/textured-chunk';
 import mainBase from '../shaders/bases/main';
+import type { TShaderAttributes } from './program';
 import TProgram from './program';
 import type TRenderer from './renderer';
 import { TUniformBlockBinding } from './uniform-manager';
@@ -25,6 +26,37 @@ export default class TTexturedProgram {
     'uEnableInstanceUVs',
   ] as const;
 
+  private static readonly ATTRIBUTES: TShaderAttributes = {
+    required: [
+      {
+        name: 'aVertexPosition',
+        size: 3,
+        type: WebGL2RenderingContext.FLOAT,
+        normalized: false,
+      },
+      {
+        name: 'aVertexUV',
+        size: 2,
+        type: WebGL2RenderingContext.FLOAT,
+        normalized: false,
+      },
+    ],
+    optional: [
+      {
+        name: 'aVertexNormal',
+        size: 3,
+        type: WebGL2RenderingContext.FLOAT,
+        normalized: false,
+      },
+      {
+        name: 'aVertexInstanceUV',
+        size: 2,
+        type: WebGL2RenderingContext.FLOAT,
+        normalized: false,
+      },
+    ],
+  };
+
   constructor(private renderer: TRenderer) {}
 
   public async load() {
@@ -34,17 +66,15 @@ export default class TTexturedProgram {
     this.program.compile(gl);
 
     this.program.setupUniformBlock('Global', TUniformBlockBinding.Global);
+    this.program.setupAttributes(gl, TTexturedProgram.ATTRIBUTES);
     this.program.validateUniforms([...TTexturedProgram.REQUIRED_UNIFORMS]);
 
     this.uniforms = {
-      uTexture: this.program.getUniformLocation(gl, 'uTexture'),
-      uColorFilter: this.program.getUniformLocation(gl, 'uColorFilter'),
-      uInstanceUVScale: this.program.getUniformLocation(gl, 'uInstanceUVScale'),
-      uMMatrix: this.program.getUniformLocation(gl, 'uMMatrix'),
-      uEnableInstanceUVs: this.program.getUniformLocation(
-        gl,
-        'uEnableInstanceUVs',
-      ),
+      uTexture: this.program.getUniformLocation('uTexture'),
+      uColorFilter: this.program.getUniformLocation('uColorFilter'),
+      uInstanceUVScale: this.program.getUniformLocation('uInstanceUVScale'),
+      uMMatrix: this.program.getUniformLocation('uMMatrix'),
+      uEnableInstanceUVs: this.program.getUniformLocation('uEnableInstanceUVs'),
     };
   }
 

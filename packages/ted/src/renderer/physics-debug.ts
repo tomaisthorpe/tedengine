@@ -1,6 +1,7 @@
 import { mat4 } from 'gl-matrix';
 import type TPhysicsDebugProgram from './physics-debug-program';
 import type TProgram from './program';
+import type { TAttributeBuffer } from './program';
 
 export default class TPhysicsDebug {
   private positionBuffer?: WebGLBuffer;
@@ -48,7 +49,7 @@ export default class TPhysicsDebug {
     // Base shader expects a model matrix
     // @todo: use a different base shader
     gl.uniformMatrix4fv(
-      program.program.getUniformLocation(gl, 'uMMatrix')!,
+      program.program.getUniformLocation('uMMatrix')!,
       false,
       mat4.identity(mat4.create()),
     );
@@ -57,52 +58,43 @@ export default class TPhysicsDebug {
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
-    const { vertexPosition, colorPosition } = program.attribLocations;
-
     this.vao = gl.createVertexArray()!;
     gl.bindVertexArray(this.vao!);
 
-    // Position buffer
-    {
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer!);
-      gl.vertexAttribPointer(
-        vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
+    const buffers: { [key: string]: TAttributeBuffer } = {
+      aVertexPosition: {
+        buffer: this.positionBuffer!,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexColor: {
+        buffer: this.colorBuffer!,
+        size: 4,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+    };
 
-      gl.enableVertexAttribArray(vertexPosition);
-    }
-
-    // Colors buffer
-    {
-      const numComponents = 4;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer!);
-      gl.vertexAttribPointer(
-        colorPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset,
-      );
-
-      gl.enableVertexAttribArray(colorPosition);
+    // Set up attributes based on program's attribute locations
+    for (const [name, location] of Object.entries(program.attribLocations)) {
+      if (location !== -1 && buffers[name]) {
+        const buffer = buffers[name];
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+        gl.vertexAttribPointer(
+          location,
+          buffer.size,
+          buffer.type,
+          buffer.normalized,
+          0,
+          0,
+        );
+        gl.enableVertexAttribArray(location);
+      }
     }
   }
-  private createBuffers(gl: WebGL2RenderingContext) {
+
+  private createBuffers(gl: WebGL2RenderingContext): void {
     this.positionBuffer = gl.createBuffer()!;
     this.colorBuffer = gl.createBuffer()!;
   }
