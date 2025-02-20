@@ -40,7 +40,7 @@
     "@nx/react": "19.8.1",
     "@nx/vite": "19.8.1",
     "@nx/workspace": "19.8.1",
-    "@playwright/test": "^1.50.1",
+    "@playwright/test": "^1.47.0",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "16.0.1",
     "@types/howler": "^2.2.12",

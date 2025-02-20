@@ -40,6 +40,34 @@ jobs:
         with:
           name: code-coverage-report
           path: coverage/packages/ted/
+  test-playwright:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    needs: [build]
+    defaults:
+      run:
+        working-directory: ./apps/docs
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - uses: actions/download-artifact@v4
+      with:
+        name: docs-artifacts
+          path: dist/apps/docs
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      run: npx playwright test
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
   build:
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +93,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [lint, test, build]
+    needs: [lint, test, test-playwright, build]
     concurrency:
       group: 'pages'
       cancel-in-progress: true
