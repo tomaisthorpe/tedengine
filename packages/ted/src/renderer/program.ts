@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { IAsset } from '../core/resource-manager';
 import type { TShader } from '../shaders/chunked-shader';
+import { TUniformManager } from './uniform-manager';
 
 const compileShader = (
   gl: WebGL2RenderingContext,
@@ -47,8 +48,8 @@ export default class TProgram implements IAsset {
    */
   public compiled = false;
   public program?: WebGLProgram;
-  public attribLocations: any = {};
-  public uniformLocations: any = {};
+  public attribLocations: Record<string, number> = {};
+  private uniformManager?: TUniformManager;
 
   private vertexShaderSource?: string;
   private fragmentShaderSource?: string;
@@ -92,6 +93,8 @@ export default class TProgram implements IAsset {
     this.program = createProgram(gl, vertexShader, fragmentShader);
     this.compiled = true;
 
+    this.uniformManager = new TUniformManager(gl, this.program);
+
     this.attribLocations.vertexPosition = gl.getAttribLocation(
       this.program,
       'aVertexPosition',
@@ -108,63 +111,65 @@ export default class TProgram implements IAsset {
       this.program,
       'aVertexUV',
     );
-
     this.attribLocations.instanceUVPosition = gl.getAttribLocation(
       this.program,
       'aVertexInstanceUV',
-    );
-
-    this.uniformLocations.mMatrix = gl.getUniformLocation(
-      this.program,
-      'uMMatrix',
-    );
-
-    this.uniformLocations.uEnableInstanceUVs = gl.getUniformLocation(
-      this.program,
-      'uEnableInstanceUVs',
-    );
-  }
-
-  public getAttributeLocations(
-    gl: WebGL2RenderingContext,
-    attributes: string[],
-  ): WebGLUniformLocation[] {
-    return attributes.map(
-      (attribute) => gl.getUniformLocation(this.program!, attribute)!,
     );
   }
 
   public getUniformLocation(
     gl: WebGL2RenderingContext,
     name: string,
-  ): WebGLUniformLocation {
-    if (!this.uniformLocations[name]) {
-      this.uniformLocations[name] = gl.getUniformLocation(this.program!, name);
+  ): WebGLUniformLocation | null {
+    if (!this.uniformManager) {
+      throw new Error('Program not compiled');
     }
-
-    return this.uniformLocations[name];
+    return this.uniformManager.getUniformLocation(name);
   }
 
-  public getUniformOffsets(
-    gl: WebGL2RenderingContext,
-    uniforms: string[],
-  ): number[] {
-    const uboVariableIndices = gl.getUniformIndices(this.program!, uniforms);
-
-    if (!uboVariableIndices) {
-      throw new Error('Could not get uniform indices');
+  public setupUniformBlock(
+    blockName: string,
+    bindingPoint: number,
+    uniformNames?: string[],
+  ) {
+    if (!this.uniformManager) {
+      throw new Error('Program not compiled');
     }
-
-    const uboVariableOffsets = gl.getActiveUniforms(
-      this.program!,
-      uboVariableIndices,
-      gl.UNIFORM_OFFSET,
+    return this.uniformManager.setupUniformBlock(
+      blockName,
+      bindingPoint,
+      uniformNames,
     );
+  }
 
-    if (!uboVariableOffsets) {
-      throw new Error('Could not get uniform offsets');
+  public getUniformBlockOffsets(
+    gl: WebGL2RenderingContext,
+    blockName: string,
+    uniformNames: string[],
+  ) {
+    if (!this.uniformManager) {
+      throw new Error('Program not compiled');
     }
+    return this.uniformManager.getUniformBlockOffsets(blockName, uniformNames);
+  }
 
-    return uboVariableOffsets;
+  public validateUniforms(
+    requiredUniforms: string[],
+    blockUniforms: string[] = [],
+  ) {
+    if (!this.uniformManager) {
+      throw new Error('Program not compiled');
+    }
+    this.uniformManager.validateUniforms(requiredUniforms, blockUniforms);
+  }
+
+  public dispose(gl: WebGL2RenderingContext) {
+    if (this.program) {
+      gl.deleteProgram(this.program);
+      this.program = undefined;
+      this.compiled = false;
+      this.uniformManager?.clearCache();
+      this.uniformManager = undefined;
+    }
   }
 }

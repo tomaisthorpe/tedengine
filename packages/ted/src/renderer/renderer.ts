@@ -107,45 +107,25 @@ export default class TRenderer {
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 1, this.lightingUniformBuffer);
 
     // Get location of the uniforms
-    const uboUniforms = probeProgram.program!.getUniformOffsets(gl, [
-      'uVPMatrix',
-      'uAmbientLight',
-      'uDirectionalLightDir',
-      'uDirectionalLight',
-    ]);
-
-    this.globalUniformBufferOffsets.vpMatrix = uboUniforms[0];
-    this.lightingUniformBufferOffsets.ambientLight = uboUniforms[1];
-    this.lightingUniformBufferOffsets.directionalLightDir = uboUniforms[2];
-    this.lightingUniformBufferOffsets.directionalLight = uboUniforms[3];
-
-    const index = gl.getUniformBlockIndex(
-      this.colorProgram.program!.program!,
+    const globalOffsets = probeProgram.program!.getUniformBlockOffsets(
+      gl,
       'Global',
+      ['uVPMatrix'],
     );
-    gl.uniformBlockBinding(this.colorProgram.program!.program!, index, 0);
 
-    const lcIndex = gl.getUniformBlockIndex(
-      this.colorProgram.program!.program!,
+    const lightingOffsets = probeProgram.program!.getUniformBlockOffsets(
+      gl,
       'Lighting',
+      ['uAmbientLight', 'uDirectionalLightDir', 'uDirectionalLight'],
     );
-    gl.uniformBlockBinding(this.colorProgram.program!.program!, lcIndex, 1);
 
-    const tIndex = gl.getUniformBlockIndex(
-      this.texturedProgram.program!.program!,
-      'Global',
-    );
-    gl.uniformBlockBinding(this.texturedProgram.program!.program!, tIndex, 0);
-
-    const pIndex = gl.getUniformBlockIndex(
-      this.physicsDebugProgram.program!.program!,
-      'Global',
-    );
-    gl.uniformBlockBinding(
-      this.physicsDebugProgram.program!.program!,
-      pIndex,
-      0,
-    );
+    this.globalUniformBufferOffsets.vpMatrix = globalOffsets['uVPMatrix'];
+    this.lightingUniformBufferOffsets.ambientLight =
+      lightingOffsets['uAmbientLight'];
+    this.lightingUniformBufferOffsets.directionalLightDir =
+      lightingOffsets['uDirectionalLightDir'];
+    this.lightingUniformBufferOffsets.directionalLight =
+      lightingOffsets['uDirectionalLight'];
 
     // Create shadow map buffers
     // This will only be used if shadows are enabled

@@ -115,6 +115,7 @@ export { default as TProgram } from './renderer/program';
 export * from './renderer/renderable-texture';
 export { default as TRenderableTexture } from './renderer/renderable-texture';
 export * from './renderer/frame-params';
+export * from './renderer/uniform-manager';
 
 export { default as TGame } from './ui/components/Game';
 export * from './ui/context';

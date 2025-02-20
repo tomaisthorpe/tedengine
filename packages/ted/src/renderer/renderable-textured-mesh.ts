@@ -23,7 +23,6 @@ export default class TRenderableTexturedMesh implements IAsset {
 
   // Instance buffers, used to override the UVs of the mesh
   private instanceUVBuffer?: WebGLBuffer;
-  private colorFilterUniformLocation?: WebGLUniformLocation;
 
   private source?: string;
 
@@ -49,9 +48,6 @@ export default class TRenderableTexturedMesh implements IAsset {
 
       // Create the VAO for the vertex and color buffers
       this.createVAO(gl, texturedProgram.program!);
-
-      this.colorFilterUniformLocation =
-        texturedProgram.getColorFilterUniformLocation(gl);
     }
 
     if (
@@ -59,8 +55,12 @@ export default class TRenderableTexturedMesh implements IAsset {
       !this.indexBuffer ||
       !this.uvBuffer ||
       !this.normalBuffer ||
-      !this.colorFilterUniformLocation ||
-      !this.instanceUVBuffer
+      !this.instanceUVBuffer ||
+      !texturedProgram.uniforms ||
+      !texturedProgram.uniforms.uMMatrix ||
+      !texturedProgram.uniforms.uEnableInstanceUVs ||
+      !texturedProgram.uniforms.uInstanceUVScale ||
+      !texturedProgram.uniforms.uColorFilter
     ) {
       return;
     }
@@ -73,16 +73,12 @@ export default class TRenderableTexturedMesh implements IAsset {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
     // Send the m
-    gl.uniformMatrix4fv(
-      texturedProgram.program!.uniformLocations.mMatrix,
-      false,
-      m,
-    );
+    gl.uniformMatrix4fv(texturedProgram.uniforms.uMMatrix, false, m);
 
-    gl.uniform4fv(this.colorFilterUniformLocation, colorFilter);
+    gl.uniform4fv(texturedProgram.uniforms.uColorFilter, colorFilter);
 
     gl.uniform1f(
-      texturedProgram.program!.uniformLocations.uEnableInstanceUVs,
+      texturedProgram.uniforms.uEnableInstanceUVs,
       instanceUVs ? 1 : 0,
     );
 
@@ -106,12 +102,12 @@ export default class TRenderableTexturedMesh implements IAsset {
 
     if (instanceUVScales) {
       gl.uniform2fv(
-        texturedProgram.getInstanceUVScaleUniformLocation(gl)!,
+        texturedProgram.uniforms.uInstanceUVScale,
         new Float32Array(instanceUVScales),
       );
     } else {
       gl.uniform2fv(
-        texturedProgram.getInstanceUVScaleUniformLocation(gl)!,
+        texturedProgram.uniforms.uInstanceUVScale,
         new Float32Array([1, 1]),
       );
     }
