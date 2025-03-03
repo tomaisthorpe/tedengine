@@ -3,6 +3,11 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import path from 'path';
 
+// Load WebGL mock for static site generation
+if (typeof window === 'undefined') {
+  require('./src/mocks/webgl');
+}
+
 function configureEngine(context, options) {
   return {
     name: 'configure-engine-plugin',
