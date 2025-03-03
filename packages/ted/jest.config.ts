@@ -9,5 +9,9 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/ted',
   collectCoverageFrom: ['./src/**/*'],
-  setupFilesAfterEnv: ['./jest.setup.ts'],
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: [
+    '@testing-library/jest-dom',
+    '<rootDir>/src/test/webgl.mock.ts',
+  ],
 };
