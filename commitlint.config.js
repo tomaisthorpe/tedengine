@@ -30,6 +30,7 @@ module.exports = {
         'perf',
         'math',
         'editor',
+        'cli',
       ],
     ],
   },

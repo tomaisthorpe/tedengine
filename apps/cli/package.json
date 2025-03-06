@@ -1,0 +1,7 @@
+{
+  "name": "@tedengine/cli",
+  "version": "0.1.0",
+  "bin": {
+    "ted": "./src/main.ts"
+  }
+}
