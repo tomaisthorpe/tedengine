@@ -1,5 +1,33 @@
 # @tedengine/ted
 
+## 0.12.0
+
+### Minor Changes
+
+- ef72d87: Add directional light color and intensity
+- 8fc595e: Add pause/resume to particle component
+- 91986c4: Add ambient light color
+- 5f96006: Move ambient and directional light to uniform block
+- 55ec1d9: Add loading UVs from obj files
+- 3b43776: Allow changing ambient and directional light at runtime
+- 1ffbd37: Refactor program attribute handling
+- ec1f8b0: Add basic shadow mapping
+- ee28e55: Refactor uniform handling
+- 5175283: Add probe shader to query settings from GPU
+- c571c14: Add framebuffers
+- bdffa7b: Add color picker for debug rows
+- 6ce5f3b: Use Howler for audio
+
+### Patch Changes
+
+- 734199a: Bump dependencies
+- 30ed48c: Update instance UVs scaling to vec2
+- fee265f: Fix textured mesh UV scaling
+- f66a9ea: Update deps
+- e4e93ac: Update deps
+- fe44608: Remove some unnecessary code from color program
+- 290482e: Fix input value bubble displaying under inputs
+
 ## 0.11.1
 
 ### Patch Changes
