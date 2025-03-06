@@ -29,6 +29,7 @@ module.exports = {
         'release',
         'perf',
         'math',
+        'editor',
       ],
     ],
   },
