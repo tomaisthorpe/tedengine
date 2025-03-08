@@ -20,38 +20,3 @@ export function createRenderComponent(): RenderComponentData {
     visible: true,
   };
 }
-
-/**
- * Serialize a render component
- * @param data The render component data
- */
-export function serializeRenderComponent(data: RenderComponentData): unknown {
-  return {
-    visible: data.visible,
-    renderTaskData: data.renderTaskData,
-  };
-}
-
-/**
- * Deserialize a render component
- * @param serialized The serialized render component data
- */
-export function deserializeRenderComponent(
-  serialized: unknown,
-): RenderComponentData {
-  const data = serialized as Record<string, unknown>;
-
-  const result: RenderComponentData = {
-    visible: true,
-  };
-
-  if (data.visible !== undefined) {
-    result.visible = data.visible as boolean;
-  }
-
-  if (data.renderTaskData) {
-    result.renderTaskData = data.renderTaskData as Record<string, unknown>;
-  }
-
-  return result;
-}

@@ -18,8 +18,6 @@ export interface ComponentData {
 export interface ComponentType<T extends ComponentData> {
   id: ComponentTypeId;
   name: string;
-  serialize: (data: T) => unknown;
-  deserialize: (serialized: unknown) => T;
   create: () => T;
 }
 
@@ -181,47 +179,5 @@ export class ComponentManager {
       }
       return true;
     });
-  }
-
-  /**
-   * Serialize a component
-   * @param entityId The entity the component belongs to
-   * @param typeId The component type ID
-   */
-  public serializeComponent(
-    entityId: EntityId,
-    typeId: ComponentTypeId,
-  ): unknown {
-    const componentType = this.componentTypes.get(typeId);
-    if (!componentType) {
-      throw new Error(`Component type ${typeId} is not registered`);
-    }
-
-    const component = this.getComponent(entityId, typeId);
-    if (!component) {
-      throw new Error(`Entity ${entityId} does not have component ${typeId}`);
-    }
-
-    return componentType.serialize(component);
-  }
-
-  /**
-   * Deserialize a component and add it to an entity
-   * @param entityId The entity to add the component to
-   * @param typeId The component type ID
-   * @param serialized The serialized component data
-   */
-  public deserializeComponent(
-    entityId: EntityId,
-    typeId: ComponentTypeId,
-    serialized: unknown,
-  ): void {
-    const componentType = this.componentTypes.get(typeId);
-    if (!componentType) {
-      throw new Error(`Component type ${typeId} is not registered`);
-    }
-
-    const component = componentType.deserialize(serialized);
-    this.addComponent(entityId, typeId, component);
   }
 }

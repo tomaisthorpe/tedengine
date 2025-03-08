@@ -2,20 +2,14 @@ import { ComponentType, ComponentTypeId } from './component-manager';
 import {
   TRANSFORM_COMPONENT_TYPE,
   createTransformComponent,
-  serializeTransformComponent,
-  deserializeTransformComponent,
 } from './components/transform-component';
 import {
   RENDER_COMPONENT_TYPE,
   createRenderComponent,
-  serializeRenderComponent,
-  deserializeRenderComponent,
 } from './components/render-component';
 import {
   PHYSICS_COMPONENT_TYPE,
   createPhysicsComponent,
-  serializePhysicsComponent,
-  deserializePhysicsComponent,
 } from './components/physics-component';
 
 /**
@@ -77,8 +71,6 @@ export class ComponentRegistry {
       id: TRANSFORM_COMPONENT_TYPE,
       name: 'Transform',
       create: createTransformComponent,
-      serialize: serializeTransformComponent,
-      deserialize: deserializeTransformComponent,
     });
 
     // Register render component
@@ -86,8 +78,6 @@ export class ComponentRegistry {
       id: RENDER_COMPONENT_TYPE,
       name: 'Render',
       create: createRenderComponent,
-      serialize: serializeRenderComponent,
-      deserialize: deserializeRenderComponent,
     });
 
     // Register physics component
@@ -95,8 +85,6 @@ export class ComponentRegistry {
       id: PHYSICS_COMPONENT_TYPE,
       name: 'Physics',
       create: createPhysicsComponent,
-      serialize: serializePhysicsComponent,
-      deserialize: deserializePhysicsComponent,
     });
   }
 }

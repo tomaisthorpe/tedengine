@@ -76,27 +76,4 @@ export class ECSEngineIntegration {
     this.worldBridge.setTEDWorld(world);
     this.worldBridge.convertWorldToECS();
   }
-
-  /**
-   * Serialize the ECS world
-   */
-  public serialize(): Record<string, unknown> | undefined {
-    if (!this.useECS || !this.worldBridge) {
-      return undefined;
-    }
-
-    return this.worldBridge.serialize();
-  }
-
-  /**
-   * Deserialize the ECS world
-   * @param serialized The serialized world data
-   */
-  public deserialize(serialized: Record<string, unknown>): void {
-    if (!this.useECS || !this.worldBridge) {
-      return;
-    }
-
-    this.worldBridge.deserialize(serialized);
-  }
 }

@@ -255,19 +255,4 @@ export class ECSWorldBridge {
       this.convertActorToEntity(actor);
     }
   }
-
-  /**
-   * Serialize the ECS world
-   */
-  public serialize(): Record<string, unknown> {
-    return this.ecsWorld.serialize();
-  }
-
-  /**
-   * Deserialize the ECS world
-   * @param serialized The serialized world data
-   */
-  public deserialize(serialized: Record<string, unknown>): void {
-    this.ecsWorld.deserialize(serialized);
-  }
 }
