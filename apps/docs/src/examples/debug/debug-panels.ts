@@ -1,22 +1,38 @@
 import { vec3 } from 'gl-matrix';
 import {
-  TRotatingComponent,
-  TBoxComponent,
   TGameState,
   TEngine,
-  TActor,
+  createBoxMesh,
+  TMaterialComponent,
+  TMeshComponent,
+  TShouldRenderComponent,
+  TTransform,
+  TTransformComponent,
 } from '@tedengine/ted';
+import { TRotatingComponent } from '../shared/rotating';
+import { TRotatingSystem } from '../shared/rotating';
 
-class Actor extends TActor {
-  constructor(engine: TEngine) {
-    super();
+class BoxState extends TGameState {
+  public async onCreate(engine: TEngine) {
+    this.onReady(engine);
+  }
 
-    const rotating = new TRotatingComponent(engine, this);
+  public onReady(engine: TEngine) {
+    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
 
-    const box = new TBoxComponent(engine, this, 1, 1, 1);
-    box.attachTo(rotating);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
+    const box = this.world.ecs.createEntity();
+    const transform = new TTransformComponent(
+      new TTransform(vec3.fromValues(0, 0, -3)),
+    );
+    const mesh = createBoxMesh(1, 1, 1);
+    const rotating = new TRotatingComponent();
+    this.world.ecs.addComponents(box, [
+      transform,
+      new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
+      new TMaterialComponent(mesh.material),
+      new TShouldRenderComponent(),
+      rotating,
+    ]);
 
     const section = engine.debugPanel.addSection('New Section', true);
     section.addValue('Label', () => 'Value');
@@ -26,7 +42,7 @@ class Actor extends TActor {
       'number',
       '-3',
       (value: string) => {
-        this.rootComponent.transform.translation = vec3.fromValues(
+        transform.transform.translation = vec3.fromValues(
           0,
           0,
           parseFloat(value),
@@ -64,17 +80,6 @@ class Actor extends TActor {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     section.addCheckbox('Checkbox', true, (val) => {});
-  }
-}
-
-class BoxState extends TGameState {
-  public async onCreate(engine: TEngine) {
-    this.onReady(engine);
-  }
-
-  public onReady(engine: TEngine) {
-    const box = new Actor(engine);
-    this.addActor(box);
   }
 }
 

@@ -1,31 +1,24 @@
 import { vec3 } from 'gl-matrix';
 import type { TGameStateWithOnUpdate } from '@tedengine/ted';
 import {
-  TBoxComponent,
   TGameState,
-  TActor,
-  TOrbitCamera,
-  TBoxCollider,
   TEngine,
+  createBoxCollider,
+  createBoxMesh,
+  TActiveCameraComponent,
+  TCameraComponent,
+  TMaterialComponent,
+  TMeshComponent,
+  TMouseInputComponent,
+  TMouseInputSystem,
+  TOrbitCameraComponent,
+  TOrbitCameraSystem,
+  TProjectionType,
+  TRigidBodyComponent,
+  TShouldRenderComponent,
+  TTransform,
+  TTransformComponent,
 } from '@tedengine/ted';
-
-class Cube extends TActor {
-  constructor(
-    engine: TEngine,
-    x: number,
-    y: number,
-    z: number,
-    collisionClass: string,
-  ) {
-    super();
-
-    const box = new TBoxComponent(engine, this, 1, 1, 1);
-    this.rootComponent = box;
-    this.rootComponent.collider = new TBoxCollider(1, 1, 1, collisionClass);
-
-    this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
-  }
-}
 
 class ColliderState extends TGameState implements TGameStateWithOnUpdate {
   public async onCreate(engine: TEngine) {
@@ -38,20 +31,63 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Cube(engine, 10, 0, 0, 'Solid');
-    this.addActor(box);
+    this.world.ecs.addSystem(
+      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    );
 
-    const box2 = new Cube(engine, -6, 0, 0, 'Solid');
-    this.addActor(box2);
+    this.world.ecs.addSystem(
+      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    );
 
-    const box3 = new Cube(engine, 6, 0, 0, 'NoCollide');
-    this.addActor(box3);
+    const boxMesh = createBoxMesh(1, 1, 1);
 
-    const orbitCamera = new TOrbitCamera(engine, 20);
-    orbitCamera.speed = 0.5;
-    orbitCamera.cameraComponent.showDebug = true;
-    this.addActor(orbitCamera);
-    this.activeCamera = orbitCamera;
+    const box = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(box, [
+      new TTransformComponent(new TTransform(vec3.fromValues(10, 0, 0))),
+      new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
+      new TMaterialComponent(boxMesh.material),
+      new TShouldRenderComponent(),
+      new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
+    ]);
+
+    const box2 = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(box2, [
+      new TTransformComponent(new TTransform(vec3.fromValues(-6, 0, 0))),
+      new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
+      new TMaterialComponent(boxMesh.material),
+      new TShouldRenderComponent(),
+      new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
+    ]);
+
+    const box3 = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(box3, [
+      new TTransformComponent(new TTransform(vec3.fromValues(6, 0, 0))),
+      new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
+      new TMaterialComponent(boxMesh.material),
+      new TShouldRenderComponent(),
+      new TRigidBodyComponent(
+        { mass: 1 },
+        createBoxCollider(1, 1, 1, 'NoCollide'),
+      ),
+    ]);
+
+    const perspective = this.world.ecs.createEntity();
+    const perspectiveComponent = new TCameraComponent({
+      type: TProjectionType.Perspective,
+      fov: 45,
+    });
+    this.world.ecs.addComponents(perspective, [
+      perspectiveComponent,
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TActiveCameraComponent(),
+      new TOrbitCameraComponent({
+        distance: 20,
+        speed: 0.5,
+        enableDrag: true,
+        paused: false,
+      }),
+      new TMouseInputComponent(),
+    ]);
   }
 
   public async onUpdate(engine: TEngine, delta: number): Promise<void> {

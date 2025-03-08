@@ -1,6 +1,6 @@
 // TFrameParams is used to tell the rendered how to render a frame.
 import type { mat4, vec4, vec2, vec3 } from 'gl-matrix';
-import type { TSpriteLayer } from '../actor-components/sprite-component';
+import type { TSpriteLayer } from '../components/sprite-component';
 import type { TCameraView } from '../cameras/camera-view';
 import type { TPalette } from '../graphics/color-material';
 

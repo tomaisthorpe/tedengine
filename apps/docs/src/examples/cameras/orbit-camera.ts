@@ -1,96 +1,85 @@
 import shipMtl from '@assets/ship.mtl';
 import shipMesh from '@assets/ship.obj';
 import { vec3 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import type { TColorMaterial } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TResourcePack,
   TMeshComponent,
-  TOrbitCamera,
-  TPerspectiveCamera,
   TEngine,
+  TMaterialComponent,
+  TShouldRenderComponent,
+  TTransform,
+  TTransformComponent,
+  TCameraComponent,
+  TProjectionType,
+  TActiveCameraComponent,
+  TOrbitCameraComponent,
+  TOrbitCameraSystem,
+  TMouseInputSystem,
+  TMouseInputComponent,
 } from '@tedengine/ted';
-
-class ship extends TActor {
-  public static resources: TResourcePackConfig = {
-    meshes: [shipMesh],
-    materials: [shipMtl],
-  };
-
-  private paused = false;
-
-  constructor(engine: TEngine) {
-    super();
-
-    const mesh = new TMeshComponent(engine, this);
-    mesh.applyMesh(engine, shipMesh);
-    mesh.applyMaterial(engine, shipMtl);
-  }
-}
 
 class OrbitState extends TGameState {
   public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, ship.resources);
+    const rp = new TResourcePack(engine, {
+      meshes: [shipMesh],
+      materials: [shipMtl],
+    });
 
     await rp.load();
     this.onReady(engine);
   }
 
   public onReady(engine: TEngine) {
-    const aub = new ship(engine);
-    this.addActor(aub);
-
-    const debugCamera = new TPerspectiveCamera(engine);
-    this.addActor(debugCamera);
-    debugCamera.rootComponent.transform.translation = vec3.fromValues(0, 0, 40);
-
-    this.activeCamera = debugCamera;
-
-    const orbitCamera = new TOrbitCamera(engine, 15);
-    orbitCamera.cameraComponent.showDebug = true;
-    this.addActor(orbitCamera);
-
-    orbitCamera.cameraComponent.showDebugCamera(engine);
-
-    this.activeCamera = orbitCamera;
-
-    const section = engine.debugPanel.addSection('Orbit Camera', true);
-
-    section.addSelect(
-      'Camera',
-      [
-        { label: 'Orbit', value: 'orbit' },
-        { label: 'Debug', value: 'debug' },
-      ],
-      'orbit',
-      (camera) => {
-        if (camera === 'orbit') {
-          this.activeCamera = orbitCamera;
-        } else {
-          this.activeCamera = debugCamera;
-        }
-      },
+    this.world.ecs.addSystem(
+      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
     );
 
-    section.addInput(
-      'Orbit Speed',
-      'range',
-      '1',
-      (value) => {
-        orbitCamera.speed = parseFloat(value);
-      },
-      {
-        min: -10,
-        max: 10,
-        step: 0.1,
-        showValueBubble: true,
-      },
+    this.world.ecs.addSystem(
+      new TMouseInputSystem(this.world.ecs, engine.inputManager),
     );
 
-    section.addCheckbox('Mouse Controls', true, (value: boolean) => {
-      orbitCamera.enableDrag = value;
+    const mesh = new TMeshComponent({
+      source: 'path',
+      path: shipMesh,
     });
+
+    const material = new TMaterialComponent(
+      engine.resources.get<TColorMaterial>(shipMtl)!,
+    );
+
+    const ship = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(ship, [
+      mesh,
+      material,
+      new TTransformComponent(
+        new TTransform(
+          vec3.fromValues(0, 0, 0),
+          undefined,
+          vec3.fromValues(1, 1, 1),
+        ),
+      ),
+      new TShouldRenderComponent(),
+    ]);
+
+    const perspective = this.world.ecs.createEntity();
+    const perspectiveComponent = new TCameraComponent({
+      type: TProjectionType.Perspective,
+      fov: 45,
+    });
+    this.world.ecs.addComponents(perspective, [
+      perspectiveComponent,
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TActiveCameraComponent(),
+      new TOrbitCameraComponent({
+        distance: 15,
+        speed: 1,
+        enableDrag: true,
+        paused: false,
+      }),
+      new TMouseInputComponent(),
+    ]);
   }
 }
 

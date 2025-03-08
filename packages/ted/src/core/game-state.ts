@@ -1,9 +1,7 @@
-import type { ICamera } from '../cameras/camera';
 import type TEngine from '../engine/engine';
 import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
 import type { TSerializedLighting } from '../renderer/frame-params';
-import type TActor from './actor';
 import TEventQueue from './event-queue';
 import { TEventTypesCore } from './events';
 import TWorld from './world';
@@ -57,8 +55,6 @@ export default class TGameState {
   public created = false;
   public world?: TWorld;
 
-  public activeCamera?: ICamera;
-
   /**
    * Event queue for the game state which will recieve all events when the state is active.
    */
@@ -71,16 +67,6 @@ export default class TGameState {
     this.jobs.additionalContext = {
       gameState: this,
     };
-  }
-
-  /**
-   * Adds actor to the world in this game state.
-   * This is here for convience.
-   *
-   * @param actor
-   */
-  public addActor(actor: TActor): void {
-    this.world?.addActor(actor);
   }
 
   /**

@@ -1,73 +1,50 @@
 import { vec3 } from 'gl-matrix';
 import {
-  TBoxComponent,
   TGameState,
   TEngine,
-  TPawn,
-  TSimpleController,
-  TEventTypesInput,
-  TOrthographicCamera,
+  TMouseInputComponent,
+  TTransformComponent,
+  TSystem,
+  createBoxMesh,
+  TCameraComponent,
+  TMaterialComponent,
+  TMeshComponent,
+  TMouseInputSystem,
+  TProjectionType,
+  TShouldRenderComponent,
+  TTransform,
 } from '@tedengine/ted';
-import type {
-  TController,
-  TActorWithOnUpdate,
-  TMouseUpEvent,
-} from '@tedengine/ted';
+import type { TWorld, TECS, TECSQuery } from '@tedengine/ted';
 
-class Cube extends TPawn implements TActorWithOnUpdate {
-  constructor(
-    engine: TEngine,
-    state: TGameState,
-    x: number,
-    y: number,
-    z: number,
-  ) {
+class PointerLockSystem extends TSystem {
+  private query: TECSQuery;
+  constructor(private ecs: TECS) {
     super();
 
-    const controller = new TSimpleController(state.events);
-    controller.possess(this);
-    controller.enablePointerLock(engine);
+    this.query = this.ecs.createQuery([
+      TMouseInputComponent,
+      TTransformComponent,
+    ]);
+  }
 
-    const box = new TBoxComponent(engine, this, 100, 100, 2);
-    this.rootComponent = box;
+  public async update(engine: TEngine, world: TWorld): Promise<void> {
+    const entities = this.query.execute();
 
-    this.rootComponent.transform.translation = vec3.fromValues(x, y, z);
+    for (const entity of entities) {
+      const mouseInputComponent = this.ecs
+        .getComponents(entity)
+        ?.get(TMouseInputComponent);
+      const transform = this.ecs
+        .getComponents(entity)
+        ?.get(TTransformComponent);
 
-    state.events.addListener<TMouseUpEvent>(
-      TEventTypesInput.MouseUp,
-      (e: TMouseUpEvent) => {
-        console.log(
-          `You clicked on the game at (${e.screen[0]},${e.screen[1]})!`,
+      if (mouseInputComponent.mouseMovement) {
+        const loc = world.cameraSystem?.clipToWorldSpace(
+          mouseInputComponent.mouseMovement.clip,
         );
-      },
-    );
-  }
-
-  async onUpdate(engine: TEngine): Promise<void> {
-    if (!this.controller) {
-      return;
+        transform.transform.translation = vec3.fromValues(loc[0], loc[1], -10);
+      }
     }
-
-    this.controller.update();
-
-    // @todo this feels messy
-    // Get the mouse location
-    const loc = this.controller.mouseMovement;
-    const camera = this.world?.gameState.activeCamera;
-
-    if (loc && camera) {
-      // Convert from clip to world space
-      const world = camera.clipToWorldSpace(loc.clip);
-      this.rootComponent.transform.translation = vec3.fromValues(
-        world[0],
-        world[1],
-        -10,
-      );
-    }
-  }
-
-  public setupController(controller: TController): void {
-    super.setupController(controller);
   }
 }
 
@@ -77,10 +54,36 @@ class ColliderState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Cube(engine, this, 100, 100, -10);
-    this.addActor(box);
+    this.world.ecs.addSystem(
+      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    );
 
-    this.activeCamera = new TOrthographicCamera(engine);
+    this.world.ecs.addSystem(new PointerLockSystem(this.world.ecs));
+
+    const mesh = createBoxMesh(100, 100, 2);
+
+    const entity = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(entity, [
+      new TMouseInputComponent(),
+      new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
+      new TMaterialComponent(mesh.material),
+      new TTransformComponent(new TTransform(vec3.fromValues(100, 100, -10))),
+      new TShouldRenderComponent(),
+    ]);
+
+    // Setup orthographic camera
+    const cameraEntity = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(cameraEntity, [
+      new TCameraComponent({
+        type: TProjectionType.Orthographic,
+        zNear: 0.1,
+        zFar: 100,
+      }),
+      new TTransformComponent(new TTransform()),
+    ]);
+    this.world.cameraSystem.setActiveCamera(cameraEntity);
+
+    engine.inputManager.enablePointerLock();
   }
 }
 

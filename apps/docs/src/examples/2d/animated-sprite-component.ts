@@ -1,47 +1,73 @@
-import asteroidTexture from '@assets/person.png';
-import { vec3, vec4 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import personTexture from '@assets/person.png';
+import { vec3 } from 'gl-matrix';
+import type { TTexture } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TOriginPoint,
   TResourcePack,
   TEngine,
   TAnimatedSpriteComponent,
   TSpriteLayer,
-  TOrthographicCamera,
   TTextureFilter,
+  TSpriteComponent,
+  TTransformComponent,
+  TTransform,
+  TTextureComponent,
+  TShouldRenderComponent,
+  TCameraComponent,
+  TProjectionType,
+  TActiveCameraComponent,
 } from '@tedengine/ted';
 
-class Sprite extends TActor {
-  public static resources: TResourcePackConfig = {
-    textures: [
-      {
-        url: asteroidTexture,
-        config: {
-          filter: TTextureFilter.Nearest,
+class SpriteState extends TGameState {
+  public async onCreate(engine: TEngine) {
+    const rp = new TResourcePack(engine, {
+      textures: [
+        {
+          url: personTexture,
+          config: {
+            filter: TTextureFilter.Nearest,
+          },
         },
-      },
-    ],
-  };
+      ],
+    });
+    await rp.load();
 
-  constructor(engine: TEngine) {
-    super();
+    this.onReady(engine);
+  }
 
-    const sprite = new TAnimatedSpriteComponent(
-      engine,
-      this,
-      12 * 4,
-      24 * 4,
-      TOriginPoint.Center,
-      TSpriteLayer.Foreground_0,
-      {
-        frameCount: 9,
-        frameRate: 10,
-      },
-    );
-    sprite.applyTexture(engine, asteroidTexture);
-    sprite.colorFilter = vec4.fromValues(1, 1, 1, 1);
+  public onReady(engine: TEngine) {
+    const sprite = new TSpriteComponent({
+      width: 12 * 4,
+      height: 24 * 4,
+      origin: TOriginPoint.Center,
+      layer: TSpriteLayer.Foreground_0,
+    });
+
+    const animatedSprite = new TAnimatedSpriteComponent(10, 9);
+
+    const entity = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(entity, [
+      new TTransformComponent(
+        new TTransform(
+          vec3.fromValues(0, 0, -3),
+          undefined,
+          vec3.fromValues(1, 1, 1),
+        ),
+      ),
+      sprite,
+      animatedSprite,
+      new TTextureComponent(engine.resources.get<TTexture>(personTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    this.world.ecs.addComponents(this.world.ecs.createEntity(), [
+      new TCameraComponent({
+        type: TProjectionType.Orthographic,
+      }),
+      new TTransformComponent(new TTransform()),
+      new TActiveCameraComponent(),
+    ]);
 
     const filterSection = engine.debugPanel.addSection('Color Filter', true);
     filterSection.addInput(
@@ -97,33 +123,13 @@ class Sprite extends TActor {
       },
     );
 
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
-
     const section = engine.debugPanel.addSection('Animation', true);
     section.addButtons('Toggle Animation', {
       label: 'Toggle',
       onClick: () => {
-        sprite.toggleAnimation();
+        animatedSprite.paused = !animatedSprite.paused;
       },
     });
-  }
-}
-
-class SpriteState extends TGameState {
-  public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, Sprite.resources);
-
-    await rp.load();
-
-    this.onReady(engine);
-  }
-
-  public onReady(engine: TEngine) {
-    const asteroid = new Sprite(engine);
-    this.addActor(asteroid);
-
-    const camera = new TOrthographicCamera(engine);
-    this.activeCamera = camera;
   }
 }
 

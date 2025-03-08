@@ -1,4 +1,3 @@
-import { getDefaultCamera } from '../cameras/camera';
 import TEventQueue from '../core/event-queue';
 import type { TEvent } from '../core/event-queue';
 import TGameStateManager from '../core/game-state-manager';
@@ -30,6 +29,7 @@ import type {
   TEngineMessageUpdateGameContext,
 } from './messages';
 import { TMessageTypesEngine } from './messages';
+import { TInputManager } from '../input/input-manager';
 
 const TIME_PER_ENGINE_TIME_UPDATE = 1000;
 
@@ -65,6 +65,7 @@ export default class TEngine {
 
   // todo: temporary
   public mouse?: TMouseLocation;
+  public inputManager: TInputManager;
 
   // @todo move this somewhere more relevant
   public stats: {
@@ -111,6 +112,8 @@ export default class TEngine {
 
     this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen, this);
     this.segmentTimer = new TSegmentTimer(this.debugPanel, 'Performance');
+
+    this.inputManager = new TInputManager(this.events);
   }
 
   async onMessage(ev: MessageEvent) {
@@ -192,6 +195,8 @@ export default class TEngine {
     this.events.update();
     endEventUpdate();
 
+    this.inputManager.update(delta);
+
     const endGameStateUpdate =
       this.segmentTimer.startSegment('Game State Update');
     const stats = await this.gameState.update(delta);
@@ -199,14 +204,18 @@ export default class TEngine {
 
     const endFramePreparation =
       this.segmentTimer.startSegment('Frame Preparation');
-    const camera = this.gameState.getActiveCamera() || getDefaultCamera(this);
+    const camera = this.gameState.getActiveCamera();
+
+    if (!camera) {
+      return;
+    }
 
     const params: TFrameParams = {
       frameNumber: this.frameNumber,
       lighting: this.gameState.getLighting(),
       renderTasks: this.gameState.getRenderTasks(),
       cameraView: camera.getView(),
-      projectionMatrix: camera.getProjectionMatrix(
+      projectionMatrix: camera?.getProjectionMatrix(
         this.renderingSize.width,
         this.renderingSize.height,
       ),

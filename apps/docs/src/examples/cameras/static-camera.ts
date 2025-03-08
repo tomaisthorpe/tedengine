@@ -1,109 +1,115 @@
 import shipMtl from '@assets/ship.mtl';
 import shipMesh from '@assets/ship.obj';
 import { vec3 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import type { TColorMaterial } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TResourcePack,
   TMeshComponent,
-  TPerspectiveCamera,
-  TOrthographicCamera,
   TEngine,
+  TMaterialComponent,
+  TTransformComponent,
+  TTransform,
+  TShouldRenderComponent,
+  TProjectionType,
+  TCameraComponent,
+  TActiveCameraComponent,
 } from '@tedengine/ted';
-
-class ship extends TActor {
-  public static resources: TResourcePackConfig = {
-    meshes: [shipMesh],
-    materials: [shipMtl],
-  };
-
-  private paused = false;
-
-  constructor(engine: TEngine) {
-    super();
-
-    const mesh = new TMeshComponent(engine, this);
-    mesh.applyMesh(engine, shipMesh);
-    mesh.applyMaterial(engine, shipMtl);
-    mesh.transform.scale = vec3.fromValues(1, 1, 1);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -15);
-    this.rootComponent.transform.rotateZ(0.7);
-
-    engine.debugPanel.addButtons('Rotation', {
-      label: 'Pause',
-      onClick: (button) => {
-        this.paused = !this.paused;
-
-        if (this.paused) {
-          button.label = 'Resume';
-        } else {
-          button.label = 'Pause';
-        }
-      },
-    });
-  }
-
-  protected onUpdate(engine: TEngine, delta: number) {
-    if (!this.paused) {
-      this.rootComponent.transform.rotateY(delta * 0.5 * 0.7);
-    }
-  }
-}
+import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
 
 class AubState extends TGameState {
   public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, ship.resources);
+    const rp = new TResourcePack(engine, {
+      meshes: [shipMesh],
+      materials: [shipMtl],
+    });
 
     await rp.load();
     this.onReady(engine);
   }
 
   public onReady(engine: TEngine) {
-    const aub = new ship(engine);
-    this.addActor(aub);
+    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
 
-    const orthoCamera = new TOrthographicCamera(engine);
-    this.addActor(orthoCamera);
+    const mesh = new TMeshComponent({
+      source: 'path',
+      path: shipMesh,
+    });
 
-    const perspectiveCamera = new TPerspectiveCamera(engine);
-    this.addActor(perspectiveCamera);
+    const material = new TMaterialComponent(
+      engine.resources.get<TColorMaterial>(shipMtl)!,
+    );
 
-    this.activeCamera = perspectiveCamera;
+    const ship = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(ship, [
+      mesh,
+      material,
+      new TTransformComponent(
+        new TTransform(
+          vec3.fromValues(0, 0, -15),
+          undefined,
+          vec3.fromValues(1, 1, 1),
+        ),
+      ),
+      new TShouldRenderComponent(),
+      new TRotatingComponent(),
+    ]);
 
-    // const section = engine.debugPanel.addSection('Camera', true);
+    const perspective = this.world.ecs.createEntity();
+    const perspectiveComponent = new TCameraComponent({
+      type: TProjectionType.Perspective,
+      fov: 45,
+    });
+    this.world.ecs.addComponents(perspective, [
+      perspectiveComponent,
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TActiveCameraComponent(),
+    ]);
 
-    // section.addSelect(
-    //   'Projection Mode',
-    //   [
-    //     { label: 'Perspective', value: 'perspective' },
-    //     { label: 'Orthographic', value: 'ortho' },
-    //   ],
-    //   'perspective',
-    //   (mode) => {
-    //     if (mode === 'perspective') {
-    //       this.activeCamera = perspectiveCamera;
-    //     } else {
-    //       this.activeCamera = orthoCamera;
-    //     }
-    //   }
-    // );
+    const ortho = this.world.ecs.createEntity();
+    const orthoComponent = new TCameraComponent({
+      type: TProjectionType.Orthographic,
+    });
+    this.world.ecs.addComponents(ortho, [
+      orthoComponent,
+      new TTransformComponent(new TTransform()),
+    ]);
 
-    // section.addInput(
-    //   'FOV',
-    //   'range',
-    //   '45',
-    //   (value: string) => {
-    //     perspectiveCamera.fov = parseFloat(value);
-    //   },
-    //   {
-    //     max: 120,
-    //     min: 20,
-    //     step: 5,
-    //     showValueBubble: true,
-    //   }
-    // );
+    const section = engine.debugPanel.addSection('Camera', true);
+
+    section.addSelect(
+      'Projection Mode',
+      [
+        { label: 'Perspective', value: 'perspective' },
+        { label: 'Orthographic', value: 'ortho' },
+      ],
+      'perspective',
+      (mode) => {
+        if (mode === 'perspective') {
+          this.world.cameraSystem.setActiveCamera(perspective);
+        } else {
+          this.world.cameraSystem.setActiveCamera(ortho);
+        }
+      },
+    );
+
+    section.addInput(
+      'FOV',
+      'range',
+      '45',
+      (value: string) => {
+        const cfg = perspectiveComponent.cameraConfig;
+        if (cfg.type === TProjectionType.Perspective) {
+          cfg.fov = parseFloat(value);
+        }
+      },
+      {
+        max: 120,
+        min: 20,
+        step: 5,
+        showValueBubble: true,
+      },
+    );
   }
 }
 

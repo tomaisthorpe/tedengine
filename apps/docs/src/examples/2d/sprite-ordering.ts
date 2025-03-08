@@ -1,65 +1,25 @@
 import crystalTexture from '@assets/crystal.png';
 import asteroidTexture from '@assets/asteroid.png';
 import { vec3 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import type { TTexture } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TSpriteComponent,
   TOriginPoint,
   TResourcePack,
   TSpriteLayer,
   TEngine,
+  TTextureComponent,
+  TTransform,
+  TTransformComponent,
+  TShouldRenderComponent,
 } from '@tedengine/ted';
-
-class Sprite extends TActor {
-  public static resources: TResourcePackConfig = {
-    textures: [asteroidTexture, crystalTexture],
-  };
-
-  constructor(engine: TEngine) {
-    super();
-
-    const box = new TSpriteComponent(
-      engine,
-      this,
-      0.8,
-      0.8,
-      TOriginPoint.Center,
-      TSpriteLayer.Foreground_0,
-    );
-    box.applyTexture(engine, asteroidTexture);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
-
-    const crystal = new TSpriteComponent(
-      engine,
-      this,
-      1,
-      1,
-      TOriginPoint.Center,
-      TSpriteLayer.Background_0,
-    );
-    crystal.applyTexture(engine, crystalTexture);
-
-    engine.debugPanel.addButtons('Change Order', {
-      label: 'Flip',
-      onClick: (button) => {
-        if (box.layer === TSpriteLayer.Foreground_0) {
-          box.layer = TSpriteLayer.Background_0;
-          crystal.layer = TSpriteLayer.Foreground_0;
-        } else {
-          crystal.layer = TSpriteLayer.Background_0;
-          box.layer = TSpriteLayer.Foreground_0;
-        }
-      },
-    });
-  }
-}
 
 class SpriteState extends TGameState {
   public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, Sprite.resources);
+    const rp = new TResourcePack(engine, {
+      textures: [asteroidTexture, crystalTexture],
+    });
 
     await rp.load();
 
@@ -67,8 +27,48 @@ class SpriteState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const sprites = new Sprite(engine);
-    this.addActor(sprites);
+    const asteroidSprite = new TSpriteComponent({
+      width: 0.8,
+      height: 0.8,
+      origin: TOriginPoint.Center,
+      layer: TSpriteLayer.Foreground_0,
+    });
+
+    const asteroid = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(asteroid, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      asteroidSprite,
+      new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    const crystalSprite = new TSpriteComponent({
+      width: 1,
+      height: 1,
+      origin: TOriginPoint.Center,
+      layer: TSpriteLayer.Background_0,
+    });
+
+    const crystal = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(crystal, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      crystalSprite,
+      new TTextureComponent(engine.resources.get<TTexture>(crystalTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    engine.debugPanel.addButtons('Change Order', {
+      label: 'Flip',
+      onClick: (button) => {
+        if (asteroidSprite.layer === TSpriteLayer.Foreground_0) {
+          asteroidSprite.layer = TSpriteLayer.Background_0;
+          crystalSprite.layer = TSpriteLayer.Foreground_0;
+        } else {
+          crystalSprite.layer = TSpriteLayer.Background_0;
+          asteroidSprite.layer = TSpriteLayer.Foreground_0;
+        }
+      },
+    });
   }
 }
 

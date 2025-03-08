@@ -24,9 +24,11 @@ import type {
   RigidBody,
   World,
 } from '@dimforge/rapier3d-compat';
-import type { TBoxColliderConfig } from './colliders/box-collider';
-import type { TPlaneColliderConfig } from './colliders/plane-collider';
-import type { TSphereColliderConfig } from './colliders/sphere-collider';
+import type {
+  TBoxColliderConfig,
+  TPlaneColliderConfig,
+  TSphereColliderConfig,
+} from './colliders';
 
 export interface TRapierObject {
   uuid: string;
@@ -216,16 +218,16 @@ export default class TRapier3DWorld implements TPhysicsWorld {
     if (collider.type === TColliderType.BOX) {
       const config = collider as TBoxColliderConfig;
       shape = this.RAPIER.ColliderDesc.cuboid(
-        config.width / 2 * this.physicsScale,
-        config.height / 2 * this.physicsScale,
-        config.depth / 2 * this.physicsScale,
+        (config.width / 2) * this.physicsScale,
+        (config.height / 2) * this.physicsScale,
+        (config.depth / 2) * this.physicsScale,
       );
     } else if (collider.type === TColliderType.PLANE) {
       const config = collider as TPlaneColliderConfig;
       shape = this.RAPIER.ColliderDesc.cuboid(
-        config.width / 2 * this.physicsScale,
+        (config.width / 2) * this.physicsScale,
         0.000001,
-        config.height / 2 * this.physicsScale,
+        (config.height / 2) * this.physicsScale,
       );
     } else if (collider.type === TColliderType.SPHERE) {
       const config = collider as TSphereColliderConfig;

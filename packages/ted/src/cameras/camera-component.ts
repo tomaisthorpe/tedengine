@@ -1,29 +1,27 @@
-import TSceneComponent from '../actor-components/scene-component';
-import type TActor from '../core/actor';
-import TDebugCamera from '../debug/debug-camera';
-import type TEngine from '../engine/engine';
+import { TComponent } from '../ecs/component';
+import type { TProjectionType } from '../graphics';
 
-export default class TCameraComponent extends TSceneComponent {
-  public showDebug = false;
-  private debugCamera?: TDebugCamera;
+export interface TPerspectiveCameraConfig {
+  type: TProjectionType.Perspective;
+  fov?: number;
+  zNear?: number;
+  zFar?: number;
+}
 
-  constructor(actor: TActor) {
-    super(actor);
+export interface TOrthographicCameraConfig {
+  type: TProjectionType.Orthographic;
+  zNear?: number;
+  zFar?: number;
+}
 
-    this.canRender = false;
-    this.shouldRender = false;
-  }
+export type TCameraConfig =
+  | TPerspectiveCameraConfig
+  | TOrthographicCameraConfig;
 
-  public showDebugCamera(engine: TEngine): void {
-    if (!this.debugCamera) {
-      this.debugCamera = new TDebugCamera(engine, this.actor);
-      this.debugCamera.attachTo(this);
-    }
-  }
-
-  public hideDebugCamera(): void {
-    if (this.debugCamera) {
-      this.debugCamera.shouldRender = false;
-    }
+export class TCameraComponent extends TComponent {
+  constructor(public cameraConfig: TCameraConfig) {
+    super();
   }
 }
+
+export class TActiveCameraComponent extends TComponent {}

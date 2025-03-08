@@ -2,89 +2,27 @@ import trainLocoMesh from '@assets/train-electric-city-a.obj';
 import trainPantoMesh from '@assets/train-electric-city-b.obj';
 import trainMiddleMesh from '@assets/train-electric-city-c.obj';
 import trainTexture from '@assets/kenney-colormap.png';
-import { vec3 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import { quat, vec3 } from 'gl-matrix';
+import type { TTexture } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TResourcePack,
   TTexturedMeshComponent,
   TEngine,
-  TSceneComponent,
+  TTransformComponent,
+  TTransform,
+  TTextureComponent,
+  TShouldRenderComponent,
+  TParentEntityComponent,
 } from '@tedengine/ted';
-
-class Train extends TActor {
-  public static resources: TResourcePackConfig = {
-    texturedMeshes: [trainLocoMesh, trainPantoMesh, trainMiddleMesh],
-    materials: [],
-    textures: [trainTexture],
-  };
-
-  private paused = false;
-
-  constructor(engine: TEngine) {
-    super();
-
-    const wholeTrain = new TSceneComponent(this);
-    wholeTrain.transform.translation = vec3.fromValues(0, 0, 0.365);
-
-    const start = new TTexturedMeshComponent(this);
-    start.applyMesh(engine, trainLocoMesh);
-    start.applyTexture(engine, trainTexture);
-    start.transform.scale = vec3.fromValues(0.1, 0.1, 0.1);
-    start.attachTo(wholeTrain);
-
-    const panto = new TTexturedMeshComponent(this);
-    panto.applyMesh(engine, trainPantoMesh);
-    panto.applyTexture(engine, trainTexture);
-    panto.transform.scale = vec3.fromValues(0.1, 0.1, 0.1);
-    panto.transform.translation = vec3.fromValues(0, 0, -0.24);
-    panto.attachTo(wholeTrain);
-
-    const middle = new TTexturedMeshComponent(this);
-    middle.applyMesh(engine, trainMiddleMesh);
-    middle.applyTexture(engine, trainTexture);
-    middle.transform.scale = vec3.fromValues(0.1, 0.1, 0.1);
-    middle.transform.translation = vec3.fromValues(0, 0, -0.495);
-    middle.attachTo(wholeTrain);
-
-    const end = new TTexturedMeshComponent(this);
-    end.applyMesh(engine, trainLocoMesh);
-    end.applyTexture(engine, trainTexture);
-    end.transform.scale = vec3.fromValues(0.1, 0.1, 0.1);
-    end.transform.translation = vec3.fromValues(0, 0, -0.735);
-    end.transform.rotateY(Math.PI);
-    end.attachTo(wholeTrain);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -1);
-
-    this.rootComponent.transform.rotateX(0.3);
-    this.rootComponent.transform.rotateY(Math.PI / 2);
-
-    engine.debugPanel.addButtons('Rotation', {
-      label: 'Pause',
-      onClick: (button) => {
-        this.paused = !this.paused;
-
-        if (this.paused) {
-          button.label = 'Resume';
-        } else {
-          button.label = 'Pause';
-        }
-      },
-    });
-  }
-
-  protected onUpdate(engine: TEngine, delta: number) {
-    if (!this.paused) {
-      this.rootComponent.transform.rotateY(delta * 0.5 * 0.7);
-    }
-  }
-}
+import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
 
 class TrainState extends TGameState {
   public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, Train.resources);
+    const rp = new TResourcePack(engine, {
+      texturedMeshes: [trainLocoMesh, trainPantoMesh, trainMiddleMesh],
+      textures: [trainTexture],
+    });
 
     await rp.load();
 
@@ -92,8 +30,86 @@ class TrainState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const train = new Train(engine);
-    this.addActor(train);
+    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
+
+    const rotatingComponent = new TRotatingComponent(
+      vec3.fromValues(0, 0.5, 0),
+    );
+
+    const train = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(train, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -1))),
+      rotatingComponent,
+    ]);
+
+    const start = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(start, [
+      new TParentEntityComponent(train),
+      new TTransformComponent(
+        new TTransform(undefined, undefined, vec3.fromValues(0.1, 0.1, 0.1)),
+      ),
+      new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
+      new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    const panto = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(panto, [
+      new TParentEntityComponent(train),
+      new TTransformComponent(
+        new TTransform(
+          vec3.fromValues(0, 0, -0.24),
+          undefined,
+          vec3.fromValues(0.1, 0.1, 0.1),
+        ),
+      ),
+      new TTexturedMeshComponent({ source: 'path', path: trainPantoMesh }),
+      new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    const middle = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(middle, [
+      new TParentEntityComponent(train),
+      new TTransformComponent(
+        new TTransform(
+          vec3.fromValues(0, 0, -0.495),
+          undefined,
+          vec3.fromValues(0.1, 0.1, 0.1),
+        ),
+      ),
+      new TTexturedMeshComponent({ source: 'path', path: trainMiddleMesh }),
+      new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    const end = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(end, [
+      new TParentEntityComponent(train),
+      new TTransformComponent(
+        new TTransform(
+          vec3.fromValues(0, 0, -0.735),
+          quat.fromEuler(quat.create(), 0, 180, 0),
+          vec3.fromValues(0.1, 0.1, 0.1),
+        ),
+      ),
+      new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
+      new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
+      new TShouldRenderComponent(),
+    ]);
+
+    engine.debugPanel.addButtons('Rotation', {
+      label: 'Pause',
+      onClick: (button) => {
+        rotatingComponent.paused = !rotatingComponent.paused;
+
+        if (rotatingComponent.paused) {
+          button.label = 'Resume';
+        } else {
+          button.label = 'Pause';
+        }
+      },
+    });
 
     this.world.config.lighting = {
       ambientLight: {

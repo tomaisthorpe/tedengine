@@ -1,25 +1,37 @@
 import asteroidTexture from '@assets/asteroid.png';
 import { quat, vec3, vec4 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import type { TTexture } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TResourcePack,
   TEngine,
   TParticlesComponent,
+  TSpriteLayer,
+  TOriginPoint,
+  TSpriteComponent,
+  TTransformComponent,
+  TTextureComponent,
+  TTransform,
+  TShouldRenderComponent,
+  TSpriteInstancesComponent,
+  TParticlesSystem,
 } from '@tedengine/ted';
 
-class ManyColors extends TActor {
-  public static resources: TResourcePackConfig = {
-    textures: [asteroidTexture],
-  };
+class SpriteState extends TGameState {
+  public async onCreate(engine: TEngine) {
+    const rp = new TResourcePack(engine, {
+      textures: [asteroidTexture],
+    });
 
-  public particles: TParticlesComponent;
+    await rp.load();
 
-  constructor(engine: TEngine) {
-    super();
+    this.onReady(engine);
+  }
 
-    this.particles = new TParticlesComponent(engine, this, 0.2, 0.2, {
+  public onReady(engine: TEngine) {
+    this.world.ecs.addSystem(new TParticlesSystem(this.world.ecs));
+
+    const colorParticles = new TParticlesComponent({
       emitter: {
         maxParticles: 1000,
         maxEmitRate: 200,
@@ -84,23 +96,23 @@ class ManyColors extends TActor {
         },
       },
     });
-    this.particles.applyTexture(engine, asteroidTexture);
 
-    this.rootComponent.transform.translation = vec3.fromValues(0.75, -0.5, -3);
-  }
-}
+    const manyColors = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(manyColors, [
+      new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
+      new TSpriteComponent({
+        width: 0.2,
+        height: 0.2,
+        origin: TOriginPoint.Center,
+        layer: TSpriteLayer.Foreground_0,
+      }),
+      new TTransformComponent(new TTransform(vec3.fromValues(0.75, -0.5, -3))),
+      colorParticles,
+      new TShouldRenderComponent(),
+      new TSpriteInstancesComponent([]),
+    ]);
 
-class Fiery extends TActor {
-  public static resources: TResourcePackConfig = {
-    textures: [asteroidTexture],
-  };
-
-  public particles: TParticlesComponent;
-
-  constructor(engine: TEngine) {
-    super();
-
-    this.particles = new TParticlesComponent(engine, this, 0.2, 0.2, {
+    const fieryParticles = new TParticlesComponent({
       emitter: {
         maxParticles: 500,
         maxEmitRate: 200,
@@ -152,37 +164,30 @@ class Fiery extends TActor {
         },
       },
     });
-    this.particles.applyTexture(engine, asteroidTexture);
-
-    this.rootComponent.transform.translation = vec3.fromValues(-0.75, -0.5, -3);
-  }
-}
-
-class SpriteState extends TGameState {
-  public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, ManyColors.resources, Fiery.resources);
-
-    await rp.load();
-
-    this.onReady(engine);
-  }
-
-  public onReady(engine: TEngine) {
-    const manyColors = new ManyColors(engine);
-    this.addActor(manyColors);
-
-    const fiery = new Fiery(engine);
-    this.addActor(fiery);
+    const fiery = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(fiery, [
+      new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
+      new TSpriteComponent({
+        width: 0.2,
+        height: 0.2,
+        origin: TOriginPoint.Center,
+        layer: TSpriteLayer.Foreground_0,
+      }),
+      new TTransformComponent(new TTransform(vec3.fromValues(-0.75, -0.5, -3))),
+      fieryParticles,
+      new TShouldRenderComponent(),
+      new TSpriteInstancesComponent([]),
+    ]);
 
     const section = engine.debugPanel.addSection('Particles', true);
     section.addButtons('System 1', {
       label: 'Pause',
       onClick: (button) => {
-        if (fiery.particles.paused) {
-          fiery.particles.resume();
+        if (fieryParticles.paused) {
+          fieryParticles.paused = false;
           button.label = 'Pause';
         } else {
-          fiery.particles.pause();
+          fieryParticles.paused = true;
           button.label = 'Resume';
         }
       },
@@ -191,11 +196,11 @@ class SpriteState extends TGameState {
     section.addButtons('System 2', {
       label: 'Pause',
       onClick: (button) => {
-        if (manyColors.particles.paused) {
-          manyColors.particles.resume();
+        if (colorParticles.paused) {
+          colorParticles.paused = false;
           button.label = 'Pause';
         } else {
-          manyColors.particles.pause();
+          colorParticles.paused = true;
           button.label = 'Resume';
         }
       },

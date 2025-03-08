@@ -1,21 +1,21 @@
 import { vec3 } from 'gl-matrix';
 import {
-  TSphereComponent,
   TGameState,
-  TActor,
-  TOrbitCamera,
   TEngine,
+  TShouldRenderComponent,
+  TMeshComponent,
+  TTransform,
+  TTransformComponent,
+  createSphereMesh,
+  TMaterialComponent,
+  TOrbitCameraComponent,
+  TActiveCameraComponent,
+  TCameraComponent,
+  TMouseInputComponent,
+  TProjectionType,
+  TOrbitCameraSystem,
+  TMouseInputSystem,
 } from '@tedengine/ted';
-
-class Actor extends TActor {
-  constructor(engine: TEngine) {
-    super();
-
-    new TSphereComponent(engine, this, 0.5, 12, 12);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, 0);
-  }
-}
 
 class SphereState extends TGameState {
   public async onCreate(engine: TEngine) {
@@ -23,13 +23,35 @@ class SphereState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Actor(engine);
-    this.addActor(box);
+    this.world.ecs.addSystem(
+      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    );
 
-    const orbitCamera = new TOrbitCamera(engine, 5);
-    this.addActor(orbitCamera);
+    this.world.ecs.addSystem(
+      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    );
+    const sphere = this.world.ecs.createEntity();
 
-    this.activeCamera = orbitCamera;
+    const mesh = createSphereMesh(0.5, 12, 12);
+    this.world.ecs.addComponents(sphere, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
+      new TMaterialComponent(mesh.material),
+      new TShouldRenderComponent(),
+    ]);
+
+    const camera = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(camera, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
+      new TActiveCameraComponent(),
+      new TMouseInputComponent(),
+      new TOrbitCameraComponent({
+        distance: 5,
+        speed: 0.5,
+        enableDrag: true,
+      }),
+    ]);
 
     this.world.config.lighting = {
       ambientLight: {

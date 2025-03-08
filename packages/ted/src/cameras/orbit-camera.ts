@@ -1,125 +1,150 @@
-import type { vec2 } from 'gl-matrix';
-import { mat4, vec3 } from 'gl-matrix';
-import TSceneComponent from '../actor-components/scene-component';
-import TPawn from '../core/pawn';
+import { vec3, quat } from 'gl-matrix';
 import type TEngine from '../engine/engine';
-import { TProjectionType } from '../graphics';
-import TController from '../input/controller';
-import type { ICamera } from './camera';
-import TCameraComponent from './camera-component';
-import type { TCameraView } from './camera-view';
-import { clipToWorldSpace } from './base-camera';
+import { TCameraComponent, TActiveCameraComponent } from './camera-component';
+import { TComponent } from '../ecs/component';
+import type { TECS } from '../ecs/ecs';
+import type TECSQuery from '../ecs/query';
+import { TSystem } from '../ecs/system';
+import { TMouseInputComponent } from '../input/mouse-input';
+import type { TInputManager } from '../input/input-manager';
+import { TInputDevice } from '../input/input-manager';
+import type TWorld from '../core/world';
+import TTransform from '../math/transform';
+import { TTransformComponent } from '../components';
 
-export default class TOrbitCamera extends TPawn implements ICamera {
-  private container: TSceneComponent;
-  public cameraComponent: TCameraComponent;
-  public speed = 1;
-  public enableDrag = true;
+export interface TOrbitCameraConfig {
+  distance: number;
+  speed?: number;
+  enableDrag?: boolean;
+  paused?: boolean;
+}
 
-  private paused = false;
+export class TOrbitCameraComponent extends TComponent {
+  public distance: number;
+  public speed: number;
+  public enableDrag: boolean;
+  public paused: boolean;
 
-  private lastMouseX = 0;
-  private lastMouseY = 0;
+  public quat: quat;
 
-  private fov = 45;
+  public lastMouseX = 0;
+  public lastMouseY = 0;
 
-  constructor(
-    private engine: TEngine,
-    public distance: number,
-  ) {
+  constructor(config: TOrbitCameraConfig, q?: quat) {
     super();
 
-    const controller = new TOrbitController(engine);
-    controller.possess(this);
+    this.distance = config.distance;
+    this.speed = config.speed ?? 1;
+    this.enableDrag = config.enableDrag ?? true;
+    this.paused = config.paused ?? false;
 
-    this.container = new TSceneComponent(this);
-    this.container.transform.rotateX(-0.4);
-
-    this.cameraComponent = new TCameraComponent(this);
-    this.cameraComponent.transform.translation = vec3.fromValues(
-      0,
-      0,
-      distance,
-    );
-
-    this.cameraComponent.attachTo(this.container);
-  }
-
-  public getView(): TCameraView {
-    return {
-      projectionType: TProjectionType.Perspective,
-      transform: this.cameraComponent.getWorldTransform().getMatrix(),
-      fov: this.fov,
-    };
-  }
-
-  public getProjectionMatrix(width: number, height: number): mat4 {
-    const fieldOfView = (this.fov * Math.PI) / 180;
-    const aspect = width / height;
-    const zNear = 0.1;
-    const zFar = 100.0;
-    const projection = mat4.create();
-
-    mat4.perspective(projection, fieldOfView, aspect, zNear, zFar);
-
-    const cameraSpace = mat4.invert(
-      mat4.create(),
-      this.cameraComponent.getWorldTransform().getMatrix(),
-    );
-    return mat4.multiply(mat4.create(), projection, cameraSpace);
-  }
-
-  public clipToWorldSpace(location: vec2): vec3 {
-    const projectionMatrix = this.getProjectionMatrix(
-      this.engine.renderingSize.width,
-      this.engine.renderingSize.height,
-    );
-
-    return clipToWorldSpace(projectionMatrix, location);
-  }
-
-  public setupController(controller: TController): void {
-    super.setupController(controller);
-
-    controller.bindAction('ToggleDrag', 'pressed', this.startDrag.bind(this));
-    controller.bindAction('ToggleDrag', 'released', this.stopDrag.bind(this));
-  }
-
-  private startDrag() {
-    if (!this.enableDrag || !this.engine.mouse) return;
-
-    this.paused = true;
-
-    this.lastMouseX = this.engine.mouse.screen[0];
-    this.lastMouseY = this.engine.mouse.screen[1];
-  }
-
-  private stopDrag() {
-    this.paused = false;
-  }
-
-  protected onUpdate(_: TEngine, delta: number): void {
-    this.controller?.update();
-
-    if (this.paused && this.engine.mouse) {
-      const diffX = this.lastMouseX - this.engine.mouse.screen[0];
-      const diffY = this.lastMouseY - this.engine.mouse.screen[1];
-
-      this.rootComponent.transform.rotateY(0.01 * diffX);
-      this.container.transform.rotateX(0.01 * diffY);
-
-      this.lastMouseX = this.engine.mouse.screen[0];
-      this.lastMouseY = this.engine.mouse.screen[1];
-      return;
-    }
-    this.rootComponent.transform.rotateY(this.speed * delta);
+    //
+    this.quat = q ?? quat.rotateX(quat.create(), quat.create(), -0.4);
   }
 }
 
-class TOrbitController extends TController {
-  constructor(engine: TEngine) {
-    super(engine.events);
+export class TOrbitCameraSystem extends TSystem {
+  private query: TECSQuery;
+  constructor(
+    private ecs: TECS,
+    private inputManager: TInputManager,
+  ) {
+    super();
 
-    this.addActionFromMouseEvent('ToggleDrag', 0);
+    this.query = ecs.createQuery([
+      TCameraComponent,
+      TTransformComponent,
+      TOrbitCameraComponent,
+      TMouseInputComponent,
+      TActiveCameraComponent,
+    ]);
+
+    inputManager.mapInput('ToggleDrag', {
+      device: TInputDevice.Mouse,
+      key: '0',
+    });
+  }
+
+  public async update(
+    engine: TEngine,
+    world: TWorld,
+    ecs: TECS,
+    delta: number,
+  ): Promise<void> {
+    const entities = this.query.execute();
+    for (const entity of entities) {
+      const camera = this.ecs.getComponents(entity)?.get(TCameraComponent);
+      const transform = this.ecs
+        .getComponents(entity)
+        ?.get(TTransformComponent);
+      const mouseInputComponent = this.ecs
+        .getComponents(entity)
+        ?.get(TMouseInputComponent);
+      const orbitCamera = this.ecs
+        .getComponents(entity)
+        ?.get(TOrbitCameraComponent);
+
+      if (!camera || !mouseInputComponent || !orbitCamera || !transform) {
+        continue;
+      }
+
+      // Update the orbit camera's quaternion if not paused
+      if (!orbitCamera.paused) {
+        quat.rotateY(
+          orbitCamera.quat,
+          orbitCamera.quat,
+          orbitCamera.speed * delta,
+        );
+      } else if (mouseInputComponent.mouseLocation) {
+        const diffX =
+          orbitCamera.lastMouseX - mouseInputComponent.mouseLocation.client[0];
+        const diffY =
+          orbitCamera.lastMouseY - mouseInputComponent.mouseLocation.client[1];
+
+        orbitCamera.quat = quat.rotateY(
+          orbitCamera.quat,
+          orbitCamera.quat,
+          diffX * 0.01,
+        );
+
+        orbitCamera.quat = quat.rotateX(
+          orbitCamera.quat,
+          orbitCamera.quat,
+          diffY * 0.01,
+        );
+
+        orbitCamera.lastMouseX = mouseInputComponent.mouseLocation.client[0];
+        orbitCamera.lastMouseY = mouseInputComponent.mouseLocation.client[1];
+      }
+
+      if (
+        this.inputManager.wasActionJustPressed('ToggleDrag') &&
+        orbitCamera.enableDrag
+      ) {
+        orbitCamera.paused = true;
+        orbitCamera.lastMouseX =
+          mouseInputComponent.mouseLocation?.client[0] ?? 0;
+        orbitCamera.lastMouseY =
+          mouseInputComponent.mouseLocation?.client[1] ?? 0;
+      } else if (this.inputManager.wasActionJustReleased('ToggleDrag')) {
+        orbitCamera.paused = false;
+      }
+
+      // Create a base vector representing distance along z-axis
+      const baseVector = vec3.fromValues(0, 0, orbitCamera.distance);
+
+      // Rotate the baseVector by the quaternion to get the actual position
+      const rotatedVector = vec3.transformQuat(
+        vec3.create(),
+        baseVector,
+        orbitCamera.quat,
+      );
+
+      // Create a new transform with the calculated position and face the origin
+      const newTransform = new TTransform(rotatedVector);
+      newTransform.lookAt(vec3.fromValues(0, 0, 0));
+
+      transform.transform = newTransform;
+    }
   }
 }

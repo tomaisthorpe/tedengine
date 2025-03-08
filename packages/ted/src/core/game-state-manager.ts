@@ -1,4 +1,4 @@
-import type { ICamera } from '../cameras/camera';
+import type TCameraSystem from '../cameras/camera-system';
 import type TEngine from '../engine/engine';
 import type {
   TSerializedLighting,
@@ -130,8 +130,8 @@ export default class TGameStateManager {
     return this.current()?.getLighting() || {};
   }
 
-  public getActiveCamera(): ICamera | undefined {
-    return this.current()?.activeCamera;
+  public getActiveCamera(): TCameraSystem | undefined {
+    return this.current()?.world?.cameraSystem;
   }
 
   /**

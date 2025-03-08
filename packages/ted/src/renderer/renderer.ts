@@ -1,6 +1,6 @@
 // @todo has limited error handling
 import { mat4, vec3 } from 'gl-matrix';
-import { TSpriteLayer } from '../actor-components/sprite-component';
+import { TSpriteLayer } from '../components/sprite-component';
 import type TResourceManager from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
 import TColorProgram from './color-program';

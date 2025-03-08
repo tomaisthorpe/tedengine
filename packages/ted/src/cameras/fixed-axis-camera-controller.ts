@@ -1,36 +1,23 @@
 import { vec3, quat } from 'gl-matrix';
-import type TSceneComponent from '../actor-components/scene-component';
 import type TEngine from '../engine/engine';
-import type ICameraController from './camera-controller';
-import TBaseCameraController from './base-camera-controller';
-import type TBaseCamera from './base-camera';
+import { TComponent } from '../ecs/component';
+import type { TECS } from '../ecs/ecs';
+import { TSystem } from '../ecs/system';
+import type TECSQuery from '../ecs/query';
+import { TCameraComponent } from './camera-component';
+import { TActiveCameraComponent } from './camera-component';
+import { TTransformComponent } from '../components';
+import { TRigidBodyComponent } from '../physics/rigid-body-component';
+import type TWorld from '../core/world';
 
-export default class TFixedAxisCameraController
-  extends TBaseCameraController
-  implements ICameraController {
-  private component?: TSceneComponent;
-
-  // Distance from the attached component on the z axis.
+export class TFixedAxisCameraComponent extends TComponent {
   public distance = 0;
-
-  public deadzone = 0;
-
   public axis = 'z';
-  private axisConfig: {
-    [key: string]: {
-      distance: [number, number, number];
-      rotation: [number, number, number];
-    };
-  } = {
-      x: { distance: [1, 0, 0], rotation: [0, 90, 0] },
-      y: { distance: [0, 1, 0], rotation: [-90, 0, 0] },
-      z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
-    };
-
+  public deadzone = 0;
   public bounds?: { min: vec3; max: vec3 };
-
-  public leadFactor = 0; // Adjustable lead factor
-  public maxLead = 0; // Maximum lead distance
+  public leadFactor = 0;
+  public maxLead = 0;
+  public lerpFactor = 1;
 
   constructor(config?: {
     distance?: number;
@@ -56,16 +43,6 @@ export default class TFixedAxisCameraController
     }
 
     if (config?.bounds !== undefined) {
-      if (config.bounds.min[0] > config.bounds.max[0]) {
-        throw new Error('min x must be less than max x');
-      }
-      if (config.bounds.min[1] > config.bounds.max[1]) {
-        throw new Error('min y must be less than max y');
-      }
-      if (config.bounds.min[2] > config.bounds.max[2]) {
-        throw new Error('min z must be less than max z');
-      }
-
       this.bounds = config.bounds;
     }
 
@@ -81,83 +58,146 @@ export default class TFixedAxisCameraController
       this.lerpFactor = config.lerpFactor;
     }
   }
+}
 
-  /**
-   * Attach this controller to a scene component.
-   * @param component The scene component to attach to.
-   */
-  attachTo(component: TSceneComponent): void {
-    this.component = component;
+export class TFixedAxisCameraTargetComponent extends TComponent {}
+
+export class TFixedAxisCameraSystem extends TSystem {
+  private activeCameraQuery: TECSQuery;
+  private targetQuery: TECSQuery;
+  private axisConfig: {
+    [key: string]: {
+      distance: [number, number, number];
+      rotation: [number, number, number];
+    };
+  } = {
+    x: { distance: [1, 0, 0], rotation: [0, 90, 0] },
+    y: { distance: [0, 1, 0], rotation: [-90, 0, 0] },
+    z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
+  };
+  constructor(private ecs: TECS) {
+    super();
+
+    this.activeCameraQuery = ecs.createQuery([
+      TCameraComponent,
+      TActiveCameraComponent,
+      TFixedAxisCameraComponent,
+    ]);
+
+    this.targetQuery = ecs.createQuery([
+      TTransformComponent,
+      TFixedAxisCameraTargetComponent,
+      TRigidBodyComponent,
+    ]);
   }
 
-  /**
-   * Update the camera position based on the target's position and velocity.
-   * @param camera The camera to update.
-   * @param engine The game engine.
-   * @param delta Time delta.
-   */
-  public async onUpdate(
-    camera: TBaseCamera,
+  public async update(
     engine: TEngine,
+    world: TWorld,
+    ecs: TECS,
     delta: number,
   ): Promise<void> {
-    if (!this.component || !this.axisConfig[this.axis]) return;
+    const entities = this.activeCameraQuery.execute();
 
-    const currentPosition = this.component.getWorldTransform().translation;
+    for (const entity of entities) {
+      const camera = this.ecs.getComponents(entity)?.get(TCameraComponent);
+      const cameraTransform = this.ecs
+        .getComponents(entity)
+        ?.get(TTransformComponent);
+      const fixedAxisCamera = this.ecs
+        .getComponents(entity)
+        ?.get(TFixedAxisCameraComponent);
+      if (!camera || !cameraTransform || !fixedAxisCamera) {
+        continue;
+      }
 
-    const velocity = this.component.linearVelocity ?? [0, 0, 0];
-    vec3.scale(velocity, velocity, delta);
+      const targets = this.targetQuery.execute();
+      if (targets.length === 0) {
+        continue;
+      }
 
-    // Calculate lead position with maximum lead
-    const leadPosition = vec3.create();
-    const leadVector = vec3.create();
-    vec3.scale(leadVector, velocity, this.leadFactor);
+      const target = targets[0];
 
-    // Limit the lead vector to the maximum lead distance
-    if (this.maxLead > 0) {
-      const leadDistance = vec3.length(leadVector);
-      if (leadDistance > this.maxLead) {
-        vec3.scale(leadVector, leadVector, this.maxLead / leadDistance);
+      const targetTransform = this.ecs
+        .getComponents(target)
+        ?.get(TTransformComponent);
+      const targetRigidBody = this.ecs
+        .getComponents(target)
+        ?.get(TRigidBodyComponent);
+      if (!targetTransform || !targetRigidBody) {
+        continue;
+      }
+
+      const targetVelocity = targetRigidBody.physicsOptions.linearVelocity ?? [
+        0, 0, 0,
+      ];
+      const velocity = vec3.scale(vec3.create(), targetVelocity, delta);
+
+      // Calculate lead position with maximum lead
+      const leadPosition = vec3.create();
+      const leadVector = vec3.create();
+      vec3.scale(leadVector, velocity, fixedAxisCamera.leadFactor);
+
+      // Limit the lead vector to the maximum lead distance
+      if (fixedAxisCamera.maxLead > 0) {
+        const leadDistance = vec3.length(leadVector);
+        if (leadDistance > fixedAxisCamera.maxLead) {
+          vec3.scale(
+            leadVector,
+            leadVector,
+            fixedAxisCamera.maxLead / leadDistance,
+          );
+        }
+      }
+
+      vec3.add(leadPosition, targetTransform.transform.translation, leadVector);
+
+      const distance = vec3.multiply(
+        vec3.create(),
+        this.axisConfig[fixedAxisCamera.axis].distance,
+        vec3.fromValues(
+          fixedAxisCamera.distance,
+          fixedAxisCamera.distance,
+          fixedAxisCamera.distance,
+        ),
+      );
+
+      const targetPosition = vec3.add(vec3.create(), leadPosition, distance);
+
+      // Apply bounds to target position
+      let outOfBounds = false;
+      if (fixedAxisCamera.bounds) {
+        const originalTarget = vec3.clone(targetPosition);
+        vec3.max(targetPosition, targetPosition, fixedAxisCamera.bounds.min);
+        vec3.min(targetPosition, targetPosition, fixedAxisCamera.bounds.max);
+        outOfBounds = !vec3.equals(originalTarget, targetPosition);
+      }
+
+      // Apply deadzone
+      const currentCameraPosition = cameraTransform.transform.translation;
+      const distanceToTarget = vec3.distance(
+        currentCameraPosition,
+        targetPosition,
+      );
+
+      if (distanceToTarget > fixedAxisCamera.deadzone || outOfBounds) {
+        const t = 1 - Math.pow(1 - fixedAxisCamera.lerpFactor, delta * 10);
+        cameraTransform.transform.translation = this.lerpVector(
+          currentCameraPosition,
+          targetPosition,
+          t,
+        );
+
+        const rotation = quat.fromEuler(
+          quat.create(),
+          ...this.axisConfig[fixedAxisCamera.axis].rotation,
+        );
+        cameraTransform.transform.rotation = rotation;
       }
     }
+  }
 
-    vec3.add(leadPosition, currentPosition, leadVector);
-
-    const distance = vec3.multiply(
-      vec3.create(),
-      this.axisConfig[this.axis].distance,
-      vec3.fromValues(this.distance, this.distance, this.distance),
-    );
-
-    const targetPosition = vec3.add(vec3.create(), leadPosition, distance);
-
-    // Apply bounds to target position
-    let outOfBounds = false;
-    if (this.bounds) {
-      const originalTarget = vec3.clone(targetPosition);
-      vec3.max(targetPosition, targetPosition, this.bounds.min);
-      vec3.min(targetPosition, targetPosition, this.bounds.max);
-      outOfBounds = !vec3.equals(originalTarget, targetPosition);
-    }
-
-    // Apply deadzone
-    const currentCameraPosition = camera.cameraComponent.transform.translation;
-    const distanceToTarget = vec3.distance(
-      currentCameraPosition,
-      targetPosition,
-    );
-
-    if (distanceToTarget > this.deadzone || outOfBounds) {
-      // Move the camera using the base controller method
-      this.moveTo(targetPosition, outOfBounds);
-
-      const rotation = quat.fromEuler(
-        quat.create(),
-        ...this.axisConfig[this.axis].rotation,
-      );
-      camera.cameraComponent.transform.rotation = rotation;
-    }
-
-    await super.onUpdate(camera, engine, delta);
+  private lerpVector(current: vec3, target: vec3, t: number): vec3 {
+    return vec3.lerp(vec3.create(), current, target, t);
   }
 }

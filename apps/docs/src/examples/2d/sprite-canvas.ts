@@ -3,22 +3,14 @@ import type { TTexture } from '@tedengine/ted';
 import {
   TCanvas,
   TGameState,
-  TActor,
   TSpriteComponent,
   TTextureFilter,
   TEngine,
+  TTransform,
+  TTransformComponent,
+  TTextureComponent,
+  TShouldRenderComponent,
 } from '@tedengine/ted';
-
-class Actor extends TActor {
-  constructor(engine: TEngine, texture: TTexture) {
-    super();
-
-    const sprite = new TSpriteComponent(engine, this, 1, 1);
-    sprite.setTexture(texture);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
-  }
-}
 
 class CanvasState extends TGameState {
   private texture?: TTexture;
@@ -38,8 +30,16 @@ class CanvasState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Actor(engine, this.texture!);
-    this.addActor(box);
+    const entity = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(entity, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      new TSpriteComponent({
+        width: 1,
+        height: 1,
+      }),
+      new TTextureComponent(this.texture!),
+      new TShouldRenderComponent(),
+    ]);
   }
 }
 

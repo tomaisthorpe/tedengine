@@ -1,35 +1,31 @@
 import landscapeMtl from '@assets/landscape.mtl';
 import landscapeMesh from '@assets/landscape.obj';
 import { vec3 } from 'gl-matrix';
-import type { TResourcePackConfig } from '@tedengine/ted';
+import type { TColorMaterial } from '@tedengine/ted';
 import {
   TGameState,
-  TActor,
   TResourcePack,
   TMeshComponent,
   TEngine,
-  TOrbitCamera,
+  TTransform,
+  TShouldRenderComponent,
+  TTransformComponent,
+  TMaterialComponent,
+  TActiveCameraComponent,
+  TProjectionType,
+  TCameraComponent,
+  TOrbitCameraComponent,
+  TMouseInputComponent,
+  TOrbitCameraSystem,
+  TMouseInputSystem,
 } from '@tedengine/ted';
-
-class Landscape extends TActor {
-  public static resources: TResourcePackConfig = {
-    meshes: [landscapeMesh],
-    materials: [landscapeMtl],
-  };
-
-  constructor(engine: TEngine) {
-    super();
-
-    const mesh = new TMeshComponent(engine, this);
-    mesh.applyMesh(engine, landscapeMesh);
-    mesh.applyMaterial(engine, landscapeMtl);
-    mesh.transform.scale = vec3.fromValues(0.1, 0.1, 0.1);
-  }
-}
 
 class MeshState extends TGameState {
   public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, Landscape.resources);
+    const rp = new TResourcePack(engine, {
+      meshes: [landscapeMesh],
+      materials: [landscapeMtl],
+    });
 
     await rp.load();
 
@@ -37,14 +33,46 @@ class MeshState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const landscape = new Landscape(engine);
-    this.addActor(landscape);
+    this.world.ecs.addSystem(
+      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    );
 
-    const orbitCamera = new TOrbitCamera(engine, 2.5);
-    orbitCamera.speed = 0;
-    this.addActor(orbitCamera);
+    this.world.ecs.addSystem(
+      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    );
+    const entity = this.world.ecs.createEntity();
 
-    this.activeCamera = orbitCamera;
+    const mesh = new TMeshComponent({ source: 'path', path: landscapeMesh });
+    const material = new TMaterialComponent(
+      engine.resources.get<TColorMaterial>(landscapeMtl)!,
+    );
+
+    const transform = new TTransform(
+      vec3.fromValues(0, 0, 0),
+      undefined,
+      vec3.fromValues(0.1, 0.1, 0.1),
+    );
+
+    this.world.ecs.addComponents(entity, [
+      new TTransformComponent(transform),
+      new TShouldRenderComponent(),
+      mesh,
+      material,
+    ]);
+
+    const camera = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(camera, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
+      new TActiveCameraComponent(),
+      new TMouseInputComponent(),
+      new TOrbitCameraComponent({
+        distance: 2.5,
+        speed: 0,
+        enableDrag: true,
+        paused: false,
+      }),
+    ]);
 
     this.world.config.lighting = {
       shadows: {

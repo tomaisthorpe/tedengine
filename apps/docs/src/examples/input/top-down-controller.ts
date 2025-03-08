@@ -2,50 +2,56 @@ import { quat, vec3 } from 'gl-matrix';
 import {
   TGameState,
   TEngine,
-  TPawn,
-  TPerspectiveCamera,
-  TFixedAxisCameraController,
-  TTopDownController,
   TSpriteComponent,
   TOriginPoint,
   TResourcePack,
+  TTopDownInputSystem,
+  TTextureComponent,
+  TShouldRenderComponent,
+  TTransform,
+  TTransformComponent,
+  TTopDownInputComponent,
+  TMouseInputComponent,
+  TMouseInputSystem,
+  TSystem,
 } from '@tedengine/ted';
-import type {
-  ICamera,
-  TActorWithOnUpdate,
-  TResourcePackConfig,
-} from '@tedengine/ted';
+import type { TECS, TECSQuery, TTexture, TWorld } from '@tedengine/ted';
 import asteroidTexture from '@assets/asteroid.png';
 
-class Sprite extends TPawn implements TActorWithOnUpdate {
-  private sprite: TSpriteComponent;
+class TopDownRotatorSystem extends TSystem {
+  private query: TECSQuery;
 
-  public static resources: TResourcePackConfig = {
-    textures: [asteroidTexture],
-  };
-
-  constructor(engine: TEngine, gameState: TGameState, camera: ICamera) {
+  constructor(private ecs: TECS) {
     super();
 
-    const controller = new TTopDownController(gameState.events, camera);
-    controller.possess(this);
-
-    this.sprite = new TSpriteComponent(engine, this, 1, 1, TOriginPoint.Center);
-    this.sprite.applyTexture(engine, asteroidTexture);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
+    this.query = ecs.createQuery([TTopDownInputComponent, TTransformComponent]);
   }
 
-  async onUpdate(): Promise<void> {
-    if (!this.controller) return;
+  public async update(): Promise<void> {
+    const entities = this.query.execute();
 
-    this.controller.update();
+    for (const entity of entities) {
+      const topDownInputComponent = this.ecs
+        .getComponents(entity)
+        ?.get(TTopDownInputComponent);
 
-    const { angle } = this.controller as TTopDownController;
+      const transform = this.ecs
+        .getComponents(entity)
+        ?.get(TTransformComponent);
 
-    const q = quat.fromEuler(quat.create(), 0, 0, (angle * 180) / Math.PI + 90);
+      if (!topDownInputComponent || !transform) {
+        continue;
+      }
 
-    this.sprite.transform.rotation = q;
+      const q = quat.fromEuler(
+        quat.create(),
+        0,
+        0,
+        (topDownInputComponent.angle * 180) / Math.PI + 90,
+      );
+
+      transform.transform.rotation = q;
+    }
   }
 }
 
@@ -56,7 +62,9 @@ class TopDownState extends TGameState {
   }
 
   public async onCreate(engine: TEngine) {
-    const rp = new TResourcePack(engine, Sprite.resources);
+    const rp = new TResourcePack(engine, {
+      textures: [asteroidTexture],
+    });
 
     await rp.load();
 
@@ -64,20 +72,24 @@ class TopDownState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const camera = new TPerspectiveCamera(engine);
-    this.addActor(camera);
-
-    const box = new Sprite(engine, this, camera);
-    this.addActor(box);
-
-    const controller = new TFixedAxisCameraController({
-      distance: 5,
-      axis: 'z',
-    });
-    controller.attachTo(box.rootComponent);
-    camera.controller = controller;
-
-    this.activeCamera = camera;
+    this.world.ecs.addSystem(
+      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    );
+    this.world.ecs.addSystem(new TTopDownInputSystem(this.world.ecs));
+    this.world.ecs.addSystem(new TopDownRotatorSystem(this.world.ecs));
+    const asteroid = this.world.ecs.createEntity();
+    this.world.ecs.addComponents(asteroid, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      new TSpriteComponent({
+        width: 1,
+        height: 1,
+        origin: TOriginPoint.Center,
+      }),
+      new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
+      new TShouldRenderComponent(),
+      new TMouseInputComponent(),
+      new TTopDownInputComponent(),
+    ]);
   }
 }
 

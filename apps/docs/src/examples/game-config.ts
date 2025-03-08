@@ -1,24 +1,15 @@
 import { vec3 } from 'gl-matrix';
 import {
-  TRotatingComponent,
-  TBoxComponent,
   TGameState,
-  TActor,
   TEngine,
+  createBoxMesh,
+  TMaterialComponent,
+  TMeshComponent,
+  TShouldRenderComponent,
+  TTransform,
+  TTransformComponent,
 } from '@tedengine/ted';
-
-class Actor extends TActor {
-  constructor(engine: TEngine) {
-    super();
-
-    const rotating = new TRotatingComponent(engine, this);
-
-    const box = new TBoxComponent(engine, this, 1, 1, 1);
-    box.attachTo(rotating);
-
-    this.rootComponent.transform.translation = vec3.fromValues(0, 0, -3);
-  }
-}
+import { TRotatingSystem, TRotatingComponent } from './shared/rotating';
 
 class BoxState extends TGameState {
   public async onCreate(engine: TEngine) {
@@ -26,8 +17,17 @@ class BoxState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const box = new Actor(engine);
-    this.addActor(box);
+    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
+
+    const entity = this.world.ecs.createEntity();
+    const mesh = createBoxMesh(1, 1, 1);
+    this.world.ecs.addComponents(entity, [
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      new TRotatingComponent(),
+      new TShouldRenderComponent(),
+      new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
+      new TMaterialComponent(mesh.material),
+    ]);
   }
 }
 

@@ -1,9 +1,7 @@
-import { quat, vec3 } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 import type TEngine from '../engine/engine';
 import type {
-  TPhysicsBody,
   TPhysicsBodyOptions,
-  TPhysicsCollision,
   TPhysicsQueryOptions,
   TPhysicsQueryLineResult,
   TPhysicsQueryAreaResult,
@@ -14,11 +12,8 @@ import {
   TRenderTask,
   type TSerializedRenderTask,
 } from '../renderer/frame-params';
-import type TActor from './actor';
 import type { TPhysicsRegisterBody } from '../physics/state-changes';
 import { TPhysicsMessageTypes } from '../physics/messages';
-import type TSceneComponent from '../actor-components/scene-component';
-import type { TActorWithOnWorldAdd } from './actor';
 import type {
   TPhysicsApplyCentralForce,
   TPhysicsStateChange,
@@ -35,17 +30,19 @@ import type { TJobsMessageRelayResult } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import type TGameState from './game-state';
 import type { TPhysicsSimulateStepResult } from '../physics/jobs';
-
-const actorHasOnWorldAdd = (state: TActor): state is TActorWithOnWorldAdd =>
-  (state as TActorWithOnWorldAdd).onWorldAdd !== undefined;
-
-export type TCollisionCallback = (actor: TActor) => void;
-
-export interface TCollisionListener {
-  componentUUID: string;
-  collisionClass?: string;
-  handler: TCollisionCallback;
-}
+import type { TEntity } from '../ecs/ecs';
+import { TECS } from '../ecs/ecs';
+import {
+  TMeshLoadSystem,
+  TSpriteLoadSystem,
+  TTexturedMeshLoadSystem,
+} from '../graphics/mesh-load-system';
+import { TMeshRenderSystem } from '../graphics/render-tasks-system';
+import { TAnimatedSpriteSystem } from '../components/animated-sprite-component';
+import TCameraSystem from '../cameras/camera-system';
+import type { TRigidBodyComponent } from '../physics/rigid-body-component';
+import type TTransform from '../math/transform';
+import { TPhysicsSystem } from '../physics/physics-system';
 
 export interface TWorldConfig {
   mode?: TPhysicsMode;
@@ -71,7 +68,7 @@ export interface TWorldUpdateStats {
 }
 
 export default class TWorld {
-  public actors: TActor[] = [];
+  public ecs: TECS = new TECS();
 
   private worker?: Worker;
   public config: TWorldConfig = {
@@ -94,15 +91,13 @@ export default class TWorld {
   private queuedNewBodies: TPhysicsRegisterBody[] = [];
   private queuedRemoveBodies: TPhysicsRemoveBody[] = [];
 
-  private lastDelta = 0;
-  private updateStartTime = 0;
-
   private onCreatedResolve?: () => void;
-
-  private collisionListeners: { [key: string]: TCollisionListener[] } = {};
 
   private lastPhysicsDebug?: TPhysicsWorldDebug;
   public physicsDebug = false;
+
+  private renderSystem!: TMeshRenderSystem;
+  public cameraSystem!: TCameraSystem;
 
   private jobs: TJobManager;
   constructor(
@@ -114,69 +109,34 @@ export default class TWorld {
 
   public async create(): Promise<void> {
     return new Promise<void>((resolve) => {
+      // Add default systems
+      this.ecs.addSystem(new TMeshLoadSystem(this.ecs));
+      this.ecs.addSystem(new TTexturedMeshLoadSystem(this.ecs));
+      this.ecs.addSystem(new TSpriteLoadSystem(this.ecs));
+      this.ecs.addSystem(new TAnimatedSpriteSystem(this.ecs));
+      this.ecs.addSystem(new TPhysicsSystem(this.ecs, this.gameState.events));
+      this.renderSystem = new TMeshRenderSystem(this.ecs);
+      this.ecs.addSystem(this.renderSystem);
+
+      this.cameraSystem = new TCameraSystem(this.ecs, this.engine);
+      this.ecs.addSystem(this.cameraSystem);
+
       this.onCreatedResolve = resolve;
       this.worker = createPhysicsWorker();
       this.worker.onmessage = this.onMessage.bind(this);
     });
   }
 
-  /**
-   * Adds actor to the world
-   *
-   * @param actor
-   */
-  public addActor(actor: TActor): void {
-    actor.world = this;
-    this.actors.push(actor);
-
-    this.registerActorWithPhysicsWorker(actor);
-
-    if (actorHasOnWorldAdd(actor)) {
-      actor.onWorldAdd(this.engine, this);
-    }
-  }
-
-  public removeActor(actor: TActor): void {
-    const index = this.actors.indexOf(actor);
-    if (index === -1) return;
-
-    this.actors.splice(index, 1);
-
-    this.removeActorFromPhysicsWorker(actor);
-
-    actor.world = undefined;
-  }
-
-  private removeActorFromPhysicsWorker(actor: TActor) {
-    // Remove the root component
-    const component = actor.rootComponent;
-
-    // If there is no collider, it definitely won't be in the physics world
-    if (!component.collider) return;
-
-    const sc: TPhysicsRemoveBody = {
-      type: TPhysicsStateChangeType.REMOVE_BODY,
-      uuid: component.uuid,
-    };
-
-    this.queuedRemoveBodies.push(sc);
-
-    // Remove any listeners that have been registered
-    delete this.collisionListeners[component.uuid];
-  }
-
-  private registerActorWithPhysicsWorker(actor: TActor) {
-    // Register only the root component
-    const component = actor.rootComponent;
-
-    if (!component.collider) return;
-
-    const transform = component.getWorldTransform();
-    const colliderConfig = component.collider.getConfig();
-
-    this.queuedNewBodies.push({
-      uuid: component.uuid,
-      collider: colliderConfig,
+  public registerRigidBody(
+    entity: TEntity,
+    body: TRigidBodyComponent,
+    transform: TTransform,
+  ) {
+    // @todo entities don't use uuids, we need to find a better way to do this
+    // @todo transform should be the world transform
+    const sc: TPhysicsRegisterBody = {
+      uuid: entity.toString(),
+      collider: body.collider,
       translation: [
         transform.translation[0],
         transform.translation[1],
@@ -188,11 +148,21 @@ export default class TWorld {
         transform.rotation[2],
         transform.rotation[3],
       ],
-      options: component.bodyOptions,
-    });
+      options: body.physicsOptions,
+    };
 
-    this.collisionClassLookup[component.uuid] =
-      colliderConfig.collisionClass || this.config.defaultCollisionClass;
+    this.queuedNewBodies.push(sc);
+
+    this.collisionClassLookup[entity.toString()] =
+      body.collider.collisionClass || this.config.defaultCollisionClass;
+  }
+
+  public removeRigidBody(entity: TEntity) {
+    const sc: TPhysicsRemoveBody = {
+      type: TPhysicsStateChangeType.REMOVE_BODY,
+      uuid: entity.toString(),
+    };
+    this.queuedRemoveBodies.push(sc);
   }
 
   private onMessage(event: MessageEvent) {
@@ -225,22 +195,9 @@ export default class TWorld {
     }
   }
 
-  /**
-   * Called every frame with delta and triggers update on all actors
-   */
-  public async update(_: TEngine, delta: number): Promise<TWorldUpdateStats> {
-    if (this.paused) {
-      return {
-        worldUpdateTime: 0,
-        physicsStepTime: 0,
-        physicsTotalTime: 0,
-        actorUpdateTime: 0,
-      };
-    }
-
-    this.updateStartTime = performance.now();
-    this.lastDelta = delta;
-
+  public async simulateStep(
+    delta: number,
+  ): Promise<TPhysicsSimulateStepResult> {
     // Copy the queued state changes
     const stateChanges = [...this.queuedStateChanges];
     const newBodies = [...this.queuedNewBodies];
@@ -258,13 +215,30 @@ export default class TWorld {
 
     this.lastPhysicsDebug = result.debug;
 
-    const stats = this.onPhysicsUpdate(
-      result.bodies,
-      result.collisions,
-      result.stepElapsedTime,
-    );
+    return result;
+  }
+  /**
+   * Called every frame with delta and triggers update on all actors
+   */
+  public async update(_: TEngine, delta: number): Promise<TWorldUpdateStats> {
+    if (this.paused) {
+      return {
+        worldUpdateTime: 0,
+        physicsStepTime: 0,
+        physicsTotalTime: 0,
+        actorUpdateTime: 0,
+      };
+    }
 
-    return stats;
+    await this.ecs.update(this.engine, this, delta);
+
+    // @todo remove this once we have a proper way to get the stats
+    return {
+      worldUpdateTime: 0,
+      physicsStepTime: 0,
+      physicsTotalTime: 0,
+      actorUpdateTime: 0,
+    };
   }
 
   public getLighting(): TSerializedLighting {
@@ -273,10 +247,6 @@ export default class TWorld {
 
   public getRenderTasks(): TSerializedRenderTask[] {
     const tasks: TSerializedRenderTask[] = [];
-
-    for (const actor of this.actors) {
-      tasks.push(...actor.getRenderTasks());
-    }
 
     if (this.physicsDebug && this.lastPhysicsDebug) {
       tasks.push({
@@ -287,7 +257,7 @@ export default class TWorld {
       });
     }
 
-    return tasks;
+    return [...tasks, ...this.renderSystem.renderTasks];
   }
 
   /**
@@ -304,156 +274,46 @@ export default class TWorld {
     this.paused = true;
   }
 
-  private onPhysicsUpdate(
-    worldState: TPhysicsBody[],
-    collisions: TPhysicsCollision[],
-    stepElapsedTime: number,
-  ): TWorldUpdateStats {
-    for (const obj of worldState) {
-      // Find the actor with root component with this uuid
-      for (const actor of this.actors) {
-        if (actor.rootComponent.uuid === obj.uuid) {
-          actor.rootComponent.transform.translation = vec3.fromValues(
-            ...obj.translation,
-          );
-          actor.rootComponent.transform.rotation = quat.fromValues(
-            ...obj.rotation,
-          );
-
-          // @todo should we just update the linear and angular velocity here?
-          actor.rootComponent.updatePhysicsBody(obj);
-
-          break;
-        }
-      }
-    }
-
-    for (const collision of collisions) {
-      // Check if either body has a listener waiting
-      this.checkCollision(collision.bodies[0], collision.bodies[1]);
-      this.checkCollision(collision.bodies[1], collision.bodies[0]);
-    }
-
-    const startActorUpdate = performance.now();
-    const physicsElapsedTime = startActorUpdate - this.updateStartTime;
-
-    for (const actor of this.actors) {
-      actor.update(this.engine, this.lastDelta);
-    }
-
-    const afterActorUpdate = performance.now();
-
-    const stats: TWorldUpdateStats = {
-      worldUpdateTime: afterActorUpdate - this.updateStartTime,
-      physicsTotalTime: physicsElapsedTime,
-      physicsStepTime: stepElapsedTime,
-      actorUpdateTime: afterActorUpdate - startActorUpdate,
-    };
-
-    return stats;
-  }
-
-  private checkCollision(bodyA: string, bodyB: string) {
-    const listeners = this.collisionListeners[bodyA];
-    if (!listeners) return;
-
-    for (const listener of listeners) {
-      // Just incase wasn't supplied
-      if (!listener.collisionClass) continue;
-
-      // Check if the collision class matches what the listener is looking for
-      if (this.collisionClassLookup[bodyB] !== listener.collisionClass) {
-        continue;
-      }
-
-      const actor = this.actors.find(
-        (actor) => actor.rootComponent.uuid === bodyB,
-      );
-
-      if (actor) {
-        listener.handler(actor);
-      }
-    }
-  }
-
   public destroy() {
     this.worker?.terminate();
   }
 
-  public applyCentralForce(component: TSceneComponent, force: vec3) {
+  public applyCentralForce(entity: TEntity, force: vec3) {
     const sc: TPhysicsApplyCentralForce = {
       type: TPhysicsStateChangeType.APPLY_CENTRAL_FORCE,
-      uuid: component.uuid,
+      uuid: entity.toString(),
       force,
     };
     this.queuePhysicsStateChange(sc);
   }
 
-  public applyCentralImpulse(component: TSceneComponent, impulse: vec3) {
+  public applyCentralImpulse(entity: TEntity, impulse: vec3) {
     const sc: TPhysicsApplyCentralImpulse = {
       type: TPhysicsStateChangeType.APPLY_CENTRAL_IMPULSE,
-      uuid: component.uuid,
+      uuid: entity.toString(),
       impulse,
     };
     this.queuePhysicsStateChange(sc);
-  }
-
-  /**
-   * Adds a listener for when a collision occurs with a specific collision class
-   *
-   * @todo add support for removing listeners
-   */
-  public onEnterCollisionClass(
-    actor: TActor,
-    collisionClass: string,
-    handler: TCollisionCallback,
-  ) {
-    if (!actor.rootComponent.collider) {
-      throw new Error(
-        'cannot add collision listener to actor without collider',
-      );
-    }
-
-    if (!this.collisionListeners[actor.rootComponent.uuid]) {
-      this.collisionListeners[actor.rootComponent.uuid] = [];
-    }
-
-    this.collisionListeners[actor.rootComponent.uuid].push({
-      componentUUID: actor.rootComponent.uuid,
-      collisionClass,
-      handler,
-    });
   }
 
   private queuePhysicsStateChange(stateChange: TPhysicsStateChange) {
     this.queuedStateChanges.push(stateChange);
   }
 
-  public updateBodyOptions(
-    component: TSceneComponent,
-    options: TPhysicsBodyOptions,
-  ) {
-    // If there is no collider, it definitely won't be in the physics world
-    if (!component.collider) return;
-
+  public updateBodyOptions(entity: TEntity, options: TPhysicsBodyOptions) {
     // @todo check if this body is registered yet, if not, we can just wait until it's registered
     const sc: TPhysicsUpdateBodyOptions = {
       type: TPhysicsStateChangeType.UPDATE_BODY_OPTIONS,
-      uuid: component.uuid,
+      uuid: entity.toString(),
       options,
     };
     this.queuePhysicsStateChange(sc);
   }
 
-  public updateTransform(component: TSceneComponent) {
-    // If there is no collider, it definitely won't be in the physics world
-    if (!component.collider) return;
-
-    const transform = component.getWorldTransform();
-
+  public updateTransform(entity: TEntity, transform: TTransform) {
     const sc: TPhysicsUpdateTransform = {
       type: TPhysicsStateChangeType.UPDATE_TRANSFORM,
-      uuid: component.uuid,
+      uuid: entity.toString(),
       translation: [
         transform.translation[0],
         transform.translation[1],
@@ -482,16 +342,9 @@ export default class TWorld {
     const result: TWorldQueryLineResult[] = [];
 
     for (const hit of hits) {
-      const actor = this.actors.find(
-        (actor) => actor.rootComponent.uuid === hit.uuid,
-      );
-      if (!actor) continue;
-
       result.push({
         distance: hit.distance,
-        actor,
-        // @todo this will need to be updated once root components are no longer used with the physics
-        component: actor.rootComponent,
+        entity: parseInt(hit.uuid),
       });
     }
 
@@ -511,15 +364,8 @@ export default class TWorld {
     const result: TWorldQueryAreaResult[] = [];
 
     for (const hit of hits) {
-      const actor = this.actors.find(
-        (actor) => actor.rootComponent.uuid === hit.uuid,
-      );
-      if (!actor) continue;
-
       result.push({
-        actor,
-        // @todo this will need to be updated once root components are no longer used with the physics
-        component: actor.rootComponent,
+        entity: parseInt(hit.uuid),
       });
     }
 
@@ -528,12 +374,10 @@ export default class TWorld {
 }
 
 export interface TWorldQueryLineResult {
-  actor: TActor;
-  component: TSceneComponent;
+  entity: TEntity;
   distance: number;
 }
 
 export interface TWorldQueryAreaResult {
-  actor: TActor;
-  component: TSceneComponent;
+  entity: TEntity;
 }

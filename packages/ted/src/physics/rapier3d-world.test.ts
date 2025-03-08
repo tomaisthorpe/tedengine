@@ -1,7 +1,7 @@
 import type { TWorldConfig } from '../core/world';
 import TRapier3DWorld from './rapier3d-world';
 import { v4 as uuidv4 } from 'uuid';
-import TBoxCollider from './colliders/box-collider';
+import { createBoxCollider } from './colliders';
 
 const worldConfig: TWorldConfig = {
   gravity: [0, 0, 0],
@@ -25,11 +25,11 @@ describe('queryLine', () => {
     world = new TRapier3DWorld();
     await world.create(worldConfig);
 
-    const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
-    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1]);
+    const colliderA = createBoxCollider(1, 1, 1, 'Solid');
+    world.addBody(bodyA, colliderA, [10, 0, 0], [0, 0, 0, 1]);
 
-    const colliderB = new TBoxCollider(1, 1, 1, 'Other');
-    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1]);
+    const colliderB = createBoxCollider(1, 1, 1, 'Other');
+    world.addBody(bodyB, colliderB, [20, 0, 0], [0, 0, 0, 1]);
 
     world.step(1);
   });
@@ -78,11 +78,11 @@ describe('queryArea', () => {
     world = new TRapier3DWorld();
     await world.create(worldConfig);
 
-    const colliderA = new TBoxCollider(1, 1, 1, 'Solid');
-    world.addBody(bodyA, colliderA.getConfig(), [10, 0, 0], [0, 0, 0, 1]);
+    const colliderA = createBoxCollider(1, 1, 1, 'Solid');
+    world.addBody(bodyA, colliderA, [10, 0, 0], [0, 0, 0, 1]);
 
-    const colliderB = new TBoxCollider(1, 1, 1, 'Other');
-    world.addBody(bodyB, colliderB.getConfig(), [20, 0, 0], [0, 0, 0, 1]);
+    const colliderB = createBoxCollider(1, 1, 1, 'Other');
+    world.addBody(bodyB, colliderB, [20, 0, 0], [0, 0, 0, 1]);
 
     world.step(1);
   });
