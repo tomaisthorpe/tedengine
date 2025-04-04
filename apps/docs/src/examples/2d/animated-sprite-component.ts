@@ -46,8 +46,7 @@ class SpriteState extends TGameState {
 
     const animatedSprite = new TAnimatedSpriteComponent(10, 9);
 
-    const entity = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(entity, [
+    this.world.ecs.createEntity([
       new TTransformComponent(
         new TTransform(
           vec3.fromValues(0, 0, -3),
@@ -61,7 +60,7 @@ class SpriteState extends TGameState {
       new TShouldRenderComponent(),
     ]);
 
-    this.world.ecs.addComponents(this.world.ecs.createEntity(), [
+    this.world.ecs.createEntity([
       new TCameraComponent({
         type: TProjectionType.Orthographic,
       }),

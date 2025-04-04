@@ -16,11 +16,11 @@ export class TECS {
 
   private nextEntityId = 0;
 
-  public createEntity(): TEntity {
+  public createEntity(components?: TComponent[]): TEntity {
     const entity = this.nextEntityId;
     this.nextEntityId++;
 
-    this.entities.set(entity, new TComponentContainer());
+    this.entities.set(entity, new TComponentContainer(components));
     return entity;
   }
 

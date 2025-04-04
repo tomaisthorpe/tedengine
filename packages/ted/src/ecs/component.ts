@@ -13,6 +13,14 @@ export type TComponentConstructor<T extends TComponent = TComponent> = new (
 export class TComponentContainer {
   private components: Map<TComponentConstructor, TComponent> = new Map();
 
+  constructor(components?: TComponent[]) {
+    if (components) {
+      for (const component of components) {
+        this.add(component);
+      }
+    }
+  }
+
   public add(component: TComponent): void {
     this.components.set(
       component.constructor as TComponentConstructor,
