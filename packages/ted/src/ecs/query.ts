@@ -7,7 +7,14 @@ export default class TECSQuery {
     private readonly components: TComponentConstructor[],
   ) {}
 
+  private excludedComponents: TComponentConstructor[] = [];
+
+  public excludes(components: TComponentConstructor[]): TECSQuery {
+    this.excludedComponents = components;
+    return this;
+  }
+
   public execute(): TEntity[] {
-    return this.ecs.queryEntities(this.components);
+    return this.ecs.queryEntities(this.components, this.excludedComponents);
   }
 }

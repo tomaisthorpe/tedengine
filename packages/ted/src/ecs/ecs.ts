@@ -74,9 +74,18 @@ export class TECS {
     return new TECSQuery(this, components);
   }
 
-  public queryEntities(components: TComponentConstructor[]): TEntity[] {
-    return Array.from(this.entities.keys()).filter((entity) =>
-      this.getComponents(entity)?.hasAll(components),
-    );
+  public queryEntities(
+    components: TComponentConstructor[],
+    excludedComponents: TComponentConstructor[] = [],
+  ): TEntity[] {
+    return Array.from(this.entities.keys()).filter((entity) => {
+      const entityComponents = this.getComponents(entity);
+      if (!entityComponents) return false;
+
+      return (
+        entityComponents.hasAll(components) &&
+        !entityComponents.hasAny(excludedComponents)
+      );
+    });
   }
 }

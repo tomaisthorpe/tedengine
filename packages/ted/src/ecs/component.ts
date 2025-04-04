@@ -45,6 +45,12 @@ export class TComponentContainer {
     );
   }
 
+  public hasAny(componentClasses: Iterable<TComponentConstructor>): boolean {
+    return Array.from(componentClasses).some((componentClass) =>
+      this.has(componentClass),
+    );
+  }
+
   public remove(componentClass: TComponentConstructor): void {
     this.components.delete(componentClass);
   }
