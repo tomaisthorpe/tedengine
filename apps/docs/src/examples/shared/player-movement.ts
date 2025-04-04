@@ -33,8 +33,8 @@ export class PlayerMovementSystem extends TSystem {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const input = ecs.getComponents(entity)?.get(TPlayerInputComponent);
-      const transform = ecs.getComponents(entity)?.get(TTransformComponent);
+      const input = ecs.getComponent(entity, TPlayerInputComponent);
+      const transform = ecs.getComponent(entity, TTransformComponent);
 
       if (!input || !transform) continue;
 

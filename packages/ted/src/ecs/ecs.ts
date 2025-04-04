@@ -59,6 +59,13 @@ export class TECS {
     }
   }
 
+  public getComponent<T extends TComponent>(
+    entity: TEntity,
+    componentClass: TComponentConstructor<T>,
+  ): T | undefined {
+    return this.entities.get(entity)?.get(componentClass);
+  }
+
   public getComponents(entity: TEntity): TComponentContainer | undefined {
     return this.entities.get(entity);
   }
