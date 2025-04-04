@@ -9,6 +9,9 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  NX_DISABLE_DB: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
