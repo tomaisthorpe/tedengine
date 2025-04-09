@@ -3,13 +3,13 @@
 exports[`renders ErrorScreen component 1`] = `
 <div>
   <div
-    class="sc-blHHSb bwhBqq"
+    class="sc-Qotzb fBCQZT"
   >
     <div>
       It's all gone wrong...try refresh.
     </div>
     <div
-      class="sc-gtLWhw KNMNH"
+      class="sc-fYsHOw feLTtw"
     >
       Something went wrong
     </div>
