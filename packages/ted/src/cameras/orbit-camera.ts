@@ -26,6 +26,7 @@ export class TOrbitCameraComponent extends TComponent {
   public paused: boolean;
 
   public quat: quat;
+  public initialTilt: quat; // Store the initial tilt separately
 
   public lastMouseX = 0;
   public lastMouseY = 0;
@@ -38,8 +39,11 @@ export class TOrbitCameraComponent extends TComponent {
     this.enableDrag = config.enableDrag ?? true;
     this.paused = config.paused ?? false;
 
-    //
-    this.quat = q ?? quat.rotateX(quat.create(), quat.create(), -0.4);
+    // Store the initial tilt separately
+    this.initialTilt = quat.rotateX(quat.create(), quat.create(), -0.4);
+
+    // Initialize the rotation quaternion
+    this.quat = q ?? quat.create();
   }
 }
 
@@ -90,6 +94,7 @@ export class TOrbitCameraSystem extends TSystem {
 
       // Update the orbit camera's quaternion if not paused
       if (!orbitCamera.paused) {
+        // Only rotate around Y-axis for automatic rotation
         quat.rotateY(
           orbitCamera.quat,
           orbitCamera.quat,
@@ -101,15 +106,17 @@ export class TOrbitCameraSystem extends TSystem {
         const diffY =
           orbitCamera.lastMouseY - mouseInputComponent.mouseLocation.client[1];
 
-        orbitCamera.quat = quat.rotateY(
-          orbitCamera.quat,
-          orbitCamera.quat,
+        // Rotate around Y-axis for horizontal movement
+        orbitCamera.initialTilt = quat.rotateY(
+          orbitCamera.initialTilt,
+          orbitCamera.initialTilt,
           diffX * 0.01,
         );
 
-        orbitCamera.quat = quat.rotateX(
-          orbitCamera.quat,
-          orbitCamera.quat,
+        // Rotate around X-axis for vertical movement
+        orbitCamera.initialTilt = quat.rotateX(
+          orbitCamera.initialTilt,
+          orbitCamera.initialTilt,
           diffY * 0.01,
         );
 
@@ -133,11 +140,18 @@ export class TOrbitCameraSystem extends TSystem {
       // Create a base vector representing distance along z-axis
       const baseVector = vec3.fromValues(0, 0, orbitCamera.distance);
 
-      // Rotate the baseVector by the quaternion to get the actual position
+      // Combine the rotation quaternion with the initial tilt
+      const combinedQuat = quat.multiply(
+        quat.create(),
+        orbitCamera.quat,
+        orbitCamera.initialTilt,
+      );
+
+      // Rotate the baseVector by the combined quaternion to get the actual position
       const rotatedVector = vec3.transformQuat(
         vec3.create(),
         baseVector,
-        orbitCamera.quat,
+        combinedQuat,
       );
 
       // Create a new transform with the calculated position and face the origin
