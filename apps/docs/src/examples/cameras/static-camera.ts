@@ -46,9 +46,9 @@ class AubState extends TGameState {
       material,
       new TTransformComponent(
         new TTransform(
-          vec3.fromValues(0, 0, -15),
+          vec3.fromValues(0, 0, -400),
           undefined,
-          vec3.fromValues(1, 1, 1),
+          vec3.fromValues(60, 60, 60),
         ),
       ),
       new TShouldRenderComponent(),
@@ -59,16 +59,20 @@ class AubState extends TGameState {
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
+      zNear: 0.1,
+      zFar: 1000,
     });
     this.world.ecs.addComponents(perspective, [
       perspectiveComponent,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 500))),
       new TActiveCameraComponent(),
     ]);
 
     const ortho = this.world.ecs.createEntity();
     const orthoComponent = new TCameraComponent({
       type: TProjectionType.Orthographic,
+      zNear: 0.1,
+      zFar: 1000,
     });
     this.world.ecs.addComponents(ortho, [
       orthoComponent,
