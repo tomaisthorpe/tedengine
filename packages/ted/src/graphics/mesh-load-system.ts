@@ -32,6 +32,12 @@ export class TMeshLoadSystem extends TSystem {
       }
       const mesh = components?.get(TMeshComponent);
 
+      // Mesh has already been loaded
+      if (mesh.uuid) {
+        ecs.addComponent(entity, new TMeshReadyComponent());
+        continue;
+      }
+
       const { data } = mesh;
 
       if (data.source === 'inline') {
