@@ -21,12 +21,13 @@ WebGL and TypeScript based game engine designed for rapid game jam development a
 
 ## Roadmap
 
-- ✅ WebGL rendering pipeline for 3D and 2D
-- ✅ Simple audio system
+- ✅ WebGL2 rendering pipeline supporting both 3D and 2D graphics
+- ✅ Simple multi-threaded architecture separating game logic and rendering
+- ✅ Basic audio system
 - ✅ Rigid body physics with [Rapier](https://github.com/dimforge/rapier.js)
-- 🚧 Entity Component System (ECS) architecture 
+- 🚧 Entity Component System (ECS) implementation
+- 🚧 Improve profiling and debug tools
 - 📝 Better asset loading pipeline
-- 📝 Improved debugging and profiling tools
 - 📝 Increased test coverage
 - 📝 More utilities to help with speed during game jams
 
