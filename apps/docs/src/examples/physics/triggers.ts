@@ -77,7 +77,7 @@ class TriggerState extends TGameState {
       new TMaterialComponent(boxMesh.material),
       new TShouldRenderComponent(),
       new TRigidBodyComponent(
-        { mass: 1 },
+        { mass: 0, isTrigger: true },
         createBoxCollider(1, 1, 1, 'Trigger'),
       ),
     ]);

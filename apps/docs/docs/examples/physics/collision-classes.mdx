@@ -1,6 +1,10 @@
 # Collision Classes
 
-Console also shows logs from sphere hitting any bodies with 'CustomClass' collision class.
+Collision classes can be used to listen to specific types of collisions and to filter collisions by class.
+
+This example shows a sphere with a `NoCollide` collision class, and a box with a `CustomClass` collision class.
+
+When the `CustomClass` box collides with another box, a message will be logged to the console.
 
 import useBrowserOnly from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
