@@ -1,5 +1,7 @@
 # Empty Project
 
+This example shows the bare minimum code required for the engine to run.
+
 import useBrowserOnly from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
 
@@ -11,7 +13,7 @@ export const Game = () => {
   return (
     <TGame
       game={
-        new Worker(new URL('@examples/empty-project-game.ts', import.meta.url))
+        new Worker(new URL('@examples/empty-project.ts', import.meta.url))
       }
     />
   );

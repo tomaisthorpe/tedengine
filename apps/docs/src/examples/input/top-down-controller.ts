@@ -15,7 +15,7 @@ import {
   TMouseInputSystem,
   TSystem,
 } from '@tedengine/ted';
-import type { TECS, TECSQuery, TTexture, TWorld } from '@tedengine/ted';
+import type { TECS, TECSQuery, TTexture } from '@tedengine/ted';
 import asteroidTexture from '@assets/asteroid.png';
 
 class TopDownRotatorSystem extends TSystem {

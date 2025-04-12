@@ -45,6 +45,11 @@ class ColliderState extends TGameState {
     const maxJitter = 0.4;
     const boxMesh = createBoxMesh(1, 1, 1);
 
+    const meshComponent = new TMeshComponent({
+      source: 'inline',
+      geometry: boxMesh.geometry,
+    });
+
     for (let l = 0; l < levels; l++) {
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -56,10 +61,7 @@ class ColliderState extends TGameState {
           const box = this.world.ecs.createEntity();
           this.world.ecs.addComponents(box, [
             new TTransformComponent(new TTransform(vec3.fromValues(x, y, z))),
-            new TMeshComponent({
-              source: 'inline',
-              geometry: boxMesh.geometry,
-            }),
+            meshComponent,
             new TMaterialComponent(boxMesh.material),
             new TShouldRenderComponent(),
             new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
