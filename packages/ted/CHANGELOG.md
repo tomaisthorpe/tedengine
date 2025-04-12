@@ -1,5 +1,19 @@
 # @tedengine/ted
 
+## 0.13.0
+
+### Minor Changes
+
+- b033ac5: Improved behaviour of the orbit camera
+- 20d5c41: Add `getComponent` method
+- e9a6981: Add excludes to entity queries
+- f3195c5: Allow setting components when creating entity
+- 32d163d: Move to ECS
+
+### Patch Changes
+
+- d287769: Prevent meshes being loaded multiple times if used across entities
+
 ## 0.12.0
 
 ### Minor Changes
