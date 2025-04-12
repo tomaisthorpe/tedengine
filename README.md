@@ -17,6 +17,8 @@
 
 WebGL and TypeScript based game engine designed for rapid game jam development and WebGL learning purposes.
 
+![Screenshot of mesh loaded in the engine](./screenshot.png)
+
 ## Roadmap
 
 - ✅ WebGL rendering pipeline for 3D and 2D
