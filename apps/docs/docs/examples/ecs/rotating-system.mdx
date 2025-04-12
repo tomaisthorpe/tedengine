@@ -1,4 +1,6 @@
-# Rotating Component
+# Rotating System
+
+This example shows how to create a system that rotates an object.
 
 import useBrowserOnly from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
@@ -12,7 +14,7 @@ export const Game = () => {
     <TGame
       game={
         new Worker(
-          new URL('@examples/3d/rotating-component.ts', import.meta.url),
+          new URL('@examples/ecs/rotating-system.ts', import.meta.url),
         )
       }
     />

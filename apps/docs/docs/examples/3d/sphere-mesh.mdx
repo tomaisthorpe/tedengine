@@ -1,0 +1,24 @@
+# Sphere Mesh
+
+As with the [box mesh](./box-mesh.mdx), the engine provides a `createSphereMesh` function to create a sphere mesh.
+
+This example shows how to create a sphere mesh and add it to the world.
+
+import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useBrowserOnly();
+  if (!onBrowser) {
+    return null;
+  }
+  return (
+    <TGame
+      game={
+        new Worker(new URL('@examples/3d/sphere-mesh.ts', import.meta.url))
+      }
+    />
+  );
+};
+
+<Game />

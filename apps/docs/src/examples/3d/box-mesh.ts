@@ -1,4 +1,4 @@
-import { vec3 } from 'gl-matrix';
+import { quat, vec3 } from 'gl-matrix';
 import {
   TGameState,
   TMeshComponent,
@@ -19,7 +19,10 @@ class BoxState extends TGameState {
     const { ecs } = this.world!;
     const box = ecs.createEntity();
     const transform = new TTransformComponent(
-      new TTransform(vec3.fromValues(0, 0, -3)),
+      new TTransform(
+        vec3.fromValues(0, 0, -3),
+        quat.fromValues(0.2, -0.2, 0, 1),
+      ),
     );
     ecs.addComponent(box, transform);
 

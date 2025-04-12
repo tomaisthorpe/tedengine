@@ -1,4 +1,8 @@
-# Textured Mesh Component
+# Mesh
+
+This example shows loading a mesh from an OBJ and MTL file.
+
+The mesh is then added to the world and rendered.
 
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
@@ -12,7 +16,7 @@ export const Game = () => {
     <TGame
       aspectRatio="auto"
       game={
-        new Worker(new URL('@examples/3d/textured-mesh-component.ts', import.meta.url))
+        new Worker(new URL('@examples/3d/mesh.ts', import.meta.url))
       }
     />
   );
