@@ -1,4 +1,6 @@
-# Animated Sprite Component
+# Animated Sprites
+
+Sprites can be animated by providing a sprite sheet and a frame rate.
 
 import useBrowserOnly from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
@@ -17,7 +19,7 @@ export const Game = () => {
       }}
       game={
         new Worker(
-          new URL('@examples/2d/animated-sprite-component.ts', import.meta.url),
+          new URL('@examples/2d/animated-sprite.ts', import.meta.url),
         )
       }
     />

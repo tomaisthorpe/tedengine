@@ -1,4 +1,7 @@
-# Sprite Component
+# Sprites
+
+Sprites are the most basic 2D object in the engine.
+They can be created from a texture or a [canvas](./sprite-canvas.mdx).
 
 import useBrowserOnly from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
@@ -11,7 +14,7 @@ export const Game = () => {
   return (
     <TGame
       game={
-        new Worker(new URL('@examples/2d/sprite-component.ts', import.meta.url))
+        new Worker(new URL('@examples/2d/sprite.ts', import.meta.url))
       }
     />
   );
