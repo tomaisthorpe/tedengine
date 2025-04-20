@@ -1,6 +1,6 @@
 import type { TInputManager } from './input-manager';
 import type { TECS } from '../ecs/ecs';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TWorld from '../core/world';
 import { TComponent } from '../ecs/component';
 import type TECSQuery from '../ecs/query';
@@ -26,6 +26,8 @@ export class TMouseInputComponent extends TComponent {
 }
 
 export class TMouseInputSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.PreUpdate;
+  
   private query: TECSQuery;
   constructor(
     private ecs: TECS,

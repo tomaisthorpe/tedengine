@@ -4,7 +4,7 @@ import type TWorld from '../core/world';
 import { TTransformComponent } from '../components';
 import type { TECS, TEntity } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TEngine from '../engine/engine';
 import { TRigidBodyComponent } from './rigid-body-component';
 import type { TPhysicsCollision } from './physics-world';
@@ -12,6 +12,8 @@ import type TEventQueue from '../core/event-queue';
 import { TEventTypesPhysics } from './events';
 
 export class TPhysicsSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+  
   private query: TECSQuery;
 
   constructor(

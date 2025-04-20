@@ -3,7 +3,7 @@ import { TComponent } from '../ecs/component';
 import { TInputDevice, type TInputManager } from './input-manager';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TWorld from '../core/world';
 import type TEngine from '../engine/engine';
 
@@ -28,6 +28,8 @@ export class TPlayerInputComponent extends TComponent {
 }
 
 export class TPlayerInputSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+
   private query: TECSQuery;
   constructor(
     private ecs: TECS,

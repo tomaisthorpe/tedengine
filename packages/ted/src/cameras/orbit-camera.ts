@@ -4,7 +4,7 @@ import { TCameraComponent, TActiveCameraComponent } from './camera-component';
 import { TComponent } from '../ecs/component';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import { TMouseInputComponent } from '../input/mouse-input';
 import type { TInputManager } from '../input/input-manager';
 import { TInputDevice } from '../input/input-manager';
@@ -48,6 +48,8 @@ export class TOrbitCameraComponent extends TComponent {
 }
 
 export class TOrbitCameraSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+  
   private query: TECSQuery;
   constructor(
     private ecs: TECS,

@@ -2,12 +2,14 @@ import { TComponent } from '../ecs/component';
 import { TTransformComponent } from '../components';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import { TActiveCameraComponent, TCameraComponent } from './camera-component';
 
 export class TFollowComponentCameraComponent extends TComponent {}
 
 export class TFollowComponentCameraSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+
   private activeCameraQuery: TECSQuery;
   private targetQuery: TECSQuery;
 

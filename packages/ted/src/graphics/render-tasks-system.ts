@@ -24,9 +24,11 @@ import {
 } from '../components';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 
 export class TMeshRenderSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.PostUpdate;
+  
   private meshQuery: TECSQuery;
   private texturedMeshQuery: TECSQuery;
   private spriteQuery: TECSQuery;

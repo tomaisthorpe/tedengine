@@ -3,7 +3,7 @@ import { TComponent } from '../ecs/component';
 import { TTransformComponent } from '../components';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TEngine from '../engine/engine';
 import { TMouseInputComponent } from './mouse-input';
 
@@ -12,6 +12,8 @@ export class TTopDownInputComponent extends TComponent {
 }
 
 export class TTopDownInputSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+  
   private query: TECSQuery;
 
   constructor(private ecs: TECS) {

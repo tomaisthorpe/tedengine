@@ -1,5 +1,5 @@
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type { TCameraView } from './camera-view';
 import { TCameraComponent, TActiveCameraComponent } from './camera-component';
 import type TEngine from '../engine/engine';
@@ -17,6 +17,8 @@ export interface TCamera {
 }
 
 export default class TCameraSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+
   private query: TECSQuery;
   private activeCamera?: TCamera;
 

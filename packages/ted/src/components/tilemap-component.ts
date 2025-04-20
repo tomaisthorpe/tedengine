@@ -3,7 +3,7 @@ import { TComponent } from '../ecs/component';
 import { TTransformComponent } from '.';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TEngine from '../engine/engine';
 import TCanvas from '../graphics/canvas';
 import type TImage from '../graphics/image';
@@ -61,6 +61,8 @@ export class TTilemapComponent extends TComponent {
 }
 
 export class TTilemapSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+  
   private query: TECSQuery;
 
   constructor(private ecs: TECS) {

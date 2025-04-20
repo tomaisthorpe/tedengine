@@ -7,7 +7,7 @@ import { TComponent } from '../ecs/component';
 import type TECSQuery from '../ecs/query';
 import type { TECS } from '../ecs/ecs';
 import type TWorld from '../core/world';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 
 export type TParticleConfigVec3 = vec3 | (() => vec3);
 export type TParticleConfigQuat = quat | (() => quat);
@@ -67,6 +67,8 @@ export class TParticlesComponent extends TComponent {
 }
 
 export class TParticlesSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+  
   private query: TECSQuery;
 
   constructor(ecs: TECS) {

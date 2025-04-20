@@ -2,7 +2,7 @@ import type TWorld from '../core/world';
 import { TComponent } from '../ecs/component';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TEngine from '../engine/engine';
 import TSpriteComponent from './sprite-component';
 
@@ -33,6 +33,8 @@ export default class TAnimatedSpriteComponent extends TComponent {
 }
 
 export class TAnimatedSpriteSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+  
   private query: TECSQuery;
 
   public constructor(ecs: TECS) {

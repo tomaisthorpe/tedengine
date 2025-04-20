@@ -11,10 +11,12 @@ import {
 } from '../components';
 import type { TECS } from '../ecs/ecs';
 import type TECSQuery from '../ecs/query';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import TSpriteComponent from '../components/sprite-component';
 
 export class TMeshLoadSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.PreUpdate;
+
   private query: TECSQuery;
   public constructor(ecs: TECS) {
     super();
@@ -64,6 +66,8 @@ export class TMeshLoadSystem extends TSystem {
 }
 
 export class TTexturedMeshLoadSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.PreUpdate;
+
   private query: TECSQuery;
   public constructor(ecs: TECS) {
     super();
@@ -107,6 +111,8 @@ export class TTexturedMeshLoadSystem extends TSystem {
 }
 
 export class TSpriteLoadSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.PreUpdate;
+
   private query: TECSQuery;
   public constructor(ecs: TECS) {
     super();

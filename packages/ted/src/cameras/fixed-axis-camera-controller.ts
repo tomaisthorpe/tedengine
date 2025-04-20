@@ -2,7 +2,7 @@ import { vec3, quat } from 'gl-matrix';
 import type TEngine from '../engine/engine';
 import { TComponent } from '../ecs/component';
 import type { TECS } from '../ecs/ecs';
-import { TSystem } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../ecs/system';
 import type TECSQuery from '../ecs/query';
 import { TCameraComponent } from './camera-component';
 import { TActiveCameraComponent } from './camera-component';
@@ -63,6 +63,8 @@ export class TFixedAxisCameraComponent extends TComponent {
 export class TFixedAxisCameraTargetComponent extends TComponent {}
 
 export class TFixedAxisCameraSystem extends TSystem {
+  public readonly priority: number = TSystemPriority.Update;
+
   private activeCameraQuery: TECSQuery;
   private targetQuery: TECSQuery;
   private axisConfig: {

@@ -12,7 +12,7 @@ export type TEntity = number;
 
 export class TECS {
   private entities: Map<TEntity, TComponentContainer> = new Map();
-  private systems: Set<TSystem> = new Set();
+  private systems: TSystem[] = [];
 
   private nextEntityId = 0;
 
@@ -46,15 +46,16 @@ export class TECS {
   }
 
   public addSystem(system: TSystem): void {
-    this.systems.add(system);
+    this.systems.push(system);
+    this.systems.sort((a, b) => a.priority - b.priority);
   }
 
   public removeSystem(system: TSystem): void {
-    this.systems.delete(system);
+    this.systems.splice(this.systems.indexOf(system), 1);
   }
 
   public update(engine: TEngine, world: TWorld, delta: number): void {
-    for (const system of this.systems.keys()) {
+    for (const system of this.systems) {
       system.update(engine, world, this, delta);
     }
   }

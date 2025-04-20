@@ -13,5 +13,6 @@ export default {
   setupFilesAfterEnv: [
     '@testing-library/jest-dom',
     '<rootDir>/src/test/webgl.mock.ts',
+    '<rootDir>/jest.setup.ts',
   ],
 };
