@@ -60,13 +60,6 @@ export interface TCollisionClass {
   ignores?: string[];
 }
 
-export interface TWorldUpdateStats {
-  worldUpdateTime: number;
-  physicsTotalTime: number;
-  physicsStepTime: number;
-  actorUpdateTime: number;
-}
-
 export default class TWorld {
   public ecs: TECS = new TECS();
 
@@ -220,25 +213,12 @@ export default class TWorld {
   /**
    * Called every frame with delta and triggers update on all actors
    */
-  public async update(_: TEngine, delta: number): Promise<TWorldUpdateStats> {
+  public async update(_: TEngine, delta: number): Promise<void> {
     if (this.paused) {
-      return {
-        worldUpdateTime: 0,
-        physicsStepTime: 0,
-        physicsTotalTime: 0,
-        actorUpdateTime: 0,
-      };
+      return;
     }
 
     await this.ecs.update(this.engine, this, delta);
-
-    // @todo remove this once we have a proper way to get the stats
-    return {
-      worldUpdateTime: 0,
-      physicsStepTime: 0,
-      physicsTotalTime: 0,
-      actorUpdateTime: 0,
-    };
   }
 
   public getLighting(): TSerializedLighting {

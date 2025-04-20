@@ -5,7 +5,6 @@ import type { TSerializedLighting } from '../renderer/frame-params';
 import TEventQueue from './event-queue';
 import { TEventTypesCore } from './events';
 import TWorld from './world';
-import type { TWorldUpdateStats } from './world';
 
 export interface TGameStateWithOnUpdate extends TGameState {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -81,18 +80,16 @@ export default class TGameState {
   public async update(
     engine: TEngine,
     delta: number,
-  ): Promise<TWorldUpdateStats | undefined> {
+  ): Promise<void> {
     this.events.update();
 
     if (!this.world) return;
 
-    const stats = await this.world.update(engine, delta);
+    await this.world.update(engine, delta);
 
     if (hasOnUpdate(this)) {
       await this.onUpdate(engine, delta);
     }
-
-    return stats;
   }
 
   public getRenderTasks() {

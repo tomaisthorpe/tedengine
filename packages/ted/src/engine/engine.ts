@@ -4,7 +4,6 @@ import TGameStateManager from '../core/game-state-manager';
 import { TMessageTypesCore } from '../core/messages';
 import TProxyEventQueue from '../core/proxy-event-queue';
 import TResourceManager from '../core/resource-manager';
-import type { TWorldUpdateStats } from '../core/world';
 import TDebugPanel from '../debug/debug-panel';
 import type { TConfig } from '../engine/config';
 import { TFredMessageTypes } from '../fred/messages';
@@ -70,12 +69,8 @@ export default class TEngine {
   // @todo move this somewhere more relevant
   public stats: {
     engineTime: number;
-  } & TWorldUpdateStats = {
+  } = {
     engineTime: 0,
-    physicsTotalTime: 0,
-    physicsStepTime: 0,
-    actorUpdateTime: 0,
-    worldUpdateTime: 0,
   };
   private lastEngineTimeUpdate = 0;
   private fredPort!: MessagePort;
@@ -199,7 +194,7 @@ export default class TEngine {
 
     const endGameStateUpdate =
       this.segmentTimer.startSegment('Game State Update');
-    const stats = await this.gameState.update(delta);
+    await this.gameState.update(delta);
     endGameStateUpdate();
 
     const endFramePreparation =
@@ -236,10 +231,6 @@ export default class TEngine {
     const elapsed = now - this.lastEngineTimeUpdate;
     if (elapsed > TIME_PER_ENGINE_TIME_UPDATE) {
       this.stats.engineTime = performance.now() - now;
-
-      if (stats) {
-        this.stats = { ...this.stats, ...stats };
-      }
 
       this.lastEngineTimeUpdate = now;
     }

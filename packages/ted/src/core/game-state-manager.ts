@@ -5,7 +5,6 @@ import type {
   TSerializedRenderTask,
 } from '../renderer/frame-params';
 import type TGameState from './game-state';
-import type { TWorldUpdateStats } from './world';
 
 export interface TGameStateType {
   new (engine: TEngine): TGameState;
@@ -113,10 +112,10 @@ export default class TGameStateManager {
     this.doneLoading();
   }
 
-  public async update(delta: number): Promise<TWorldUpdateStats | undefined> {
+  public async update(delta: number): Promise<void> {
     if (this.loading) return;
 
-    return await this.current()?.update(this.engine, delta);
+    await this.current()?.update(this.engine, delta);
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {
