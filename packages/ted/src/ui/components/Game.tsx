@@ -78,8 +78,7 @@ const TGame = ({
 
   const events = fred && fred.events ? fred.events : undefined;
 
-  const containerWidth =
-    aspectRatio === 'auto' ? '100%' : `min(100%, 100vh * ${aspectRatio})`;
+  const containerWidth = '100%';
   const containerHeight = aspectRatio === 'auto' ? '100%' : 'auto';
 
   return (
