@@ -57,6 +57,8 @@ jobs:
       - run: npm ci
 
       - run: npx nx build ted
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - run: npx nx build docs
       - name: Archive docs artifacts
         uses: actions/upload-artifact@v4
