@@ -31,18 +31,18 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
 
     const boxMesh = createBoxMesh(1, 1, 1);
 
-    const box = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box, [
+    const box = this.world.createEntity();
+    this.world.addComponents(box, [
       new TTransformComponent(new TTransform(vec3.fromValues(10, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -50,8 +50,8 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
-    const box2 = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box2, [
+    const box2 = this.world.createEntity();
+    this.world.addComponents(box2, [
       new TTransformComponent(new TTransform(vec3.fromValues(-6, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -59,8 +59,8 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
-    const box3 = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box3, [
+    const box3 = this.world.createEntity();
+    this.world.addComponents(box3, [
       new TTransformComponent(new TTransform(vec3.fromValues(6, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -71,12 +71,12 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
       ),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),

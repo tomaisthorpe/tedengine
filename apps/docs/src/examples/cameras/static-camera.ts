@@ -29,7 +29,7 @@ class AubState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
+    this.world.addSystem(new TRotatingSystem(this.world));
 
     const mesh = new TMeshComponent({
       source: 'path',
@@ -40,8 +40,8 @@ class AubState extends TGameState {
       engine.resources.get<TColorMaterial>(shipMtl)!,
     );
 
-    const ship = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(ship, [
+    const ship = this.world.createEntity();
+    this.world.addComponents(ship, [
       mesh,
       material,
       new TTransformComponent(
@@ -55,26 +55,26 @@ class AubState extends TGameState {
       new TRotatingComponent(),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
       zNear: 0.1,
       zFar: 1000,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 500))),
       new TActiveCameraComponent(),
     ]);
 
-    const ortho = this.world.ecs.createEntity();
+    const ortho = this.world.createEntity();
     const orthoComponent = new TCameraComponent({
       type: TProjectionType.Orthographic,
       zNear: 0.1,
       zFar: 1000,
     });
-    this.world.ecs.addComponents(ortho, [
+    this.world.addComponents(ortho, [
       orthoComponent,
       new TTransformComponent(new TTransform()),
     ]);

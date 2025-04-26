@@ -1,9 +1,8 @@
+import { TComponent } from '../core/component';
 import type TWorld from '../core/world';
-import { TComponent } from '../ecs/component';
 import { TTransformComponent } from '../components';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import type TEngine from '../engine/engine';
 import { TMouseInputComponent } from './mouse-input';
 
@@ -13,32 +12,34 @@ export class TTopDownInputComponent extends TComponent {
 
 export class TTopDownInputSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
-  
-  private query: TECSQuery;
 
-  constructor(private ecs: TECS) {
+  private query: TEntityQuery;
+
+  constructor(private world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([
+    this.query = world.createQuery([
       TMouseInputComponent,
       TTopDownInputComponent,
       TTransformComponent,
     ]);
   }
 
-  public async update(engine: TEngine, world: TWorld): Promise<void> {
+  public async update(
+    engine: TEngine,
+    world: TWorld,
+    delta: number,
+  ): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const mouseInputComponent = this.ecs
+      const mouseInputComponent = world
         .getComponents(entity)
         ?.get(TMouseInputComponent);
-      const topDownInputComponent = this.ecs
+      const topDownInputComponent = world
         .getComponents(entity)
         ?.get(TTopDownInputComponent);
-      const transform = this.ecs
-        .getComponents(entity)
-        ?.get(TTransformComponent);
+      const transform = world.getComponents(entity)?.get(TTransformComponent);
 
       if (!mouseInputComponent || !topDownInputComponent || !transform) {
         continue;

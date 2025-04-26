@@ -29,18 +29,18 @@ class ColliderState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
 
     const boxMesh = createBoxMesh(1, 1, 1);
 
-    const box = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box, [
+    const box = this.world.createEntity();
+    this.world.addComponents(box, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -48,8 +48,8 @@ class ColliderState extends TGameState {
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
-    const box2 = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box2, [
+    const box2 = this.world.createEntity();
+    this.world.addComponents(box2, [
       new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -57,8 +57,8 @@ class ColliderState extends TGameState {
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
-    const box3 = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box3, [
+    const box3 = this.world.createEntity();
+    this.world.addComponents(box3, [
       new TTransformComponent(new TTransform(vec3.fromValues(0.6, 3, 0.2))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -68,8 +68,8 @@ class ColliderState extends TGameState {
 
     const sphereMesh = createSphereMesh(0.5, 9, 12);
 
-    const sphere = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(sphere, [
+    const sphere = this.world.createEntity();
+    this.world.addComponents(sphere, [
       new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 8, 0.6))),
       new TMeshComponent({ source: 'inline', geometry: sphereMesh.geometry }),
       new TMaterialComponent(sphereMesh.material),
@@ -79,8 +79,8 @@ class ColliderState extends TGameState {
 
     const planeMesh = createPlaneMesh(10, 10);
 
-    const plane = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(plane, [
+    const plane = this.world.createEntity();
+    this.world.addComponents(plane, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -88,12 +88,12 @@ class ColliderState extends TGameState {
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),

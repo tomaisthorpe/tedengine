@@ -25,14 +25,14 @@ class SpriteState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const asteroid = this.world.ecs.createEntity();
+    const asteroid = this.world.createEntity();
     const sprite = new TSpriteComponent({
       width: 1,
       height: 1,
       origin: TOriginPoint.Center,
     });
 
-    this.world.ecs.addComponents(asteroid, [
+    this.world.addComponents(asteroid, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       sprite,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),

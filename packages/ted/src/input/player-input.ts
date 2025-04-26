@@ -1,9 +1,8 @@
 import { vec2 } from 'gl-matrix';
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 import { TInputDevice, type TInputManager } from './input-manager';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import type TWorld from '../core/world';
 import type TEngine from '../engine/engine';
 
@@ -30,25 +29,24 @@ export class TPlayerInputComponent extends TComponent {
 export class TPlayerInputSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
 
-  private query: TECSQuery;
+  private query: TEntityQuery;
   constructor(
-    private ecs: TECS,
+    private world: TWorld,
     private inputManager: TInputManager,
   ) {
     super();
-    this.query = this.ecs.createQuery([TPlayerInputComponent]);
+    this.query = this.world.createQuery([TPlayerInputComponent]);
   }
 
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const playerInputComponent = ecs
+      const playerInputComponent = world
         .getComponents(entity)
         ?.get(TPlayerInputComponent);
       if (!playerInputComponent) continue;

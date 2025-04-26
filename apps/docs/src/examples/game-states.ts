@@ -35,25 +35,25 @@ class GameState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
 
     setPlayerInputMapping(engine.inputManager);
 
-    this.world.ecs.addSystem(
-      new TPlayerInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TPlayerInputSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(new PlayerMovementSystem(this.world.ecs));
+    this.world.addSystem(new PlayerMovementSystem(this.world));
 
     const boxMesh = createBoxMesh(1, 1, 1);
-    const box = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box, [
+    const box = this.world.createEntity();
+    this.world.addComponents(box, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -64,8 +64,8 @@ class GameState extends TGameState {
     ]);
     const planeMesh = createPlaneMesh(10, 10);
 
-    const plane = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(plane, [
+    const plane = this.world.createEntity();
+    this.world.addComponents(plane, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -73,12 +73,12 @@ class GameState extends TGameState {
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),
@@ -116,25 +116,25 @@ class DupeState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
 
     setPlayerInputMapping(engine.inputManager);
 
-    this.world.ecs.addSystem(
-      new TPlayerInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TPlayerInputSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(new PlayerMovementSystem(this.world.ecs));
+    this.world.addSystem(new PlayerMovementSystem(this.world));
 
     const boxMesh = createBoxMesh(1, 1, 1);
-    const box = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(box, [
+    const box = this.world.createEntity();
+    this.world.addComponents(box, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -145,8 +145,8 @@ class DupeState extends TGameState {
     ]);
     const planeMesh = createPlaneMesh(10, 10);
 
-    const plane = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(plane, [
+    const plane = this.world.createEntity();
+    this.world.addComponents(plane, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -154,12 +154,12 @@ class DupeState extends TGameState {
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),

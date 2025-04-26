@@ -23,25 +23,25 @@ class SphereState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
-    const sphere = this.world.ecs.createEntity();
+    const sphere = this.world.createEntity();
 
     const mesh = createSphereMesh(0.5, 12, 12);
-    this.world.ecs.addComponents(sphere, [
+    this.world.addComponents(sphere, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
       new TShouldRenderComponent(),
     ]);
 
-    const camera = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(camera, [
+    const camera = this.world.createEntity();
+    this.world.addComponents(camera, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
       new TActiveCameraComponent(),

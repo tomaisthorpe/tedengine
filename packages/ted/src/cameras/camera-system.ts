@@ -1,12 +1,12 @@
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import type { TCameraView } from './camera-view';
 import { TCameraComponent, TActiveCameraComponent } from './camera-component';
 import type TEngine from '../engine/engine';
 import type { vec2 } from 'gl-matrix';
 import { mat4, vec3 } from 'gl-matrix';
 import type TWorld from '../core/world';
-import type { TECS, TEntity } from '../ecs/ecs';
+import type { TEntity } from '../core/world';
 import { TTransformComponent } from '../components';
 import TTransform from '../math/transform';
 import { TProjectionType } from '../graphics';
@@ -19,7 +19,7 @@ export interface TCamera {
 export default class TCameraSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
 
-  private query: TECSQuery;
+  private query: TEntityQuery;
   private activeCamera?: TCamera;
 
   private defaultCamera: TCamera = {
@@ -33,19 +33,15 @@ export default class TCameraSystem extends TSystem {
   };
 
   public constructor(
-    private ecs: TECS,
+    private world: TWorld,
     private engine: TEngine,
   ) {
     super();
 
-    this.query = ecs.createQuery([TCameraComponent, TActiveCameraComponent]);
+    this.query = world.createQuery([TCameraComponent, TActiveCameraComponent]);
   }
 
-  public async update(
-    engine: TEngine,
-    world: TWorld,
-    ecs: TECS,
-  ): Promise<void> {
+  public async update(engine: TEngine, world: TWorld): Promise<void> {
     const entities = this.query.execute();
 
     if (entities.length === 0) {
@@ -53,12 +49,14 @@ export default class TCameraSystem extends TSystem {
       return;
     }
 
-    const camera = ecs.getComponents(entities[0])?.get(TCameraComponent);
+    const camera = world.getComponents(entities[0])?.get(TCameraComponent);
     if (!camera) {
       return;
     }
 
-    const transform = ecs.getComponents(entities[0])?.get(TTransformComponent);
+    const transform = world
+      .getComponents(entities[0])
+      ?.get(TTransformComponent);
     if (!transform) {
       return;
     }
@@ -126,10 +124,10 @@ export default class TCameraSystem extends TSystem {
     // Get all currently active cameras so we can disable them
     const entities = this.query.execute();
     for (const entity of entities) {
-      this.ecs.removeComponent(entity, TActiveCameraComponent);
+      this.world.removeComponent(entity, TActiveCameraComponent);
     }
 
-    this.ecs.addComponent(entity, new TActiveCameraComponent());
+    this.world.addComponent(entity, new TActiveCameraComponent());
   }
 
   public getActiveCamera(): TCamera | undefined {

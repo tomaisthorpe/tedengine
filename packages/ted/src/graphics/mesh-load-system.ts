@@ -9,25 +9,24 @@ import {
   TSpriteReadyComponent,
   TTexturedMeshReadyComponent,
 } from '../components';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import TSpriteComponent from '../components/sprite-component';
 
 export class TMeshLoadSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PreUpdate;
 
-  private query: TECSQuery;
-  public constructor(ecs: TECS) {
+  private query: TEntityQuery;
+  public constructor(world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([TMeshComponent]);
+    this.query = world.createQuery([TMeshComponent]);
   }
 
-  public async update(engine: TEngine, _: TWorld, ecs: TECS): Promise<void> {
+  public async update(engine: TEngine, world: TWorld): Promise<void> {
     const entities = this.query.execute();
     for (const entity of entities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
 
       if (!components || components?.has(TMeshReadyComponent)) {
         continue;
@@ -36,7 +35,7 @@ export class TMeshLoadSystem extends TSystem {
 
       // Mesh has already been loaded
       if (mesh.uuid) {
-        ecs.addComponent(entity, new TMeshReadyComponent());
+        world.addComponent(entity, new TMeshReadyComponent());
         continue;
       }
 
@@ -55,11 +54,11 @@ export class TMeshLoadSystem extends TSystem {
 
         mesh.uuid = m.uuid;
 
-        ecs.addComponent(entity, new TMeshReadyComponent());
+        world.addComponent(entity, new TMeshReadyComponent());
       } else if (data.source === 'path') {
         const m = await engine.resources.get<TMesh>(data.path);
         mesh.uuid = m!.uuid;
-        ecs.addComponent(entity, new TMeshReadyComponent());
+        world.addComponent(entity, new TMeshReadyComponent());
       }
     }
   }
@@ -68,17 +67,17 @@ export class TMeshLoadSystem extends TSystem {
 export class TTexturedMeshLoadSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PreUpdate;
 
-  private query: TECSQuery;
-  public constructor(ecs: TECS) {
+  private query: TEntityQuery;
+  public constructor(world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([TTexturedMeshComponent]);
+    this.query = world.createQuery([TTexturedMeshComponent]);
   }
 
-  public async update(engine: TEngine, _: TWorld, ecs: TECS): Promise<void> {
+  public async update(engine: TEngine, world: TWorld): Promise<void> {
     const entities = this.query.execute();
     for (const entity of entities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
 
       if (!components || components?.has(TTexturedMeshReadyComponent)) {
         continue;
@@ -100,11 +99,11 @@ export class TTexturedMeshLoadSystem extends TSystem {
 
         mesh.uuid = m.uuid;
 
-        ecs.addComponent(entity, new TTexturedMeshReadyComponent());
+        world.addComponent(entity, new TTexturedMeshReadyComponent());
       } else if (data.source === 'path') {
         const m = await engine.resources.get<TTexturedMesh>(data.path);
         mesh.uuid = m!.uuid;
-        ecs.addComponent(entity, new TTexturedMeshReadyComponent());
+        world.addComponent(entity, new TTexturedMeshReadyComponent());
       }
     }
   }
@@ -113,17 +112,17 @@ export class TTexturedMeshLoadSystem extends TSystem {
 export class TSpriteLoadSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PreUpdate;
 
-  private query: TECSQuery;
-  public constructor(ecs: TECS) {
+  private query: TEntityQuery;
+  public constructor(world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([TSpriteComponent]);
+    this.query = world.createQuery([TSpriteComponent]);
   }
 
-  public async update(engine: TEngine, _: TWorld, ecs: TECS): Promise<void> {
+  public async update(engine: TEngine, world: TWorld): Promise<void> {
     const entities = this.query.execute();
     for (const entity of entities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
 
       if (!components || components?.has(TSpriteReadyComponent)) {
         continue;
@@ -144,7 +143,7 @@ export class TSpriteLoadSystem extends TSystem {
 
       sprite.uuid = m.uuid;
 
-      ecs.addComponent(entity, new TSpriteReadyComponent());
+      world.addComponent(entity, new TSpriteReadyComponent());
     }
   }
 }

@@ -1,9 +1,8 @@
 import type { TInputManager } from './input-manager';
-import type { TECS } from '../ecs/ecs';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import { TSystem, TSystemPriority } from '../core/system';
 import type TWorld from '../core/world';
-import { TComponent } from '../ecs/component';
-import type TECSQuery from '../ecs/query';
+import { TComponent } from '../core/component';
+import type { TEntityQuery } from '../core/entity-query';
 import type TEngine from '../engine/engine';
 import type { TMouseLocation, TMouseMovement } from './events';
 
@@ -27,26 +26,25 @@ export class TMouseInputComponent extends TComponent {
 
 export class TMouseInputSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PreUpdate;
-  
-  private query: TECSQuery;
+
+  private query: TEntityQuery;
   constructor(
-    private ecs: TECS,
+    private world: TWorld,
     private inputManager: TInputManager,
   ) {
     super();
-    this.query = this.ecs.createQuery([TMouseInputComponent]);
+    this.query = this.world.createQuery([TMouseInputComponent]);
   }
 
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const mouseInputComponent = ecs
+      const mouseInputComponent = world
         .getComponents(entity)
         ?.get(TMouseInputComponent);
       if (!mouseInputComponent) continue;

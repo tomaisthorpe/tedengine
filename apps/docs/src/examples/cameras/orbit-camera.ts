@@ -32,12 +32,12 @@ class OrbitState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
 
     const mesh = new TMeshComponent({
@@ -49,8 +49,8 @@ class OrbitState extends TGameState {
       engine.resources.get<TColorMaterial>(shipMtl)!,
     );
 
-    const ship = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(ship, [
+    const ship = this.world.createEntity();
+    this.world.addComponents(ship, [
       mesh,
       material,
       new TTransformComponent(
@@ -63,12 +63,12 @@ class OrbitState extends TGameState {
       new TShouldRenderComponent(),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),

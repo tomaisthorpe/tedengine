@@ -29,7 +29,7 @@ class SpriteState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(new TParticlesSystem(this.world.ecs));
+    this.world.addSystem(new TParticlesSystem(this.world));
 
     const colorParticles = new TParticlesComponent({
       emitter: {
@@ -97,8 +97,8 @@ class SpriteState extends TGameState {
       },
     });
 
-    const manyColors = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(manyColors, [
+    const manyColors = this.world.createEntity();
+    this.world.addComponents(manyColors, [
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TSpriteComponent({
         width: 0.2,
@@ -164,8 +164,8 @@ class SpriteState extends TGameState {
         },
       },
     });
-    const fiery = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(fiery, [
+    const fiery = this.world.createEntity();
+    this.world.addComponents(fiery, [
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TSpriteComponent({
         width: 0.2,

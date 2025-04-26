@@ -22,23 +22,22 @@ import {
   TParentEntityComponent,
   TSpriteReadyComponent,
 } from '../components';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 
 export class TMeshRenderSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PostUpdate;
-  
-  private meshQuery: TECSQuery;
-  private texturedMeshQuery: TECSQuery;
-  private spriteQuery: TECSQuery;
+
+  private meshQuery: TEntityQuery;
+  private texturedMeshQuery: TEntityQuery;
+  private spriteQuery: TEntityQuery;
 
   public renderTasks: TSerializedRenderTask[] = [];
 
-  public constructor(ecs: TECS) {
+  public constructor(world: TWorld) {
     super();
 
-    this.meshQuery = ecs.createQuery([
+    this.meshQuery = world.createQuery([
       TTransformComponent,
       TMeshComponent,
       TMaterialComponent,
@@ -46,7 +45,7 @@ export class TMeshRenderSystem extends TSystem {
       TMeshReadyComponent,
     ]);
 
-    this.texturedMeshQuery = ecs.createQuery([
+    this.texturedMeshQuery = world.createQuery([
       TTransformComponent,
       TTexturedMeshComponent,
       TTextureComponent,
@@ -54,7 +53,7 @@ export class TMeshRenderSystem extends TSystem {
       TTexturedMeshReadyComponent,
     ]);
 
-    this.spriteQuery = ecs.createQuery([
+    this.spriteQuery = world.createQuery([
       TTransformComponent,
       TSpriteComponent,
       TShouldRenderComponent,
@@ -63,17 +62,13 @@ export class TMeshRenderSystem extends TSystem {
     ]);
   }
 
-  public async update(
-    engine: TEngine,
-    world: TWorld,
-    ecs: TECS,
-  ): Promise<void> {
+  public async update(engine: TEngine, world: TWorld): Promise<void> {
     this.renderTasks = [];
 
     const entities = this.meshQuery.execute();
 
     for (const entity of entities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
 
       if (!components) continue;
 
@@ -85,7 +80,7 @@ export class TMeshRenderSystem extends TSystem {
 
       if (components.has(TParentEntityComponent)) {
         const parent = components.get(TParentEntityComponent);
-        const parentTransform = ecs
+        const parentTransform = world
           .getComponents(parent.entity)!
           .get(TTransformComponent);
         if (parentTransform) {
@@ -106,7 +101,7 @@ export class TMeshRenderSystem extends TSystem {
     const texturedEntities = this.texturedMeshQuery.execute();
 
     for (const entity of texturedEntities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
 
       if (!components) continue;
 
@@ -118,7 +113,7 @@ export class TMeshRenderSystem extends TSystem {
 
       if (components.has(TParentEntityComponent)) {
         const parent = components.get(TParentEntityComponent);
-        const parentTransform = ecs
+        const parentTransform = world
           .getComponents(parent.entity)!
           .get(TTransformComponent);
         if (parentTransform) {
@@ -146,7 +141,7 @@ export class TMeshRenderSystem extends TSystem {
     const spriteEntities = this.spriteQuery.execute();
 
     for (const entity of spriteEntities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
 
       if (!components) continue;
 

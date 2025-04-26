@@ -1,23 +1,22 @@
 import {
   TComponent,
   TSystem,
-  TECSQuery,
-  TECS,
   TPlayerInputComponent,
   TTransformComponent,
   TEngine,
   TWorld,
+  TEntityQuery,
 } from '@tedengine/ted';
 import { vec3 } from 'gl-matrix';
 
 export class PlayerMovementComponent extends TComponent {}
 
 export class PlayerMovementSystem extends TSystem {
-  private query: TECSQuery;
-  constructor(ecs: TECS) {
+  private query: TEntityQuery;
+  constructor(world: TWorld) {
     super();
 
-    this.query = new TECSQuery(ecs, [
+    this.query = world.createQuery([
       TPlayerInputComponent,
       PlayerMovementComponent,
       TTransformComponent,
@@ -27,14 +26,13 @@ export class PlayerMovementSystem extends TSystem {
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const input = ecs.getComponent(entity, TPlayerInputComponent);
-      const transform = ecs.getComponent(entity, TTransformComponent);
+      const input = world.getComponent(entity, TPlayerInputComponent);
+      const transform = world.getComponent(entity, TTransformComponent);
 
       if (!input || !transform) continue;
 

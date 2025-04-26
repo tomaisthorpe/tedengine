@@ -33,14 +33,14 @@ class MeshState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
-    const entity = this.world.ecs.createEntity();
+    const entity = this.world.createEntity();
 
     const mesh = new TMeshComponent({ source: 'path', path: landscapeMesh });
     const material = new TMaterialComponent(
@@ -53,15 +53,15 @@ class MeshState extends TGameState {
       vec3.fromValues(0.1, 0.1, 0.1),
     );
 
-    this.world.ecs.addComponents(entity, [
+    this.world.addComponents(entity, [
       new TTransformComponent(transform),
       new TShouldRenderComponent(),
       mesh,
       material,
     ]);
 
-    const camera = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(camera, [
+    const camera = this.world.createEntity();
+    this.world.addComponents(camera, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
       new TActiveCameraComponent(),

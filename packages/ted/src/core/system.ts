@@ -1,6 +1,5 @@
-import type TWorld from '../core/world';
+import type TWorld from './world';
 import type TEngine from '../engine/engine';
-import type { TECS } from './ecs';
 
 export enum TSystemPriority {
   First = 0,
@@ -14,7 +13,6 @@ export abstract class TSystem {
   public abstract update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void>;
 }

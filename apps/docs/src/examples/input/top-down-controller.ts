@@ -15,27 +15,30 @@ import {
   TMouseInputSystem,
   TSystem,
 } from '@tedengine/ted';
-import type { TECS, TECSQuery, TTexture } from '@tedengine/ted';
+import type { TWorld, TEntityQuery, TTexture } from '@tedengine/ted';
 import asteroidTexture from '@assets/asteroid.png';
 
 class TopDownRotatorSystem extends TSystem {
-  private query: TECSQuery;
+  private query: TEntityQuery;
 
-  constructor(private ecs: TECS) {
+  constructor(private world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([TTopDownInputComponent, TTransformComponent]);
+    this.query = world.createQuery([
+      TTopDownInputComponent,
+      TTransformComponent,
+    ]);
   }
 
   public async update(): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const topDownInputComponent = this.ecs
+      const topDownInputComponent = this.world
         .getComponents(entity)
         ?.get(TTopDownInputComponent);
 
-      const transform = this.ecs
+      const transform = this.world
         .getComponents(entity)
         ?.get(TTransformComponent);
 
@@ -72,13 +75,13 @@ class TopDownState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
-    this.world.ecs.addSystem(new TTopDownInputSystem(this.world.ecs));
-    this.world.ecs.addSystem(new TopDownRotatorSystem(this.world.ecs));
-    const asteroid = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(asteroid, [
+    this.world.addSystem(new TTopDownInputSystem(this.world));
+    this.world.addSystem(new TopDownRotatorSystem(this.world));
+    const asteroid = this.world.createEntity();
+    this.world.addComponents(asteroid, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       new TSpriteComponent({
         width: 1,

@@ -27,12 +27,12 @@ class ColliderState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TOrbitCameraSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TOrbitCameraSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
     const rows = 10;
     const cols = 10;
@@ -58,8 +58,8 @@ class ColliderState extends TGameState {
           const z = -9 + spaceZ * r + jitter;
           const y = 0.5 + spaceY * l + jitter;
 
-          const box = this.world.ecs.createEntity();
-          this.world.ecs.addComponents(box, [
+          const box = this.world.createEntity();
+          this.world.addComponents(box, [
             new TTransformComponent(new TTransform(vec3.fromValues(x, y, z))),
             meshComponent,
             new TMaterialComponent(boxMesh.material),
@@ -71,8 +71,8 @@ class ColliderState extends TGameState {
     }
 
     const planeMesh = createPlaneMesh(40, 40);
-    const plane = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(plane, [
+    const plane = this.world.createEntity();
+    this.world.addComponents(plane, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -80,12 +80,12 @@ class ColliderState extends TGameState {
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(40, 40)),
     ]);
 
-    const perspective = this.world.ecs.createEntity();
+    const perspective = this.world.createEntity();
     const perspectiveComponent = new TCameraComponent({
       type: TProjectionType.Perspective,
       fov: 45,
     });
-    this.world.ecs.addComponents(perspective, [
+    this.world.addComponents(perspective, [
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),

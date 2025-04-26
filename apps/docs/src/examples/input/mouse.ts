@@ -15,17 +15,17 @@ import {
   TProjectionType,
   TInputDevice,
 } from '@tedengine/ted';
-import type { TECS, TECSQuery, TWorld, TInputManager } from '@tedengine/ted';
+import type { TWorld, TEntityQuery, TInputManager } from '@tedengine/ted';
 
 class MouseClickSystem extends TSystem {
-  private query: TECSQuery;
+  private query: TEntityQuery;
   constructor(
-    private ecs: TECS,
+    private world: TWorld,
     private inputManager: TInputManager,
   ) {
     super();
 
-    this.query = this.ecs.createQuery([TMouseInputComponent]);
+    this.query = this.world.createQuery([TMouseInputComponent]);
 
     inputManager.mapInput('click', {
       device: TInputDevice.Mouse,
@@ -37,7 +37,7 @@ class MouseClickSystem extends TSystem {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const mouseInputComponent = this.ecs
+      const mouseInputComponent = this.world
         .getComponents(entity)
         ?.get(TMouseInputComponent);
 
@@ -51,10 +51,10 @@ class MouseClickSystem extends TSystem {
 }
 
 class FollowMouseSystem extends TSystem {
-  private query: TECSQuery;
-  constructor(private ecs: TECS) {
+  private query: TEntityQuery;
+  constructor(private world: TWorld) {
     super();
-    this.query = this.ecs.createQuery([
+    this.query = this.world.createQuery([
       TMouseInputComponent,
       TTransformComponent,
     ]);
@@ -64,10 +64,10 @@ class FollowMouseSystem extends TSystem {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const mouseInputComponent = this.ecs
+      const mouseInputComponent = this.world
         .getComponents(entity)
         ?.get(TMouseInputComponent);
-      const transform = this.ecs
+      const transform = this.world
         .getComponents(entity)
         ?.get(TTransformComponent);
 
@@ -87,20 +87,18 @@ class ColliderState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(
-      new TMouseInputSystem(this.world.ecs, engine.inputManager),
+    this.world.addSystem(
+      new TMouseInputSystem(this.world, engine.inputManager),
     );
 
-    this.world.ecs.addSystem(
-      new MouseClickSystem(this.world.ecs, engine.inputManager),
-    );
+    this.world.addSystem(new MouseClickSystem(this.world, engine.inputManager));
 
-    this.world.ecs.addSystem(new FollowMouseSystem(this.world.ecs));
+    this.world.addSystem(new FollowMouseSystem(this.world));
 
     const mesh = createBoxMesh(100, 100, 2);
 
-    const entity = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(entity, [
+    const entity = this.world.createEntity();
+    this.world.addComponents(entity, [
       new TMouseInputComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
@@ -109,8 +107,8 @@ class ColliderState extends TGameState {
     ]);
 
     // Setup orthographic camera
-    const cameraEntity = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(cameraEntity, [
+    const cameraEntity = this.world.createEntity();
+    this.world.addComponents(cameraEntity, [
       new TCameraComponent({
         type: TProjectionType.Orthographic,
         zNear: 0.1,

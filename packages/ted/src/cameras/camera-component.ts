@@ -1,4 +1,4 @@
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 import type { TProjectionType } from '../graphics';
 
 export interface TPerspectiveCameraConfig {

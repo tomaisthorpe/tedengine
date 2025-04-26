@@ -1,9 +1,8 @@
+import { TComponent } from '../core/component';
 import type TWorld from '../core/world';
-import { TComponent } from '../ecs/component';
 import { TTransformComponent } from '.';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import type TEngine from '../engine/engine';
 import TCanvas from '../graphics/canvas';
 import type TImage from '../graphics/image';
@@ -62,31 +61,30 @@ export class TTilemapComponent extends TComponent {
 
 export class TTilemapSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
-  
-  private query: TECSQuery;
 
-  constructor(private ecs: TECS) {
+  private query: TEntityQuery;
+
+  constructor(private world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([TTilemapComponent, TTransformComponent]);
+    this.query = world.createQuery([TTilemapComponent, TTransformComponent]);
   }
 
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const tilemap = ecs.getComponents(entity)?.get(TTilemapComponent);
+      const tilemap = world.getComponents(entity)?.get(TTilemapComponent);
       if (!tilemap) {
         continue;
       }
 
       // If entity has a texture, then we've already generated it
-      if (ecs.getComponents(entity)?.has(TTextureComponent)) {
+      if (world.getComponents(entity)?.has(TTextureComponent)) {
         continue;
       }
 
@@ -121,7 +119,7 @@ export class TTilemapSystem extends TSystem {
       }
 
       const texture = await canvas.getTexture();
-      ecs.addComponents(entity, [
+      world.addComponents(entity, [
         new TTextureComponent(texture),
         new TSpriteComponent({
           width: tilemap.tilemap.displayWidth,

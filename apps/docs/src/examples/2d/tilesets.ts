@@ -16,7 +16,7 @@ import {
 
 class SpriteState extends TGameState {
   public async onCreate(engine: TEngine) {
-    this.world.ecs.addSystem(new TTilemapSystem(this.world.ecs));
+    this.world.addSystem(new TTilemapSystem(this.world));
 
     const rp = new TResourcePack(engine, {
       images: [tileset, asteroidTexture],
@@ -25,8 +25,8 @@ class SpriteState extends TGameState {
 
     await rp.load();
 
-    const entity = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(entity, [
+    const entity = this.world.createEntity();
+    this.world.addComponents(entity, [
       new TTilemapComponent(engine.resources.get<TTilemap>(tilemap)!, [
         {
           id: 1,

@@ -1,4 +1,4 @@
-import type { TEntity } from '../ecs/ecs';
+import type { TEntity } from '../core/world';
 
 export enum TEventTypesPhysics {
   COLLISION_START = 'collision_start',

@@ -1,10 +1,9 @@
 import { vec3, quat } from 'gl-matrix';
 import type TEngine from '../engine/engine';
 import { TCameraComponent, TActiveCameraComponent } from './camera-component';
-import { TComponent } from '../ecs/component';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import { TComponent } from '../core/component';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import { TMouseInputComponent } from '../input/mouse-input';
 import type { TInputManager } from '../input/input-manager';
 import { TInputDevice } from '../input/input-manager';
@@ -49,15 +48,15 @@ export class TOrbitCameraComponent extends TComponent {
 
 export class TOrbitCameraSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
-  
-  private query: TECSQuery;
+
+  private query: TEntityQuery;
   constructor(
-    private ecs: TECS,
+    private world: TWorld,
     private inputManager: TInputManager,
   ) {
     super();
 
-    this.query = ecs.createQuery([
+    this.query = world.createQuery([
       TCameraComponent,
       TTransformComponent,
       TOrbitCameraComponent,
@@ -74,19 +73,16 @@ export class TOrbitCameraSystem extends TSystem {
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
     for (const entity of entities) {
-      const camera = this.ecs.getComponents(entity)?.get(TCameraComponent);
-      const transform = this.ecs
-        .getComponents(entity)
-        ?.get(TTransformComponent);
-      const mouseInputComponent = this.ecs
+      const camera = world.getComponents(entity)?.get(TCameraComponent);
+      const transform = world.getComponents(entity)?.get(TTransformComponent);
+      const mouseInputComponent = world
         .getComponents(entity)
         ?.get(TMouseInputComponent);
-      const orbitCamera = this.ecs
+      const orbitCamera = world
         .getComponents(entity)
         ?.get(TOrbitCameraComponent);
 

@@ -34,8 +34,8 @@ class SpriteState extends TGameState {
       layer: TSpriteLayer.Foreground_0,
     });
 
-    const asteroid = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(asteroid, [
+    const asteroid = this.world.createEntity();
+    this.world.addComponents(asteroid, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       asteroidSprite,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
@@ -49,8 +49,8 @@ class SpriteState extends TGameState {
       layer: TSpriteLayer.Background_0,
     });
 
-    const crystal = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(crystal, [
+    const crystal = this.world.createEntity();
+    this.world.addComponents(crystal, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       crystalSprite,
       new TTextureComponent(engine.resources.get<TTexture>(crystalTexture)!),

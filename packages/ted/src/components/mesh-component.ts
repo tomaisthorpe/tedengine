@@ -1,4 +1,4 @@
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 import type TColorMaterial from '../graphics/color-material';
 import type { TPaletteIndex } from '../renderer/renderable-mesh';
 

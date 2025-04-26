@@ -1,40 +1,43 @@
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 import { TTransformComponent } from '../components';
-import type { TECS } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import { TActiveCameraComponent, TCameraComponent } from './camera-component';
+import type TWorld from '../core/world';
+import type TEngine from '../engine/engine';
 
 export class TFollowComponentCameraComponent extends TComponent {}
 
 export class TFollowComponentCameraSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
 
-  private activeCameraQuery: TECSQuery;
-  private targetQuery: TECSQuery;
+  private activeCameraQuery: TEntityQuery;
+  private targetQuery: TEntityQuery;
 
-  constructor(private ecs: TECS) {
+  constructor(private world: TWorld) {
     super();
 
-    this.activeCameraQuery = ecs.createQuery([
+    this.activeCameraQuery = world.createQuery([
       TCameraComponent,
       TActiveCameraComponent,
     ]);
 
-    this.targetQuery = ecs.createQuery([
+    this.targetQuery = world.createQuery([
       TTransformComponent,
       TFollowComponentCameraComponent,
     ]);
   }
 
-  public async update(): Promise<void> {
+  public async update(
+    engine: TEngine,
+    world: TWorld,
+    delta: number,
+  ): Promise<void> {
     const entities = this.activeCameraQuery.execute();
 
     for (const entity of entities) {
-      const camera = this.ecs.getComponents(entity)?.get(TCameraComponent);
-      const transform = this.ecs
-        .getComponents(entity)
-        ?.get(TTransformComponent);
+      const camera = world.getComponents(entity)?.get(TCameraComponent);
+      const transform = world.getComponents(entity)?.get(TTransformComponent);
 
       const targets = this.targetQuery.execute();
       if (targets.length === 0) {
@@ -47,7 +50,7 @@ export class TFollowComponentCameraSystem extends TSystem {
         continue;
       }
 
-      const targetTransform = this.ecs
+      const targetTransform = world
         .getComponents(target)
         ?.get(TTransformComponent);
       if (!targetTransform) {

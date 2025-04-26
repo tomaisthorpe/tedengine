@@ -1,6 +1,6 @@
 import type { vec4, vec2 } from 'gl-matrix';
 import type TTexture from '../graphics/texture';
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 
 export interface TTexturedMeshGeometry {
   positions: number[];

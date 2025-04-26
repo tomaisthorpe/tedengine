@@ -1,4 +1,4 @@
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 import type { TColliderConfig } from './colliders';
 import type { TPhysicsBody, TPhysicsBodyOptions } from './physics-world';
 

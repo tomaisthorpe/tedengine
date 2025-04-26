@@ -1,14 +1,13 @@
 import { vec3, quat } from 'gl-matrix';
 import type TEngine from '../engine/engine';
-import { TComponent } from '../ecs/component';
-import type { TECS } from '../ecs/ecs';
-import { TSystem, TSystemPriority } from '../ecs/system';
-import type TECSQuery from '../ecs/query';
+import type TWorld from '../core/world';
+import { TComponent } from '../core/component';
+import { TSystem, TSystemPriority } from '../core/system';
+import type { TEntityQuery } from '../core/entity-query';
 import { TCameraComponent } from './camera-component';
 import { TActiveCameraComponent } from './camera-component';
 import { TTransformComponent } from '../components';
 import { TRigidBodyComponent } from '../physics/rigid-body-component';
-import type TWorld from '../core/world';
 
 export class TFixedAxisCameraComponent extends TComponent {
   public distance = 0;
@@ -65,8 +64,8 @@ export class TFixedAxisCameraTargetComponent extends TComponent {}
 export class TFixedAxisCameraSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
 
-  private activeCameraQuery: TECSQuery;
-  private targetQuery: TECSQuery;
+  private activeCameraQuery: TEntityQuery;
+  private targetQuery: TEntityQuery;
   private axisConfig: {
     [key: string]: {
       distance: [number, number, number];
@@ -77,16 +76,16 @@ export class TFixedAxisCameraSystem extends TSystem {
     y: { distance: [0, 1, 0], rotation: [-90, 0, 0] },
     z: { distance: [0, 0, 1], rotation: [0, 0, 0] },
   };
-  constructor(private ecs: TECS) {
+  constructor(private world: TWorld) {
     super();
 
-    this.activeCameraQuery = ecs.createQuery([
+    this.activeCameraQuery = world.createQuery([
       TCameraComponent,
       TActiveCameraComponent,
       TFixedAxisCameraComponent,
     ]);
 
-    this.targetQuery = ecs.createQuery([
+    this.targetQuery = world.createQuery([
       TTransformComponent,
       TFixedAxisCameraTargetComponent,
       TRigidBodyComponent,
@@ -96,17 +95,16 @@ export class TFixedAxisCameraSystem extends TSystem {
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.activeCameraQuery.execute();
 
     for (const entity of entities) {
-      const camera = this.ecs.getComponents(entity)?.get(TCameraComponent);
-      const cameraTransform = this.ecs
+      const camera = world.getComponents(entity)?.get(TCameraComponent);
+      const cameraTransform = world
         .getComponents(entity)
         ?.get(TTransformComponent);
-      const fixedAxisCamera = this.ecs
+      const fixedAxisCamera = world
         .getComponents(entity)
         ?.get(TFixedAxisCameraComponent);
       if (!camera || !cameraTransform || !fixedAxisCamera) {
@@ -120,10 +118,10 @@ export class TFixedAxisCameraSystem extends TSystem {
 
       const target = targets[0];
 
-      const targetTransform = this.ecs
+      const targetTransform = world
         .getComponents(target)
         ?.get(TTransformComponent);
-      const targetRigidBody = this.ecs
+      const targetRigidBody = world
         .getComponents(target)
         ?.get(TRigidBodyComponent);
       if (!targetTransform || !targetRigidBody) {

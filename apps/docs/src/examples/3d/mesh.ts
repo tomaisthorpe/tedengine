@@ -27,7 +27,7 @@ class MeshState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
+    this.world.addSystem(new TRotatingSystem(this.world));
 
     const mesh = new TMeshComponent({ source: 'path', path: landscapeMesh });
     const material = new TMaterialComponent(
@@ -43,8 +43,8 @@ class MeshState extends TGameState {
 
     const rotating = new TRotatingComponent(vec3.fromValues(0, 0.35, 0));
 
-    const entity = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(entity, [
+    const entity = this.world.createEntity();
+    this.world.addComponents(entity, [
       new TTransformComponent(transform),
       new TShouldRenderComponent(),
       rotating,

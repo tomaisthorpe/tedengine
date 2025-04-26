@@ -1,6 +1,6 @@
 import type TTransform from '../math/transform';
-import { TComponent } from '../ecs/component';
-import type { TEntity } from '../ecs/ecs';
+import { TComponent } from '../core/component';
+import type { TEntity } from '../core/world';
 
 export class TShouldRenderComponent extends TComponent {}
 

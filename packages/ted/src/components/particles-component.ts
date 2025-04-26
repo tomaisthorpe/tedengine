@@ -1,13 +1,12 @@
-import type { quat, vec4 } from 'gl-matrix';
 import { vec3 } from 'gl-matrix';
-import type TEngine from '../engine/engine';
-import TTransform from '../math/transform';
-import { TSpriteInstancesComponent } from './sprite-component';
-import { TComponent } from '../ecs/component';
-import type TECSQuery from '../ecs/query';
-import type { TECS } from '../ecs/ecs';
 import type TWorld from '../core/world';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type TEngine from '../engine/engine';
+import { TComponent } from '../core/component';
+import type { TEntityQuery } from '../core/entity-query';
+import TTransform from '../math/transform';
+import { TSystem, TSystemPriority } from '../core/system';
+import { TSpriteInstancesComponent } from './sprite-component';
+import type { quat, vec4 } from 'gl-matrix';
 
 export type TParticleConfigVec3 = vec3 | (() => vec3);
 export type TParticleConfigQuat = quat | (() => quat);
@@ -68,13 +67,13 @@ export class TParticlesComponent extends TComponent {
 
 export class TParticlesSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
-  
-  private query: TECSQuery;
 
-  constructor(ecs: TECS) {
+  private query: TEntityQuery;
+
+  constructor(private world: TWorld) {
     super();
 
-    this.query = ecs.createQuery([
+    this.query = world.createQuery([
       TParticlesComponent,
       TSpriteInstancesComponent,
     ]);
@@ -83,13 +82,12 @@ export class TParticlesSystem extends TSystem {
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
 
     for (const entity of entities) {
-      const components = ecs.getComponents(entity);
+      const components = world.getComponents(entity);
       if (!components) continue;
 
       const particlesComponent = components.get(TParticlesComponent);

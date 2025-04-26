@@ -30,20 +30,20 @@ class TrainState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
+    this.world.addSystem(new TRotatingSystem(this.world));
 
     const rotatingComponent = new TRotatingComponent(
       vec3.fromValues(0, 0.5, 0),
     );
 
-    const train = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(train, [
+    const train = this.world.createEntity();
+    this.world.addComponents(train, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -1))),
       rotatingComponent,
     ]);
 
-    const start = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(start, [
+    const start = this.world.createEntity();
+    this.world.addComponents(start, [
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(undefined, undefined, vec3.fromValues(0.1, 0.1, 0.1)),
@@ -53,8 +53,8 @@ class TrainState extends TGameState {
       new TShouldRenderComponent(),
     ]);
 
-    const panto = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(panto, [
+    const panto = this.world.createEntity();
+    this.world.addComponents(panto, [
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(
@@ -68,8 +68,8 @@ class TrainState extends TGameState {
       new TShouldRenderComponent(),
     ]);
 
-    const middle = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(middle, [
+    const middle = this.world.createEntity();
+    this.world.addComponents(middle, [
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(
@@ -83,8 +83,8 @@ class TrainState extends TGameState {
       new TShouldRenderComponent(),
     ]);
 
-    const end = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(end, [
+    const end = this.world.createEntity();
+    this.world.addComponents(end, [
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(

@@ -16,23 +16,22 @@ class BoxState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const { ecs } = this.world!;
-    const box = ecs.createEntity();
+    const box = this.world.createEntity();
     const transform = new TTransformComponent(
       new TTransform(
         vec3.fromValues(0, 0, -3),
         quat.fromValues(0.2, -0.2, 0, 1),
       ),
     );
-    ecs.addComponent(box, transform);
+    this.world.addComponent(box, transform);
 
     const mesh = createBoxMesh(1, 1, 1);
-    ecs.addComponent(
+    this.world.addComponent(
       box,
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
     );
-    ecs.addComponent(box, new TMaterialComponent(mesh.material));
-    ecs.addComponent(box, new TShouldRenderComponent());
+    this.world.addComponent(box, new TMaterialComponent(mesh.material));
+    this.world.addComponent(box, new TShouldRenderComponent());
   }
 }
 

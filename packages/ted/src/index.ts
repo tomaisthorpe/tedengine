@@ -32,13 +32,11 @@ export * from './core/game-state';
 
 export { default as TGameStateManager } from './core/game-state-manager';
 
-export * from './ecs/ecs';
 export * from './components';
-export * from './ecs/component';
-export * from './core/world';
-export * from './ecs/system';
-export * from './ecs/query';
-export { default as TECSQuery } from './ecs/query';
+export * from './core/component';
+export * from './core/system';
+export * from './core/entity-query';
+export { TEntityQuery } from './core/entity-query';
 
 export { default as TWorld } from './core/world';
 export * from './core/messages';

@@ -1,7 +1,7 @@
 import { vec2, vec3, vec4 } from 'gl-matrix';
 import TTransform from '../math/transform';
 import type { TTexturedMeshGeometry } from './textured-mesh-component';
-import { TComponent } from '../ecs/component';
+import { TComponent } from '../core/component';
 
 export enum TOriginPoint {
   TopLeft,

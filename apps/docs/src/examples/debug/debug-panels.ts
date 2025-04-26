@@ -18,15 +18,15 @@ class BoxState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    this.world.ecs.addSystem(new TRotatingSystem(this.world.ecs));
+    this.world.addSystem(new TRotatingSystem(this.world));
 
-    const box = this.world.ecs.createEntity();
+    const box = this.world.createEntity();
     const transform = new TTransformComponent(
       new TTransform(vec3.fromValues(0, 0, -3)),
     );
     const mesh = createBoxMesh(1, 1, 1);
     const rotating = new TRotatingComponent();
-    this.world.ecs.addComponents(box, [
+    this.world.addComponents(box, [
       transform,
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),

@@ -30,8 +30,10 @@ import type { TJobsMessageRelayResult } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import type TGameState from './game-state';
 import type { TPhysicsSimulateStepResult } from '../physics/jobs';
-import type { TEntity } from '../ecs/ecs';
-import { TECS } from '../ecs/ecs';
+import type { TComponent, TComponentConstructor } from './component';
+import { TComponentContainer } from './component';
+import { TEntityQuery } from './entity-query';
+import type { TSystem } from './system';
 import {
   TMeshLoadSystem,
   TSpriteLoadSystem,
@@ -43,6 +45,11 @@ import TCameraSystem from '../cameras/camera-system';
 import type { TRigidBodyComponent } from '../physics/rigid-body-component';
 import type TTransform from '../math/transform';
 import { TPhysicsSystem } from '../physics/physics-system';
+
+/**
+ * An entity is a unique identifier for a game object.
+ */
+export type TEntity = number;
 
 export interface TWorldConfig {
   mode?: TPhysicsMode;
@@ -61,7 +68,9 @@ export interface TCollisionClass {
 }
 
 export default class TWorld {
-  public ecs: TECS = new TECS();
+  private entities: Map<TEntity, TComponentContainer> = new Map();
+  public systems: TSystem[] = [];
+  private nextEntityId = 0;
 
   private worker?: Worker;
   public config: TWorldConfig = {
@@ -100,19 +109,87 @@ export default class TWorld {
     this.jobs = gameState.jobs;
   }
 
+  public createEntity(components?: TComponent[]): TEntity {
+    const entity = this.nextEntityId;
+    this.nextEntityId++;
+
+    this.entities.set(entity, new TComponentContainer(components));
+    return entity;
+  }
+
+  public removeEntity(entity: TEntity): void {
+    this.entities.delete(entity);
+  }
+
+  public addComponent(entity: TEntity, component: TComponent): void {
+    this.entities.get(entity)?.add(component);
+  }
+
+  public addComponents(entity: TEntity, components: TComponent[]): void {
+    for (const component of components) {
+      this.addComponent(entity, component);
+    }
+  }
+
+  public removeComponent(
+    entity: TEntity,
+    componentClass: TComponentConstructor,
+  ): void {
+    this.entities.get(entity)?.remove(componentClass);
+  }
+
+  public addSystem(system: TSystem): void {
+    this.systems.push(system);
+    this.systems.sort((a, b) => a.priority - b.priority);
+  }
+
+  public removeSystem(system: TSystem): void {
+    this.systems.splice(this.systems.indexOf(system), 1);
+  }
+
+  public getComponent<T extends TComponent>(
+    entity: TEntity,
+    componentClass: TComponentConstructor<T>,
+  ): T | undefined {
+    return this.entities.get(entity)?.get(componentClass);
+  }
+
+  public getComponents(entity: TEntity): TComponentContainer | undefined {
+    return this.entities.get(entity);
+  }
+
+  public createQuery(components: TComponentConstructor[]): TEntityQuery {
+    return new TEntityQuery(this, components);
+  }
+
+  public queryEntities(
+    components: TComponentConstructor[],
+    excludedComponents: TComponentConstructor[] = [],
+  ): TEntity[] {
+    return Array.from(this.entities.keys()).filter((entity) => {
+      const entityComponents = this.getComponents(entity);
+      if (!entityComponents) return false;
+
+      return (
+        entityComponents.hasAll(components) &&
+        !entityComponents.hasAny(excludedComponents)
+      );
+    });
+  }
+
   public async create(): Promise<void> {
     return new Promise<void>((resolve) => {
       // Add default systems
-      this.ecs.addSystem(new TMeshLoadSystem(this.ecs));
-      this.ecs.addSystem(new TTexturedMeshLoadSystem(this.ecs));
-      this.ecs.addSystem(new TSpriteLoadSystem(this.ecs));
-      this.ecs.addSystem(new TAnimatedSpriteSystem(this.ecs));
-      this.ecs.addSystem(new TPhysicsSystem(this.ecs, this.gameState.events));
-      this.renderSystem = new TMeshRenderSystem(this.ecs);
-      this.ecs.addSystem(this.renderSystem);
+      this.addSystem(new TMeshLoadSystem(this));
+      this.addSystem(new TTexturedMeshLoadSystem(this));
+      this.addSystem(new TSpriteLoadSystem(this));
+      this.addSystem(new TAnimatedSpriteSystem(this));
+      this.addSystem(new TPhysicsSystem(this, this.gameState.events));
+      this.renderSystem = new TMeshRenderSystem(this);
+      this.addSystem(this.renderSystem);
 
-      this.cameraSystem = new TCameraSystem(this.ecs, this.engine);
-      this.ecs.addSystem(this.cameraSystem);
+      this.cameraSystem = new TCameraSystem(this, this.engine);
+      this.addSystem(this.cameraSystem);
 
       this.onCreatedResolve = resolve;
       this.worker = createPhysicsWorker();
@@ -218,7 +295,9 @@ export default class TWorld {
       return;
     }
 
-    await this.ecs.update(this.engine, this, delta);
+    for (const system of this.systems) {
+      await system.update(this.engine, this, delta);
+    }
   }
 
   public getLighting(): TSerializedLighting {

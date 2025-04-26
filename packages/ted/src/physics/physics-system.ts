@@ -2,9 +2,9 @@ import { quat } from 'gl-matrix';
 import { vec3 } from 'gl-matrix';
 import type TWorld from '../core/world';
 import { TTransformComponent } from '../components';
-import type { TECS, TEntity } from '../ecs/ecs';
-import type TECSQuery from '../ecs/query';
-import { TSystem, TSystemPriority } from '../ecs/system';
+import type { TEntity } from '../core/world';
+import type { TEntityQuery } from '../core/entity-query';
+import { TSystem, TSystemPriority } from '../core/system';
 import type TEngine from '../engine/engine';
 import { TRigidBodyComponent } from './rigid-body-component';
 import type { TPhysicsCollision } from './physics-world';
@@ -13,22 +13,21 @@ import { TEventTypesPhysics } from './events';
 
 export class TPhysicsSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
-  
-  private query: TECSQuery;
+
+  private query: TEntityQuery;
 
   constructor(
-    private ecs: TECS,
+    private world: TWorld,
     private events: TEventQueue,
   ) {
     super();
 
-    this.query = ecs.createQuery([TRigidBodyComponent, TTransformComponent]);
+    this.query = world.createQuery([TRigidBodyComponent, TTransformComponent]);
   }
 
   public async update(
     engine: TEngine,
     world: TWorld,
-    ecs: TECS,
     delta: number,
   ): Promise<void> {
     const entities = this.query.execute();
@@ -36,12 +35,8 @@ export class TPhysicsSystem extends TSystem {
     const bodies: { [key: string]: TRigidBodyComponent } = {};
 
     for (const entity of entities) {
-      const rigidBody = this.ecs
-        .getComponents(entity)
-        ?.get(TRigidBodyComponent);
-      const transform = this.ecs
-        .getComponents(entity)
-        ?.get(TTransformComponent);
+      const rigidBody = world.getComponents(entity)?.get(TRigidBodyComponent);
+      const transform = world.getComponents(entity)?.get(TTransformComponent);
 
       if (!rigidBody || !transform) {
         continue;
@@ -73,7 +68,7 @@ export class TPhysicsSystem extends TSystem {
         continue;
       }
 
-      const transform = this.ecs
+      const transform = world
         .getComponents(parseInt(body.uuid))
         ?.get(TTransformComponent);
       if (!transform) {
@@ -91,8 +86,8 @@ export class TPhysicsSystem extends TSystem {
 
   private handleCollisions(world: TWorld, collisions: TPhysicsCollision[]) {
     for (const collision of collisions) {
-      const entityA = this.ecs.getComponents(parseInt(collision.bodies[0]));
-      const entityB = this.ecs.getComponents(parseInt(collision.bodies[1]));
+      const entityA = world.getComponents(parseInt(collision.bodies[0]));
+      const entityB = world.getComponents(parseInt(collision.bodies[1]));
       if (!entityA || !entityB) {
         continue;
       }
@@ -111,7 +106,7 @@ export class TPhysicsSystem extends TSystem {
   }
 
   private publishCollision(world: TWorld, entityA: TEntity, entityB: TEntity) {
-    const entityBCollider = this.ecs
+    const entityBCollider = world
       .getComponents(entityB)
       ?.get(TRigidBodyComponent);
     if (!entityBCollider) {

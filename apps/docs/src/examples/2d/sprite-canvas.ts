@@ -30,8 +30,8 @@ class CanvasState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const entity = this.world.ecs.createEntity();
-    this.world.ecs.addComponents(entity, [
+    const entity = this.world.createEntity();
+    this.world.addComponents(entity, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       new TSpriteComponent({
         width: 1,
