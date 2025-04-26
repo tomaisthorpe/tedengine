@@ -9,6 +9,7 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/ted',
   collectCoverageFrom: ['./src/**/*'],
+  coverageReporters: ['json', 'html'],
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: [
     '@testing-library/jest-dom',

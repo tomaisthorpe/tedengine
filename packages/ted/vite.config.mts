@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 import dts from 'vite-plugin-dts';
 import { joinPathFragments } from '@nx/devkit';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/ted',
@@ -16,6 +17,11 @@ export default defineConfig({
     react(),
     viteTsConfigPaths({
       root: '../../',
+    }),
+    codecovVitePlugin({
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+      bundleName: '@tedengine/ted',
+      uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
 
