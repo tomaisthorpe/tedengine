@@ -111,8 +111,12 @@ export class TInputManager {
     return state?.justReleased ?? false;
   }
 
+  public getActionState(action: string): TInputState | undefined {
+    return this.actionStates.get(action);
+  }
+
   public getActionValue(action: string): number {
-    const state = this.actionStates.get(action);
+    const state = this.getActionState(action);
     return state?.value ?? 0;
   }
 
@@ -132,7 +136,7 @@ export class TInputManager {
     }
 
     for (const [action, mappings] of this.actionMappings.entries()) {
-      const actionState = this.actionStates.get(action)!;
+      const actionState = this.getActionState(action)!;
 
       const wasPressed = actionState.isDown;
       actionState.previousValue = actionState.value;
@@ -151,9 +155,10 @@ export class TInputManager {
       actionState.justPressed = !wasPressed && isActive;
       actionState.justReleased = wasPressed && !isActive;
 
-      // @todo i'm not incrementing timePressed here, but i think i should be
       if (isActive && !wasPressed) {
         actionState.timePressed = 0;
+      } else if (isActive) {
+        actionState.timePressed += delta;
       } else if (!isActive) {
         actionState.timePressed = 0;
       }
