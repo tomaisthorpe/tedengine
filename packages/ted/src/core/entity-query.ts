@@ -10,7 +10,7 @@ export class TEntityQuery {
   ) {}
 
   public excludes(components: TComponentConstructor[]): TEntityQuery {
-    this.excludedComponents = components;
+    this.excludedComponents.push(...components);
     return this;
   }
 
