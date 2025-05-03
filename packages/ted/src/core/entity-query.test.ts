@@ -61,4 +61,100 @@ describe('TEntityQuery', () => {
       [TestComponentB, TestComponentC],
     );
   });
+
+  describe('subscriptions', () => {
+    it('should notify subscribers of changes', () => {
+      const mockWorld = {
+        queryEntities: jest
+          .fn()
+          .mockReturnValueOnce([1, 2]) // First call
+          .mockReturnValueOnce([1, 3]), // Second call
+      };
+
+      const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
+      const callback = jest.fn();
+      query.subscribe(callback);
+
+      // First execute - added entities
+      query.execute();
+      expect(callback).toHaveBeenCalledWith({
+        added: [1, 2],
+        removed: [],
+      });
+
+      // Second execute - changed entities
+      query.execute();
+      expect(callback).toHaveBeenCalledWith({
+        added: [3],
+        removed: [2],
+      });
+    });
+
+    it('should allow unsubscribing', () => {
+      const mockWorld = {
+        queryEntities: jest
+          .fn()
+          .mockReturnValueOnce([1])
+          .mockReturnValueOnce([2]),
+      };
+
+      const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
+      const callback = jest.fn();
+      const unsubscribe = query.subscribe(callback);
+
+      // First execute - added entities
+      query.execute();
+      expect(callback).toHaveBeenCalledWith({
+        added: [1],
+        removed: [],
+      });
+
+      callback.mockReset();
+
+      // Unsubscribe
+      unsubscribe();
+
+      // Second execute - no callback should be called
+      query.execute();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should handle multiple subscribers', () => {
+      const mockWorld = {
+        queryEntities: jest
+          .fn()
+          .mockReturnValueOnce([1])
+          .mockReturnValueOnce([2]),
+      };
+
+      const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
+
+      query.subscribe(callback1);
+      query.subscribe(callback2);
+
+      // First execute - added entities
+      query.execute();
+      expect(callback1).toHaveBeenCalledWith({
+        added: [1],
+        removed: [],
+      });
+      expect(callback2).toHaveBeenCalledWith({
+        added: [1],
+        removed: [],
+      });
+
+      // Second execute - both callbacks should be called
+      query.execute();
+      expect(callback1).toHaveBeenCalledWith({
+        added: [2],
+        removed: [1],
+      });
+      expect(callback2).toHaveBeenCalledWith({
+        added: [2],
+        removed: [1],
+      });
+    });
+  });
 });
