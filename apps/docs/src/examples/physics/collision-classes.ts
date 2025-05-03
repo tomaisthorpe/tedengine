@@ -18,7 +18,7 @@ import {
   TOrbitCameraSystem,
   TProjectionType,
   TRigidBodyComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   TTransformComponent,
 } from '@tedengine/ted';
@@ -53,7 +53,7 @@ class ColliderState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
@@ -62,7 +62,7 @@ class ColliderState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent(
         { mass: 1 },
         createBoxCollider(1, 1, 1, 'CustomClass'),
@@ -74,7 +74,7 @@ class ColliderState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0.6, 3, 0.2))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
@@ -85,7 +85,7 @@ class ColliderState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 8, 0.6))),
       new TMeshComponent({ source: 'inline', geometry: sphereMesh.geometry }),
       new TMaterialComponent(sphereMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent(
         { mass: 1 },
         createSphereCollider(0.5, 'NoCollide'),
@@ -99,7 +99,7 @@ class ColliderState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
     ]);
 

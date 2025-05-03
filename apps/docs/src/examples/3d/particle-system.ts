@@ -12,7 +12,7 @@ import {
   TTransformComponent,
   TTextureComponent,
   TTransform,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TSpriteInstancesComponent,
   TParticlesSystem,
 } from '@tedengine/ted';
@@ -108,7 +108,7 @@ class SpriteState extends TGameState {
       }),
       new TTransformComponent(new TTransform(vec3.fromValues(0.75, -0.5, -3))),
       colorParticles,
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TSpriteInstancesComponent([]),
     ]);
 
@@ -175,7 +175,7 @@ class SpriteState extends TGameState {
       }),
       new TTransformComponent(new TTransform(vec3.fromValues(-0.75, -0.5, -3))),
       fieryParticles,
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TSpriteInstancesComponent([]),
     ]);
 

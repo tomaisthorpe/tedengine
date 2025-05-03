@@ -10,7 +10,7 @@ import {
   TMaterialComponent,
   TTransformComponent,
   TTransform,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TProjectionType,
   TCameraComponent,
   TActiveCameraComponent,
@@ -51,7 +51,7 @@ class AubState extends TGameState {
           vec3.fromValues(60, 60, 60),
         ),
       ),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRotatingComponent(),
     ]);
 

@@ -19,7 +19,7 @@ import {
   TPlayerInputSystem,
   TProjectionType,
   TRigidBodyComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   TTransformComponent,
   TEventTypesPhysics,
@@ -64,7 +64,7 @@ class TriggerState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
       new TPlayerInputComponent(),
       new PlayerMovementComponent(),
@@ -75,7 +75,7 @@ class TriggerState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0.6, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent(
         { mass: 0, isTrigger: true },
         createBoxCollider(1, 1, 1, 'Trigger'),
@@ -88,7 +88,7 @@ class TriggerState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
     ]);
 

@@ -8,7 +8,7 @@ import {
   TResourcePack,
   TTilemapComponent,
   TEngine,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   TTransformComponent,
   TTilemapSystem,
@@ -44,7 +44,7 @@ class SpriteState extends TGameState {
           vec3.fromValues(0.002, 0.002, 1),
         ),
       ),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
   }
 }

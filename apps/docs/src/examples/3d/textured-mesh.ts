@@ -12,7 +12,7 @@ import {
   TTransformComponent,
   TTransform,
   TTextureComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TParentEntityComponent,
 } from '@tedengine/ted';
 import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
@@ -50,7 +50,7 @@ class TrainState extends TGameState {
       ),
       new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const panto = this.world.createEntity();
@@ -65,7 +65,7 @@ class TrainState extends TGameState {
       ),
       new TTexturedMeshComponent({ source: 'path', path: trainPantoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const middle = this.world.createEntity();
@@ -80,7 +80,7 @@ class TrainState extends TGameState {
       ),
       new TTexturedMeshComponent({ source: 'path', path: trainMiddleMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const end = this.world.createEntity();
@@ -95,7 +95,7 @@ class TrainState extends TGameState {
       ),
       new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     engine.debugPanel.addButtons('Rotation', {

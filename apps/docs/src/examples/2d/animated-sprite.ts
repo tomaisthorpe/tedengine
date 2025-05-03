@@ -13,7 +13,7 @@ import {
   TTransformComponent,
   TTransform,
   TTextureComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TCameraComponent,
   TProjectionType,
   TActiveCameraComponent,
@@ -57,7 +57,7 @@ class SpriteState extends TGameState {
       sprite,
       animatedSprite,
       new TTextureComponent(engine.resources.get<TTexture>(personTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     this.world.createEntity([

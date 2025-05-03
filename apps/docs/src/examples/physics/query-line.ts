@@ -15,7 +15,7 @@ import {
   TOrbitCameraSystem,
   TProjectionType,
   TRigidBodyComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   TTransformComponent,
 } from '@tedengine/ted';
@@ -46,7 +46,7 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
       new TTransformComponent(new TTransform(vec3.fromValues(10, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
@@ -55,7 +55,7 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
       new TTransformComponent(new TTransform(vec3.fromValues(-6, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
     ]);
 
@@ -64,7 +64,7 @@ class ColliderState extends TGameState implements TGameStateWithOnUpdate {
       new TTransformComponent(new TTransform(vec3.fromValues(6, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent(
         { mass: 1 },
         createBoxCollider(1, 1, 1, 'NoCollide'),

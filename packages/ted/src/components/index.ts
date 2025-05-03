@@ -2,7 +2,16 @@ import type TTransform from '../math/transform';
 import { TComponent } from '../core/component';
 import type { TEntity } from '../core/world';
 
-export class TShouldRenderComponent extends TComponent {}
+export enum TVisibilityState {
+  Visible = 'visible',
+  Hidden = 'hidden',
+}
+
+export class TVisibilityComponent extends TComponent {
+  constructor(public state: TVisibilityState = TVisibilityState.Visible) {
+    super();
+  }
+}
 
 export class TTransformComponent extends TComponent {
   constructor(public transform: TTransform) {

@@ -16,11 +16,12 @@ import type {
 import { TRenderTask } from '../renderer/frame-params';
 import {
   TTransformComponent,
-  TShouldRenderComponent,
   TMeshReadyComponent,
   TTexturedMeshReadyComponent,
   TParentEntityComponent,
   TSpriteReadyComponent,
+  TVisibilityState,
+  TVisibilityComponent,
 } from '../components';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
@@ -41,7 +42,7 @@ export class TMeshRenderSystem extends TSystem {
       TTransformComponent,
       TMeshComponent,
       TMaterialComponent,
-      TShouldRenderComponent,
+      TVisibilityComponent,
       TMeshReadyComponent,
     ]);
 
@@ -49,14 +50,14 @@ export class TMeshRenderSystem extends TSystem {
       TTransformComponent,
       TTexturedMeshComponent,
       TTextureComponent,
-      TShouldRenderComponent,
+      TVisibilityComponent,
       TTexturedMeshReadyComponent,
     ]);
 
     this.spriteQuery = world.createQuery([
       TTransformComponent,
       TSpriteComponent,
-      TShouldRenderComponent,
+      TVisibilityComponent,
       TSpriteReadyComponent,
       TTextureComponent,
     ]);
@@ -71,6 +72,12 @@ export class TMeshRenderSystem extends TSystem {
       const components = world.getComponents(entity);
 
       if (!components) continue;
+
+      const visibility = components.get(TVisibilityComponent);
+
+      if (visibility.state === TVisibilityState.Hidden) {
+        continue;
+      }
 
       const mesh = components.get(TMeshComponent);
       const material = components.get(TMaterialComponent);

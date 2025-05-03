@@ -7,7 +7,7 @@ import {
   TResourcePack,
   TTopDownInputSystem,
   TTextureComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   TTransformComponent,
   TTopDownInputComponent,
@@ -89,7 +89,7 @@ class TopDownState extends TGameState {
         origin: TOriginPoint.Center,
       }),
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TMouseInputComponent(),
       new TTopDownInputComponent(),
     ]);

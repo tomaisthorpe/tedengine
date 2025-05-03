@@ -7,7 +7,7 @@ import {
   TMaterialComponent,
   TMeshComponent,
   TRigidBodyComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   createBoxMesh,
   TActiveCameraComponent,
@@ -63,7 +63,7 @@ class ColliderState extends TGameState {
             new TTransformComponent(new TTransform(vec3.fromValues(x, y, z))),
             meshComponent,
             new TMaterialComponent(boxMesh.material),
-            new TShouldRenderComponent(),
+            new TVisibilityComponent(),
             new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
           ]);
         }
@@ -76,7 +76,7 @@ class ColliderState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(40, 40)),
     ]);
 

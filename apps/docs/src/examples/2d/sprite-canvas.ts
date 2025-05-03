@@ -9,7 +9,7 @@ import {
   TTransform,
   TTransformComponent,
   TTextureComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
 } from '@tedengine/ted';
 
 class CanvasState extends TGameState {
@@ -38,7 +38,7 @@ class CanvasState extends TGameState {
         height: 1,
       }),
       new TTextureComponent(this.texture!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
   }
 }

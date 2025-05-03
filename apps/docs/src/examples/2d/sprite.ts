@@ -10,7 +10,7 @@ import {
   TTextureComponent,
   TTransform,
   TTransformComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -36,7 +36,7 @@ class SpriteState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       sprite,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const section = engine.debugPanel.addSection('Color Filter', true);

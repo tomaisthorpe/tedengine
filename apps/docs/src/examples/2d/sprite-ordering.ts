@@ -12,7 +12,7 @@ import {
   TTextureComponent,
   TTransform,
   TTransformComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -39,7 +39,7 @@ class SpriteState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       asteroidSprite,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const crystalSprite = new TSpriteComponent({
@@ -54,7 +54,7 @@ class SpriteState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       crystalSprite,
       new TTextureComponent(engine.resources.get<TTexture>(crystalTexture)!),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     engine.debugPanel.addButtons('Change Order', {

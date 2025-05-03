@@ -2,7 +2,7 @@ import { vec3 } from 'gl-matrix';
 import {
   TGameState,
   TEngine,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TMeshComponent,
   TTransform,
   TTransformComponent,
@@ -37,7 +37,7 @@ class SphereState extends TGameState {
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const camera = this.world.createEntity();

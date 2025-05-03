@@ -4,7 +4,7 @@ import {
   TEngine,
   TMeshComponent,
   TMaterialComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   createBoxMesh,
   TTransformComponent,
   TTransform,
@@ -24,7 +24,7 @@ class BoxState extends TGameState {
     this.world.addComponents(entity, [
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       new TRotatingComponent(),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
     ]);

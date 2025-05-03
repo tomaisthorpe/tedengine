@@ -4,7 +4,7 @@ import {
   TMeshComponent,
   TMaterialComponent,
   createBoxMesh,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransformComponent,
   TTransform,
 } from '@tedengine/ted';
@@ -31,7 +31,7 @@ class BoxState extends TGameState {
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
     );
     this.world.addComponent(box, new TMaterialComponent(mesh.material));
-    this.world.addComponent(box, new TShouldRenderComponent());
+    this.world.addComponent(box, new TVisibilityComponent());
   }
 }
 

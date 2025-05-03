@@ -9,7 +9,7 @@ import {
   TEngine,
   TTransform,
   TTransformComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TMaterialComponent,
 } from '@tedengine/ted';
 import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
@@ -46,7 +46,7 @@ class MeshState extends TGameState {
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
       new TTransformComponent(transform),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       rotating,
       mesh,
       material,

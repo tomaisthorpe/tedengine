@@ -8,7 +8,7 @@ import {
   TMeshComponent,
   TEngine,
   TMaterialComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransform,
   TTransformComponent,
   TCameraComponent,
@@ -60,7 +60,7 @@ class OrbitState extends TGameState {
           vec3.fromValues(1, 1, 1),
         ),
       ),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     const perspective = this.world.createEntity();

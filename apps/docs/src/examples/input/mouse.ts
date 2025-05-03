@@ -9,7 +9,7 @@ import {
   createBoxMesh,
   TMaterialComponent,
   TMeshComponent,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransformComponent,
   TCameraComponent,
   TProjectionType,
@@ -103,7 +103,7 @@ class ColliderState extends TGameState {
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
       new TTransformComponent(new TTransform(vec3.fromValues(100, 100, -10))),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
     ]);
 
     // Setup orthographic camera

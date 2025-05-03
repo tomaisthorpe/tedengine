@@ -8,7 +8,7 @@ import {
   TMeshComponent,
   TEngine,
   TTransform,
-  TShouldRenderComponent,
+  TVisibilityComponent,
   TTransformComponent,
   TMaterialComponent,
   TActiveCameraComponent,
@@ -55,7 +55,7 @@ class MeshState extends TGameState {
 
     this.world.addComponents(entity, [
       new TTransformComponent(transform),
-      new TShouldRenderComponent(),
+      new TVisibilityComponent(),
       mesh,
       material,
     ]);
