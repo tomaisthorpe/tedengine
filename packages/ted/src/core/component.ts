@@ -1,7 +1,13 @@
 /**
  * A component is a data structure that describes a property of an entity.
  */
-export abstract class TComponent {}
+export abstract class TComponent {
+  /**
+   * The components that are required by this component.
+   * If the entity doesn't have any of the components, they will be created with default values.
+   */
+  public static readonly requiredComponents?: TComponentConstructor[];
+}
 
 /**
  * Type for component class constructors
@@ -22,6 +28,19 @@ export class TComponentContainer {
   }
 
   public add(component: TComponent): void {
+    // Check if this component has required components
+    // If components are added out of order with provided values,
+    // they will be overridden later.
+    const requiredComponents = (component.constructor as typeof TComponent)
+      .requiredComponents;
+    if (requiredComponents) {
+      for (const requiredComponent of requiredComponents) {
+        if (!this.has(requiredComponent)) {
+          this.add(new requiredComponent());
+        }
+      }
+    }
+
     this.components.set(
       component.constructor as TComponentConstructor,
       component,

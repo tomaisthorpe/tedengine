@@ -2,7 +2,7 @@ import { TComponent, TComponentContainer } from './component';
 
 // Test components
 class TestComponentA extends TComponent {
-  constructor(public value: number) {
+  constructor(public value = 5) {
     super();
   }
 }
@@ -45,6 +45,42 @@ describe('TComponentContainer', () => {
   it('should add components', () => {
     container.add(componentA);
     expect(container.get(TestComponentA)).toBe(componentA);
+  });
+
+  it('should add components with required components', () => {
+    class TestComponentC extends TComponent {
+      public static requiredComponents = [TestComponentA];
+
+      constructor(public value: number) {
+        super();
+      }
+    }
+
+    const componentC = new TestComponentC(42);
+    container.add(componentC);
+
+    expect(container.get(TestComponentC)).toBe(componentC);
+    expect(container.get(TestComponentA)).toBeDefined();
+    expect(container.get(TestComponentA).value).toBe(5);
+  });
+
+  it('should override previously required components with manually added components', () => {
+    class TestComponentC extends TComponent {
+      public static requiredComponents = [TestComponentA];
+    }
+
+    const componentC = new TestComponentC();
+    container.add(componentC);
+
+    expect(container.get(TestComponentC)).toBe(componentC);
+    expect(container.get(TestComponentA)).toBeDefined();
+    expect(container.get(TestComponentA).value).toBe(5);
+
+    const componentA2 = new TestComponentA(100);
+    container.add(componentA2);
+
+    expect(container.get(TestComponentA)).toBe(componentA2);
+    expect(container.get(TestComponentA).value).toBe(100);
   });
 
   it('should get components by their constructor', () => {
