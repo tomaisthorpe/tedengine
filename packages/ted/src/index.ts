@@ -37,7 +37,7 @@ export * from './core/component';
 export * from './core/system';
 export * from './core/entity-query';
 export { TEntityQuery } from './core/entity-query';
-
+export * from './core/bundle';
 export { default as TWorld } from './core/world';
 export * from './core/messages';
 
