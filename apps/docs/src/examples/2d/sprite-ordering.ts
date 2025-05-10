@@ -36,8 +36,9 @@ class SpriteState extends TGameState {
     });
 
     this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      ),
       asteroidSprite,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TVisibilityComponent(),
@@ -51,8 +52,9 @@ class SpriteState extends TGameState {
     });
 
     this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      ),
       crystalSprite,
       new TTextureComponent(engine.resources.get<TTexture>(crystalTexture)!),
       new TVisibilityComponent(),

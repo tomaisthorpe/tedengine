@@ -1,4 +1,4 @@
-import type TTransform from '../math/transform';
+import TTransform from '../math/transform';
 import { TComponent } from '../core/component';
 import type { TEntity } from '../core/world';
 import { TBundle } from '../core/bundle';
@@ -15,7 +15,7 @@ export class TVisibilityComponent extends TComponent {
 }
 
 export class TTransformComponent extends TComponent {
-  constructor(public transform: TTransform) {
+  constructor(public transform: TTransform = new TTransform()) {
     super();
   }
 }

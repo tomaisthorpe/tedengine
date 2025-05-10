@@ -58,8 +58,9 @@ class ColliderState extends TGameState {
 
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -70,8 +71,9 @@ class ColliderState extends TGameState {
 
     const planeMesh = createPlaneMesh(10, 10);
     const plane = this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
       new TVisibilityComponent(),
@@ -79,8 +81,9 @@ class ColliderState extends TGameState {
     ]);
 
     const perspective = this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TCameraComponent({
         type: TProjectionType.Perspective,
         fov: 45,

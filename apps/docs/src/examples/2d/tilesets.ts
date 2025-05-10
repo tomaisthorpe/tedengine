@@ -28,7 +28,15 @@ class SpriteState extends TGameState {
 
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
-      TTransformBundle,
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, -2),
+            undefined,
+            vec3.fromValues(0.002, 0.002, 1),
+          ),
+        ),
+      ),
       new TTilemapComponent(engine.resources.get<TTilemap>(tilemap)!, [
         {
           id: 1,
@@ -39,13 +47,6 @@ class SpriteState extends TGameState {
           image: engine.resources.get<TImage>(asteroidTexture)!,
         },
       ]),
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, -2),
-          undefined,
-          vec3.fromValues(0.002, 0.002, 1),
-        ),
-      ),
       new TVisibilityComponent(),
     ]);
   }

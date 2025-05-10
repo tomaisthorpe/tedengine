@@ -143,13 +143,26 @@ export default class TWorld {
     this.entities.delete(entity);
   }
 
-  public addComponent(entity: TEntity, component: TComponent): void {
-    this.entities.get(entity)?.add(component);
+  public addComponent(
+    entity: TEntity,
+    componentOrBundle: TComponent | TBundle,
+  ): void {
+    this.addComponents(entity, [componentOrBundle]);
   }
 
-  public addComponents(entity: TEntity, components: TComponent[]): void {
-    for (const component of components) {
-      this.addComponent(entity, component);
+  public addComponents(
+    entity: TEntity,
+    componentsOrBundles: (TComponent | TBundle)[],
+  ): void {
+    for (const item of componentsOrBundles) {
+      if (item instanceof TBundle) {
+        const components = item.createComponents();
+        for (const component of components) {
+          this.entities.get(entity)?.add(component);
+        }
+      } else {
+        this.entities.get(entity)?.add(item);
+      }
     }
   }
 

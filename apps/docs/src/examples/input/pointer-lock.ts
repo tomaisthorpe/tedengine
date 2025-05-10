@@ -58,11 +58,12 @@ class PointerLockState extends TGameState {
     const mesh = createBoxMesh(100, 100, 2);
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
-      TTransformBundle,
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(100, 100, -10))),
+      ),
       new TMouseInputComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
-      new TTransformComponent(new TTransform(vec3.fromValues(100, 100, -10))),
       new TVisibilityComponent(),
     ]);
 
@@ -75,7 +76,6 @@ class PointerLockState extends TGameState {
         zNear: 0.1,
         zFar: 100,
       }),
-      new TTransformComponent(new TTransform()),
     ]);
     this.world.cameraSystem.setActiveCamera(cameraEntity);
 

@@ -100,7 +100,11 @@ class SpriteState extends TGameState {
 
     const manyColors = this.world.createEntity();
     this.world.addComponents(manyColors, [
-      TTransformBundle,
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(vec3.fromValues(0.75, -0.5, -3)),
+        ),
+      ),
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TSpriteComponent({
         width: 0.2,
@@ -108,7 +112,6 @@ class SpriteState extends TGameState {
         origin: TOriginPoint.Center,
         layer: TSpriteLayer.Foreground_0,
       }),
-      new TTransformComponent(new TTransform(vec3.fromValues(0.75, -0.5, -3))),
       colorParticles,
       new TVisibilityComponent(),
       new TSpriteInstancesComponent([]),
@@ -168,7 +171,11 @@ class SpriteState extends TGameState {
     });
     const fiery = this.world.createEntity();
     this.world.addComponents(fiery, [
-      TTransformBundle,
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(vec3.fromValues(-0.75, -0.5, -3)),
+        ),
+      ),
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TSpriteComponent({
         width: 0.2,
@@ -176,7 +183,6 @@ class SpriteState extends TGameState {
         origin: TOriginPoint.Center,
         layer: TSpriteLayer.Foreground_0,
       }),
-      new TTransformComponent(new TTransform(vec3.fromValues(-0.75, -0.5, -3))),
       fieryParticles,
       new TVisibilityComponent(),
       new TSpriteInstancesComponent([]),

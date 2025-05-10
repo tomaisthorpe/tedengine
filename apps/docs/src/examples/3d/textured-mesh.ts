@@ -39,62 +39,67 @@ class TrainState extends TGameState {
     );
 
     const train = this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -1))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -1))),
+      ),
       rotatingComponent,
     ]);
 
     const start = this.world.createEntity([
-      TTransformBundle,
-      new TParentEntityComponent(train),
-      new TTransformComponent(
-        new TTransform(undefined, undefined, vec3.fromValues(0.1, 0.1, 0.1)),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(undefined, undefined, vec3.fromValues(0.1, 0.1, 0.1)),
+        ),
       ),
+      new TParentEntityComponent(train),
       new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);
 
     const panto = this.world.createEntity([
-      TTransformBundle,
-      new TParentEntityComponent(train),
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, -0.24),
-          undefined,
-          vec3.fromValues(0.1, 0.1, 0.1),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, -0.24),
+            undefined,
+            vec3.fromValues(0.1, 0.1, 0.1),
+          ),
         ),
       ),
+      new TParentEntityComponent(train),
       new TTexturedMeshComponent({ source: 'path', path: trainPantoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);
 
     const middle = this.world.createEntity([
-      TTransformBundle,
-      new TParentEntityComponent(train),
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, -0.495),
-          undefined,
-          vec3.fromValues(0.1, 0.1, 0.1),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, -0.495),
+            undefined,
+            vec3.fromValues(0.1, 0.1, 0.1),
+          ),
         ),
       ),
+      new TParentEntityComponent(train),
       new TTexturedMeshComponent({ source: 'path', path: trainMiddleMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);
 
     const end = this.world.createEntity([
-      TTransformBundle,
-      new TParentEntityComponent(train),
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, -0.735),
-          quat.fromEuler(quat.create(), 0, 180, 0),
-          vec3.fromValues(0.1, 0.1, 0.1),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, -0.735),
+            quat.fromEuler(quat.create(), 0, 180, 0),
+            vec3.fromValues(0.1, 0.1, 0.1),
+          ),
         ),
       ),
+      new TParentEntityComponent(train),
       new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),

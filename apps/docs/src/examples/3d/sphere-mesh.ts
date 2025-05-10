@@ -33,8 +33,9 @@ class SphereState extends TGameState {
     );
     const sphere = createSphereMesh(0.5, 12, 12);
     this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: sphere.geometry }),
       new TMaterialComponent(sphere.material),
       new TVisibilityComponent(),
@@ -42,8 +43,9 @@ class SphereState extends TGameState {
 
     const camera = this.world.createEntity();
     this.world.addComponents(camera, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
       new TActiveCameraComponent(),
       new TMouseInputComponent(),

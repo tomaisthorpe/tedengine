@@ -19,11 +19,12 @@ class BoxState extends TGameState {
   public onReady(engine: TEngine) {
     const box = createBoxMesh(1, 1, 1);
     this.world.createEntity([
-      TTransformBundle,
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, -3),
-          quat.fromValues(0.2, -0.2, 0, 1),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, -3),
+            quat.fromValues(0.2, -0.2, 0, 1),
+          ),
         ),
       ),
       new TMeshComponent({ source: 'inline', geometry: box.geometry }),

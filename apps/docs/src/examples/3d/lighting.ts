@@ -55,8 +55,7 @@ class MeshState extends TGameState {
     );
 
     this.world.addComponents(entity, [
-      TTransformBundle,
-      new TTransformComponent(transform),
+      TTransformBundle.with(new TTransformComponent(transform)),
       new TVisibilityComponent(),
       mesh,
       material,
@@ -64,8 +63,9 @@ class MeshState extends TGameState {
 
     const camera = this.world.createEntity();
     this.world.addComponents(camera, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
       new TActiveCameraComponent(),
       new TMouseInputComponent(),

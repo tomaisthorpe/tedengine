@@ -43,16 +43,17 @@ class AubState extends TGameState {
 
     const ship = this.world.createEntity();
     this.world.addComponents(ship, [
-      TTransformBundle,
-      mesh,
-      material,
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, -400),
-          undefined,
-          vec3.fromValues(60, 60, 60),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, -400),
+            undefined,
+            vec3.fromValues(60, 60, 60),
+          ),
         ),
       ),
+      mesh,
+      material,
       new TVisibilityComponent(),
       new TRotatingComponent(),
     ]);
@@ -66,8 +67,9 @@ class AubState extends TGameState {
     });
     this.world.addComponents(perspective, [
       perspectiveComponent,
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 500))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 500))),
+      ),
       new TActiveCameraComponent(),
     ]);
 
@@ -77,11 +79,7 @@ class AubState extends TGameState {
       zNear: 0.1,
       zFar: 1000,
     });
-    this.world.addComponents(ortho, [
-      orthoComponent,
-      TTransformBundle,
-      new TTransformComponent(new TTransform()),
-    ]);
+    this.world.addComponents(ortho, [orthoComponent, TTransformBundle]);
 
     const section = engine.debugPanel.addSection('Camera', true);
 

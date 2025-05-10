@@ -51,8 +51,9 @@ class ColliderState extends TGameState {
 
     const box = this.world.createEntity();
     this.world.addComponents(box, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -61,8 +62,9 @@ class ColliderState extends TGameState {
 
     const box2 = this.world.createEntity();
     this.world.addComponents(box2, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -74,8 +76,9 @@ class ColliderState extends TGameState {
 
     const box3 = this.world.createEntity();
     this.world.addComponents(box3, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0.6, 3, 0.2))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0.6, 3, 0.2))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -86,8 +89,9 @@ class ColliderState extends TGameState {
 
     const sphere = this.world.createEntity();
     this.world.addComponents(sphere, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 8, 0.6))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 8, 0.6))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: sphereMesh.geometry }),
       new TMaterialComponent(sphereMesh.material),
       new TVisibilityComponent(),
@@ -101,8 +105,9 @@ class ColliderState extends TGameState {
 
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
       new TVisibilityComponent(),
@@ -116,7 +121,9 @@ class ColliderState extends TGameState {
     });
     this.world.addComponents(perspective, [
       perspectiveComponent,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({
         distance: 20,

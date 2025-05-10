@@ -52,16 +52,17 @@ class OrbitState extends TGameState {
 
     const ship = this.world.createEntity();
     this.world.addComponents(ship, [
-      TTransformBundle,
-      mesh,
-      material,
-      new TTransformComponent(
-        new TTransform(
-          vec3.fromValues(0, 0, 0),
-          undefined,
-          vec3.fromValues(1, 1, 1),
+      TTransformBundle.with(
+        new TTransformComponent(
+          new TTransform(
+            vec3.fromValues(0, 0, 0),
+            undefined,
+            vec3.fromValues(1, 1, 1),
+          ),
         ),
       ),
+      mesh,
+      material,
       new TVisibilityComponent(),
     ]);
 
@@ -72,8 +73,9 @@ class OrbitState extends TGameState {
     });
     this.world.addComponents(perspective, [
       perspectiveComponent,
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({
         distance: 15,

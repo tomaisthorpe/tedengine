@@ -24,8 +24,9 @@ class BoxState extends TGameState {
     const entity = this.world.createEntity();
     const mesh = createBoxMesh(1, 1, 1);
     this.world.addComponents(entity, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      ),
       new TRotatingComponent(),
       new TVisibilityComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),

@@ -55,8 +55,9 @@ class GameState extends TGameState {
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity();
     this.world.addComponents(box, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -68,8 +69,9 @@ class GameState extends TGameState {
 
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
       new TVisibilityComponent(),
@@ -82,9 +84,10 @@ class GameState extends TGameState {
       fov: 45,
     });
     this.world.addComponents(perspective, [
-      TTransformBundle,
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       perspectiveComponent,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({
         distance: 20,
@@ -139,8 +142,9 @@ class DupeState extends TGameState {
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity();
     this.world.addComponents(box, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -152,8 +156,9 @@ class DupeState extends TGameState {
 
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
       new TVisibilityComponent(),
@@ -166,9 +171,10 @@ class DupeState extends TGameState {
       fov: 45,
     });
     this.world.addComponents(perspective, [
-      TTransformBundle,
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       perspectiveComponent,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({
         distance: 20,

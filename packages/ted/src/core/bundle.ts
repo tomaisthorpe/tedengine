@@ -6,7 +6,7 @@ import type { TComponent } from './component';
  */
 export class TBundle {
   constructor(
-    private readonly componentTypes: TComponentConstructor[],
+    public readonly componentTypes: TComponentConstructor[],
     private readonly defaultValues: Map<
       TComponentConstructor,
       () => TComponent
@@ -28,6 +28,25 @@ export class TBundle {
     }
 
     return new TBundle(newComponentTypes, newDefaultValues);
+  }
+
+  /**
+   * Creates a new bundle with the specified component overrides
+   * @param overrides Component instances to override default values in the bundle
+   */
+  public with(...overrides: TComponent[]): TBundle {
+    const newDefaultValues = new Map(this.defaultValues);
+
+    for (const component of overrides) {
+      // Get the constructor of the component
+      const constructor = Object.getPrototypeOf(component).constructor;
+      // Check if this component type is in the bundle
+      if (this.componentTypes.includes(constructor)) {
+        newDefaultValues.set(constructor, () => component);
+      }
+    }
+
+    return new TBundle(this.componentTypes, newDefaultValues);
   }
 
   /**
@@ -75,6 +94,8 @@ export class TBundle {
         components.push(new componentType());
       }
     }
+
+    console.log(components);
 
     return components;
   }

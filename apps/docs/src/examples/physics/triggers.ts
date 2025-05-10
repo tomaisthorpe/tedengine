@@ -62,8 +62,9 @@ class TriggerState extends TGameState {
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity();
     this.world.addComponents(box, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(-0.1, 10, 0.6))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -74,8 +75,9 @@ class TriggerState extends TGameState {
 
     const trigger = this.world.createEntity();
     this.world.addComponents(trigger, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0.6, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0.6, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
       new TVisibilityComponent(),
@@ -88,8 +90,9 @@ class TriggerState extends TGameState {
     const planeMesh = createPlaneMesh(10, 10);
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
-      TTransformBundle,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
       new TVisibilityComponent(),
@@ -103,7 +106,9 @@ class TriggerState extends TGameState {
     });
     this.world.addComponents(perspective, [
       perspectiveComponent,
-      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      TTransformBundle.with(
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      ),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({
         distance: 20,

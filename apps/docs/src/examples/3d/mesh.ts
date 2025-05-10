@@ -46,8 +46,7 @@ class MeshState extends TGameState {
 
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
-      TTransformBundle,
-      new TTransformComponent(transform),
+      TTransformBundle.with(new TTransformComponent(transform)),
       new TVisibilityComponent(),
       rotating,
       mesh,
