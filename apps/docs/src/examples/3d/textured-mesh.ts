@@ -75,15 +75,9 @@ class TrainState extends TGameState {
 
     const middle = this.world.createEntity([
       TTransformBundle.with(
-        new TTransformComponent(
-          new TTransform(
-            vec3.fromValues(0, 0, -0.495),
-            undefined,
-            vec3.fromValues(0.1, 0.1, 0.1),
-          ),
-        ),
+        new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -0.255))),
       ),
-      new TParentEntityComponent(train),
+      new TParentEntityComponent(panto),
       new TTexturedMeshComponent({ source: 'path', path: trainMiddleMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
@@ -93,13 +87,12 @@ class TrainState extends TGameState {
       TTransformBundle.with(
         new TTransformComponent(
           new TTransform(
-            vec3.fromValues(0, 0, -0.735),
+            vec3.fromValues(0, 0, -0.24),
             quat.fromEuler(quat.create(), 0, 180, 0),
-            vec3.fromValues(0.1, 0.1, 0.1),
           ),
         ),
       ),
-      new TParentEntityComponent(train),
+      new TParentEntityComponent(middle),
       new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
