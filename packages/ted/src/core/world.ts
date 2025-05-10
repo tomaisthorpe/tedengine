@@ -46,6 +46,7 @@ import type { TRigidBodyComponent } from '../physics/rigid-body-component';
 import type TTransform from '../math/transform';
 import { TPhysicsSystem } from '../physics/physics-system';
 import { TBundle } from './bundle';
+import { TGlobalTransformSystem } from '../components/global-transform';
 
 /**
  * An entity is a unique identifier for a game object.
@@ -222,6 +223,7 @@ export default class TWorld {
       this.addSystem(new TPhysicsSystem(this, this.gameState.events));
       this.renderSystem = new TMeshRenderSystem(this);
       this.addSystem(this.renderSystem);
+      this.addSystem(new TGlobalTransformSystem(this));
 
       this.cameraSystem = new TCameraSystem(this, this.engine);
       this.addSystem(this.cameraSystem);

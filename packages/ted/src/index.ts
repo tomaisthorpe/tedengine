@@ -33,6 +33,7 @@ export * from './core/game-state';
 export { default as TGameStateManager } from './core/game-state-manager';
 
 export * from './components';
+export * from './components/global-transform';
 export * from './core/component';
 export * from './core/system';
 export * from './core/entity-query';

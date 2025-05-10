@@ -95,8 +95,6 @@ export class TBundle {
       }
     }
 
-    console.log(components);
-
     return components;
   }
 }

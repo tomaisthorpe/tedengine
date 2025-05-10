@@ -18,13 +18,13 @@ import {
   TTransformComponent,
   TMeshReadyComponent,
   TTexturedMeshReadyComponent,
-  TParentEntityComponent,
   TSpriteReadyComponent,
   TVisibilityState,
   TVisibilityComponent,
 } from '../components';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
+import { TGlobalTransformComponent } from '../components/global-transform';
 
 export class TMeshRenderSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PostUpdate;
@@ -39,7 +39,7 @@ export class TMeshRenderSystem extends TSystem {
     super();
 
     this.meshQuery = world.createQuery([
-      TTransformComponent,
+      TGlobalTransformComponent,
       TMeshComponent,
       TMaterialComponent,
       TVisibilityComponent,
@@ -47,7 +47,7 @@ export class TMeshRenderSystem extends TSystem {
     ]);
 
     this.texturedMeshQuery = world.createQuery([
-      TTransformComponent,
+      TGlobalTransformComponent,
       TTexturedMeshComponent,
       TTextureComponent,
       TVisibilityComponent,
@@ -55,7 +55,7 @@ export class TMeshRenderSystem extends TSystem {
     ]);
 
     this.spriteQuery = world.createQuery([
-      TTransformComponent,
+      TGlobalTransformComponent,
       TSpriteComponent,
       TVisibilityComponent,
       TSpriteReadyComponent,
@@ -81,21 +81,13 @@ export class TMeshRenderSystem extends TSystem {
 
       const mesh = components.get(TMeshComponent);
       const material = components.get(TMaterialComponent);
-      const transform = components.get(TTransformComponent);
+      const transform = components.get(TGlobalTransformComponent);
 
-      let matrix = transform.transform.getMatrix();
-
-      if (components.has(TParentEntityComponent)) {
-        const parent = components.get(TParentEntityComponent);
-        const parentTransform = world
-          .getComponents(parent.entity)!
-          .get(TTransformComponent);
-        if (parentTransform) {
-          matrix = parentTransform.transform
-            .add(transform.transform)
-            .getMatrix();
-        }
+      if (!transform || !transform.transform) {
+        continue;
       }
+
+      const matrix = transform.transform.getMatrix();
 
       this.renderTasks.push({
         type: TRenderTask.MeshInstance,
@@ -114,21 +106,13 @@ export class TMeshRenderSystem extends TSystem {
 
       const mesh = components.get(TTexturedMeshComponent);
       const texture = components.get(TTextureComponent);
-      const transform = components.get(TTransformComponent);
+      const transform = components.get(TGlobalTransformComponent);
 
-      let matrix = transform.transform.getMatrix();
-
-      if (components.has(TParentEntityComponent)) {
-        const parent = components.get(TParentEntityComponent);
-        const parentTransform = world
-          .getComponents(parent.entity)!
-          .get(TTransformComponent);
-        if (parentTransform) {
-          matrix = parentTransform.transform
-            .add(transform.transform)
-            .getMatrix();
-        }
+      if (!transform || !transform.transform) {
+        continue;
       }
+
+      const matrix = transform.transform.getMatrix();
 
       this.renderTasks.push({
         type: TRenderTask.MeshInstance,
