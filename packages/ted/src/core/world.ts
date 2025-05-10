@@ -45,6 +45,7 @@ import TCameraSystem from '../cameras/camera-system';
 import type { TRigidBodyComponent } from '../physics/rigid-body-component';
 import type TTransform from '../math/transform';
 import { TPhysicsSystem } from '../physics/physics-system';
+import { TBundle } from './bundle';
 
 /**
  * An entity is a unique identifier for a game object.
@@ -109,9 +110,30 @@ export default class TWorld {
     this.jobs = gameState.jobs;
   }
 
-  public createEntity(components?: TComponent[]): TEntity {
+  /**
+   * Creates an entity with the given components or bundles
+   * Order of the components matters, if a component is added to an entity
+   * and then a bundle that also contains that component, the component in the bundle
+   * will override the component in the entity.
+   *
+   * @param componentsOrBundles - The components or bundles to add to the entity
+   * @returns The entity id
+   */
+  public createEntity(componentsOrBundles?: (TComponent | TBundle)[]): TEntity {
     const entity = this.nextEntityId;
     this.nextEntityId++;
+
+    const components: TComponent[] = [];
+
+    if (componentsOrBundles) {
+      for (const item of componentsOrBundles) {
+        if (item instanceof TBundle) {
+          components.push(...item.createComponents());
+        } else {
+          components.push(item);
+        }
+      }
+    }
 
     this.entities.set(entity, new TComponentContainer(components));
     return entity;

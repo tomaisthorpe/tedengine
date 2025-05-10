@@ -73,4 +73,8 @@ export class TComponentContainer {
   public remove(componentClass: TComponentConstructor): void {
     this.components.delete(componentClass);
   }
+
+  public getAll(): TComponent[] {
+    return Array.from(this.components.values());
+  }
 }

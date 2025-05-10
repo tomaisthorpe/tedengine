@@ -4,6 +4,7 @@ import { TComponent } from './component';
 import { TSystem } from './system';
 import type TEngine from '../engine/engine';
 import type TGameState from './game-state';
+import { TBundle } from './bundle';
 
 class TestComponent extends TComponent {
   constructor(public value: number) {
@@ -34,6 +35,65 @@ describe('createEntity', () => {
 
     const entity2 = world.createEntity();
     expect(entity2).toBe(1);
+  });
+
+  test('should create entity with components', () => {
+    const mockEngine = {} as TEngine;
+    const mockGameState = {} as TGameState;
+    const world = new TWorld(mockEngine, mockGameState);
+
+    const entity = world.createEntity([
+      new TestComponent(1),
+      new TestComponent2('test'),
+    ]);
+
+    const components = world.getComponents(entity);
+    expect(components?.has(TestComponent)).toBe(true);
+    expect(components?.get(TestComponent)?.value).toBe(1);
+    expect(components?.has(TestComponent2)).toBe(true);
+    expect(components?.get(TestComponent2)?.value).toBe('test');
+  });
+
+  test('should create entity with bundle', () => {
+    const mockEngine = {} as TEngine;
+    const mockGameState = {} as TGameState;
+    const world = new TWorld(mockEngine, mockGameState);
+
+    const bundle = TBundle.fromComponents([TestComponent]).withComponent(
+      TestComponent2,
+      () => new TestComponent2('from bundle'),
+    );
+
+    const entity = world.createEntity([bundle]);
+
+    const components = world.getComponents(entity);
+    expect(components?.has(TestComponent)).toBe(true);
+    expect(components?.get(TestComponent)?.value).toBeUndefined(); // Default value
+    expect(components?.has(TestComponent2)).toBe(true);
+    expect(components?.get(TestComponent2)?.value).toBe('from bundle');
+  });
+
+  test('should create entity with mix of components and bundles', () => {
+    const mockEngine = {} as TEngine;
+    const mockGameState = {} as TGameState;
+    const world = new TWorld(mockEngine, mockGameState);
+
+    const bundle = TBundle.fromComponents([TestComponent]).withComponent(
+      TestComponent2,
+      () => new TestComponent2('from bundle'),
+    );
+
+    const entity = world.createEntity([
+      bundle,
+      new TestComponent(1),
+      new TestComponent2('override'),
+    ]);
+
+    const components = world.getComponents(entity);
+    expect(components?.has(TestComponent)).toBe(true);
+    expect(components?.get(TestComponent)?.value).toBe(1); // From direct component
+    expect(components?.has(TestComponent2)).toBe(true);
+    expect(components?.get(TestComponent2)?.value).toBe('override'); // Direct component overrides bundle
   });
 });
 

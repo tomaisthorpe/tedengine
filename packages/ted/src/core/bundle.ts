@@ -1,6 +1,5 @@
 import type { TComponentConstructor } from './component';
 import type { TComponent } from './component';
-import type TWorld from './world';
 
 /**
  * Represents a predefined set of components that can be used to create entities
@@ -13,24 +12,6 @@ export class TBundle {
       () => TComponent
     > = new Map(),
   ) {}
-
-  /**
-   * Creates a new entity with this bundle's components
-   */
-  public createEntity(world: TWorld, overrides?: TComponent[]): number {
-    const components: TComponent[] = [];
-
-    for (const componentType of this.componentTypes) {
-      const createComponent = this.defaultValues.get(componentType);
-      if (createComponent) {
-        components.push(createComponent());
-      } else {
-        components.push(new componentType());
-      }
-    }
-
-    return world.createEntity([...components, ...(overrides ?? [])]);
-  }
 
   /**
    * Adds a component type to this bundle with an optional default value factory
@@ -78,5 +59,23 @@ export class TBundle {
     componentTypes: TComponentConstructor[],
   ): TBundle {
     return new TBundle(componentTypes);
+  }
+
+  /**
+   * Creates the components defined in this bundle without creating an entity
+   */
+  public createComponents(): TComponent[] {
+    const components: TComponent[] = [];
+
+    for (const componentType of this.componentTypes) {
+      const createComponent = this.defaultValues.get(componentType);
+      if (createComponent) {
+        components.push(createComponent());
+      } else {
+        components.push(new componentType());
+      }
+    }
+
+    return components;
   }
 }
