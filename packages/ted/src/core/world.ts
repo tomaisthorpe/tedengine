@@ -123,8 +123,16 @@ export default class TWorld {
     const entity = this.nextEntityId;
     this.nextEntityId++;
 
-    const components: TComponent[] = [];
+    const components = this.collectComponents(componentsOrBundles);
+    this.entities.set(entity, new TComponentContainer(components));
 
+    return entity;
+  }
+
+  private collectComponents(
+    componentsOrBundles?: (TComponent | TBundle)[],
+  ): TComponent[] {
+    const components: TComponent[] = [];
     if (componentsOrBundles) {
       for (const item of componentsOrBundles) {
         if (item instanceof TBundle) {
@@ -134,9 +142,7 @@ export default class TWorld {
         }
       }
     }
-
-    this.entities.set(entity, new TComponentContainer(components));
-    return entity;
+    return components;
   }
 
   public removeEntity(entity: TEntity): void {
@@ -154,15 +160,9 @@ export default class TWorld {
     entity: TEntity,
     componentsOrBundles: (TComponent | TBundle)[],
   ): void {
-    for (const item of componentsOrBundles) {
-      if (item instanceof TBundle) {
-        const components = item.createComponents();
-        for (const component of components) {
-          this.entities.get(entity)?.add(component);
-        }
-      } else {
-        this.entities.get(entity)?.add(item);
-      }
+    const components = this.collectComponents(componentsOrBundles);
+    for (const component of components) {
+      this.entities.get(entity)?.add(component);
     }
   }
 
