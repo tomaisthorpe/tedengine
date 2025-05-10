@@ -1,6 +1,7 @@
 import type TTransform from '../math/transform';
 import { TComponent } from '../core/component';
 import type { TEntity } from '../core/world';
+import { TBundle } from '../core/bundle';
 
 export enum TVisibilityState {
   Visible = 'visible',
@@ -18,6 +19,8 @@ export class TTransformComponent extends TComponent {
     super();
   }
 }
+
+export const TTransformBundle = TBundle.fromComponents([TTransformComponent]);
 
 export class TMeshReadyComponent extends TComponent {}
 

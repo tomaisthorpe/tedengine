@@ -14,6 +14,8 @@ import {
   TTextureComponent,
   TVisibilityComponent,
   TParentEntityComponent,
+  TTransformBundle,
+  TMaterialComponent,
 } from '@tedengine/ted';
 import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
 
@@ -36,14 +38,14 @@ class TrainState extends TGameState {
       vec3.fromValues(0, 0.5, 0),
     );
 
-    const train = this.world.createEntity();
-    this.world.addComponents(train, [
+    const train = this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -1))),
       rotatingComponent,
     ]);
 
-    const start = this.world.createEntity();
-    this.world.addComponents(start, [
+    const start = this.world.createEntity([
+      TTransformBundle,
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(undefined, undefined, vec3.fromValues(0.1, 0.1, 0.1)),
@@ -53,8 +55,8 @@ class TrainState extends TGameState {
       new TVisibilityComponent(),
     ]);
 
-    const panto = this.world.createEntity();
-    this.world.addComponents(panto, [
+    const panto = this.world.createEntity([
+      TTransformBundle,
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(
@@ -68,8 +70,8 @@ class TrainState extends TGameState {
       new TVisibilityComponent(),
     ]);
 
-    const middle = this.world.createEntity();
-    this.world.addComponents(middle, [
+    const middle = this.world.createEntity([
+      TTransformBundle,
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(
@@ -83,8 +85,8 @@ class TrainState extends TGameState {
       new TVisibilityComponent(),
     ]);
 
-    const end = this.world.createEntity();
-    this.world.addComponents(end, [
+    const end = this.world.createEntity([
+      TTransformBundle,
       new TParentEntityComponent(train),
       new TTransformComponent(
         new TTransform(

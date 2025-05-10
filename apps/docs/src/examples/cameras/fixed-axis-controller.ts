@@ -23,6 +23,7 @@ import {
   createPlaneMesh,
   setPlayerInputMapping,
   TFixedAxisCameraSystem,
+  TTransformBundle,
 } from '@tedengine/ted';
 import {
   PlayerMovementSystem,
@@ -53,6 +54,7 @@ class ColliderState extends TGameState {
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity();
     this.world.addComponents(box, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -66,6 +68,7 @@ class ColliderState extends TGameState {
 
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -88,6 +91,7 @@ class ColliderState extends TGameState {
     });
 
     this.world.addComponents(perspective, [
+      TTransformBundle,
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 2, 5))),
       new TActiveCameraComponent(),

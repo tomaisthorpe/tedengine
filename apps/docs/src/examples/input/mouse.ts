@@ -14,6 +14,7 @@ import {
   TCameraComponent,
   TProjectionType,
   TInputDevice,
+  TTransformBundle,
 } from '@tedengine/ted';
 import type { TWorld, TEntityQuery, TInputManager } from '@tedengine/ted';
 
@@ -99,6 +100,7 @@ class ColliderState extends TGameState {
 
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
+      TTransformBundle,
       new TMouseInputComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
@@ -109,6 +111,7 @@ class ColliderState extends TGameState {
     // Setup orthographic camera
     const cameraEntity = this.world.createEntity();
     this.world.addComponents(cameraEntity, [
+      TTransformBundle,
       new TCameraComponent({
         type: TProjectionType.Orthographic,
         zNear: 0.1,

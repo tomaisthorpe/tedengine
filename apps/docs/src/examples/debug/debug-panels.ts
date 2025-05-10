@@ -8,6 +8,7 @@ import {
   TVisibilityComponent,
   TTransform,
   TTransformComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 import { TRotatingComponent } from '../shared/rotating';
 import { TRotatingSystem } from '../shared/rotating';
@@ -20,18 +21,15 @@ class BoxState extends TGameState {
   public onReady(engine: TEngine) {
     this.world.addSystem(new TRotatingSystem(this.world));
 
-    const box = this.world.createEntity();
-    const transform = new TTransformComponent(
-      new TTransform(vec3.fromValues(0, 0, -3)),
-    );
+    const entity = this.world.createEntity();
     const mesh = createBoxMesh(1, 1, 1);
-    const rotating = new TRotatingComponent();
-    this.world.addComponents(box, [
-      transform,
+    this.world.addComponents(entity, [
+      TTransformBundle,
+      new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+      new TRotatingComponent(),
+      new TVisibilityComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
-      new TVisibilityComponent(),
-      rotating,
     ]);
 
     const section = engine.debugPanel.addSection('New Section', true);
@@ -42,6 +40,7 @@ class BoxState extends TGameState {
       'number',
       '-3',
       (value: string) => {
+        const transform = this.world.getComponent(entity, TTransformComponent);
         transform.transform.translation = vec3.fromValues(
           0,
           0,
@@ -58,6 +57,7 @@ class BoxState extends TGameState {
     section.addButtons('Rotation', {
       label: 'Pause',
       onClick: (button) => {
+        const rotating = this.world.getComponent(entity, TRotatingComponent);
         rotating.paused = !rotating.paused;
 
         if (rotating.paused) {

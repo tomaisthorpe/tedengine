@@ -18,6 +18,7 @@ import {
   TOrbitCameraSystem,
   TMouseInputSystem,
   TMouseInputComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class OrbitState extends TGameState {
@@ -51,6 +52,7 @@ class OrbitState extends TGameState {
 
     const ship = this.world.createEntity();
     this.world.addComponents(ship, [
+      TTransformBundle,
       mesh,
       material,
       new TTransformComponent(
@@ -70,6 +72,7 @@ class OrbitState extends TGameState {
     });
     this.world.addComponents(perspective, [
       perspectiveComponent,
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({

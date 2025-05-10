@@ -22,6 +22,7 @@ import {
   TVisibilityComponent,
   TTransform,
   TTransformComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 import {
   PlayerMovementSystem,
@@ -54,6 +55,7 @@ class GameState extends TGameState {
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity();
     this.world.addComponents(box, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -66,6 +68,7 @@ class GameState extends TGameState {
 
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -79,6 +82,7 @@ class GameState extends TGameState {
       fov: 45,
     });
     this.world.addComponents(perspective, [
+      TTransformBundle,
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),
@@ -135,6 +139,7 @@ class DupeState extends TGameState {
     const boxMesh = createBoxMesh(1, 1, 1);
     const box = this.world.createEntity();
     this.world.addComponents(box, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -147,6 +152,7 @@ class DupeState extends TGameState {
 
     const plane = this.world.createEntity();
     this.world.addComponents(plane, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -160,6 +166,7 @@ class DupeState extends TGameState {
       fov: 45,
     });
     this.world.addComponents(perspective, [
+      TTransformBundle,
       perspectiveComponent,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TActiveCameraComponent(),

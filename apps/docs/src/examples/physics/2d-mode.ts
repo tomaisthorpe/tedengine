@@ -22,6 +22,7 @@ import {
   TVisibilityComponent,
   TTransform,
   TTransformComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 import {
   PlayerMovementSystem,
@@ -56,8 +57,8 @@ class ColliderState extends TGameState {
     this.world.addSystem(new PlayerMovementSystem(this.world));
 
     const boxMesh = createBoxMesh(1, 1, 1);
-    const box = this.world.createEntity();
-    this.world.addComponents(box, [
+    const box = this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 5, 0))),
       new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
       new TMaterialComponent(boxMesh.material),
@@ -66,10 +67,10 @@ class ColliderState extends TGameState {
       new TPlayerInputComponent(),
       new PlayerMovementComponent(),
     ]);
-    const planeMesh = createPlaneMesh(10, 10);
 
-    const plane = this.world.createEntity();
-    this.world.addComponents(plane, [
+    const planeMesh = createPlaneMesh(10, 10);
+    const plane = this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TMeshComponent({ source: 'inline', geometry: planeMesh.geometry }),
       new TMaterialComponent(planeMesh.material),
@@ -77,14 +78,13 @@ class ColliderState extends TGameState {
       new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
     ]);
 
-    const perspective = this.world.createEntity();
-    const perspectiveComponent = new TCameraComponent({
-      type: TProjectionType.Perspective,
-      fov: 45,
-    });
-    this.world.addComponents(perspective, [
-      perspectiveComponent,
+    const perspective = this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
+      new TCameraComponent({
+        type: TProjectionType.Perspective,
+        fov: 45,
+      }),
       new TActiveCameraComponent(),
       new TOrbitCameraComponent({
         distance: 20,

@@ -12,6 +12,7 @@ import {
   TTransform,
   TTransformComponent,
   TTilemapSystem,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -27,6 +28,7 @@ class SpriteState extends TGameState {
 
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
+      TTransformBundle,
       new TTilemapComponent(engine.resources.get<TTilemap>(tilemap)!, [
         {
           id: 1,

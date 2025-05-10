@@ -14,6 +14,7 @@ import {
   TProjectionType,
   TCameraComponent,
   TActiveCameraComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
 
@@ -42,6 +43,7 @@ class AubState extends TGameState {
 
     const ship = this.world.createEntity();
     this.world.addComponents(ship, [
+      TTransformBundle,
       mesh,
       material,
       new TTransformComponent(
@@ -64,6 +66,7 @@ class AubState extends TGameState {
     });
     this.world.addComponents(perspective, [
       perspectiveComponent,
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 500))),
       new TActiveCameraComponent(),
     ]);
@@ -76,6 +79,7 @@ class AubState extends TGameState {
     });
     this.world.addComponents(ortho, [
       orthoComponent,
+      TTransformBundle,
       new TTransformComponent(new TTransform()),
     ]);
 

@@ -11,6 +11,7 @@ import {
   TTransform,
   TTransformComponent,
   TVisibilityComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -25,16 +26,14 @@ class SpriteState extends TGameState {
   }
 
   public onReady(engine: TEngine) {
-    const asteroid = this.world.createEntity();
-    const sprite = new TSpriteComponent({
-      width: 1,
-      height: 1,
-      origin: TOriginPoint.Center,
-    });
-
-    this.world.addComponents(asteroid, [
+    const entity = this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
-      sprite,
+      new TSpriteComponent({
+        width: 1,
+        height: 1,
+        origin: TOriginPoint.Center,
+      }),
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TVisibilityComponent(),
     ]);
@@ -45,7 +44,7 @@ class SpriteState extends TGameState {
       'range',
       '1',
       (value) => {
-        sprite.colorFilter[0] = parseFloat(value);
+        entity.components[TSpriteComponent].colorFilter[0] = parseFloat(value);
       },
       {
         min: 0,
@@ -58,7 +57,7 @@ class SpriteState extends TGameState {
       'range',
       '1',
       (value) => {
-        sprite.colorFilter[1] = parseFloat(value);
+        entity.components[TSpriteComponent].colorFilter[1] = parseFloat(value);
       },
       {
         min: 0,
@@ -71,7 +70,7 @@ class SpriteState extends TGameState {
       'range',
       '1',
       (value) => {
-        sprite.colorFilter[2] = parseFloat(value);
+        entity.components[TSpriteComponent].colorFilter[2] = parseFloat(value);
       },
       {
         min: 0,
@@ -84,7 +83,7 @@ class SpriteState extends TGameState {
       'range',
       '1',
       (value) => {
-        sprite.colorFilter[3] = parseFloat(value);
+        entity.components[TSpriteComponent].colorFilter[3] = parseFloat(value);
       },
       {
         min: 0,

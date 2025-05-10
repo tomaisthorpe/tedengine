@@ -18,6 +18,7 @@ import {
   TMouseInputComponent,
   TOrbitCameraSystem,
   TMouseInputSystem,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class MeshState extends TGameState {
@@ -54,6 +55,7 @@ class MeshState extends TGameState {
     );
 
     this.world.addComponents(entity, [
+      TTransformBundle,
       new TTransformComponent(transform),
       new TVisibilityComponent(),
       mesh,
@@ -62,6 +64,7 @@ class MeshState extends TGameState {
 
     const camera = this.world.createEntity();
     this.world.addComponents(camera, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
       new TActiveCameraComponent(),

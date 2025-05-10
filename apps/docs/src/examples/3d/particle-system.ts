@@ -15,6 +15,7 @@ import {
   TVisibilityComponent,
   TSpriteInstancesComponent,
   TParticlesSystem,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -99,6 +100,7 @@ class SpriteState extends TGameState {
 
     const manyColors = this.world.createEntity();
     this.world.addComponents(manyColors, [
+      TTransformBundle,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TSpriteComponent({
         width: 0.2,
@@ -166,6 +168,7 @@ class SpriteState extends TGameState {
     });
     const fiery = this.world.createEntity();
     this.world.addComponents(fiery, [
+      TTransformBundle,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
       new TSpriteComponent({
         width: 0.2,

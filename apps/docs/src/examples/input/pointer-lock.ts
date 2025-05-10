@@ -13,6 +13,7 @@ import {
   TProjectionType,
   TVisibilityComponent,
   TTransform,
+  TTransformBundle,
 } from '@tedengine/ted';
 import type { TWorld, TEntityQuery } from '@tedengine/ted';
 
@@ -20,7 +21,6 @@ class PointerLockSystem extends TSystem {
   private query: TEntityQuery;
   constructor(private world: TWorld) {
     super();
-
     this.query = this.world.createQuery([
       TMouseInputComponent,
       TTransformComponent,
@@ -29,13 +29,11 @@ class PointerLockSystem extends TSystem {
 
   public async update(engine: TEngine, world: TWorld): Promise<void> {
     const entities = this.query.execute();
-
     for (const entity of entities) {
       const mouseInputComponent = world
         .getComponents(entity)
         ?.get(TMouseInputComponent);
       const transform = world.getComponents(entity)?.get(TTransformComponent);
-
       if (mouseInputComponent.mouseMovement) {
         const loc = world.cameraSystem?.clipToWorldSpace(
           mouseInputComponent.mouseMovement.clip,
@@ -46,7 +44,7 @@ class PointerLockSystem extends TSystem {
   }
 }
 
-class ColliderState extends TGameState {
+class PointerLockState extends TGameState {
   public async onCreate(engine: TEngine) {
     this.onReady(engine);
   }
@@ -55,13 +53,12 @@ class ColliderState extends TGameState {
     this.world.addSystem(
       new TMouseInputSystem(this.world, engine.inputManager),
     );
-
     this.world.addSystem(new PointerLockSystem(this.world));
 
     const mesh = createBoxMesh(100, 100, 2);
-
     const entity = this.world.createEntity();
     this.world.addComponents(entity, [
+      TTransformBundle,
       new TMouseInputComponent(),
       new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
       new TMaterialComponent(mesh.material),
@@ -72,6 +69,7 @@ class ColliderState extends TGameState {
     // Setup orthographic camera
     const cameraEntity = this.world.createEntity();
     this.world.addComponents(cameraEntity, [
+      TTransformBundle,
       new TCameraComponent({
         type: TProjectionType.Orthographic,
         zNear: 0.1,
@@ -87,7 +85,7 @@ class ColliderState extends TGameState {
 
 const config = {
   states: {
-    game: ColliderState,
+    game: PointerLockState,
   },
   defaultState: 'game',
 };

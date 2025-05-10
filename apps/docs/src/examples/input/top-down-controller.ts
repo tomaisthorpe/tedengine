@@ -14,6 +14,7 @@ import {
   TMouseInputComponent,
   TMouseInputSystem,
   TSystem,
+  TTransformBundle,
 } from '@tedengine/ted';
 import type { TWorld, TEntityQuery, TTexture } from '@tedengine/ted';
 import asteroidTexture from '@assets/asteroid.png';
@@ -82,6 +83,7 @@ class TopDownState extends TGameState {
     this.world.addSystem(new TopDownRotatorSystem(this.world));
     const asteroid = this.world.createEntity();
     this.world.addComponents(asteroid, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       new TSpriteComponent({
         width: 1,

@@ -17,6 +17,7 @@ import {
   TCameraComponent,
   TProjectionType,
   TActiveCameraComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -47,6 +48,7 @@ class SpriteState extends TGameState {
     const animatedSprite = new TAnimatedSpriteComponent(10, 9);
 
     this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(
         new TTransform(
           vec3.fromValues(0, 0, -3),
@@ -61,6 +63,7 @@ class SpriteState extends TGameState {
     ]);
 
     this.world.createEntity([
+      TTransformBundle,
       new TCameraComponent({
         type: TProjectionType.Orthographic,
       }),
@@ -68,8 +71,8 @@ class SpriteState extends TGameState {
       new TActiveCameraComponent(),
     ]);
 
-    const filterSection = engine.debugPanel.addSection('Color Filter', true);
-    filterSection.addInput(
+    const section = engine.debugPanel.addSection('Color Filter', true);
+    section.addInput(
       'Red',
       'range',
       '1',
@@ -82,7 +85,7 @@ class SpriteState extends TGameState {
         step: 0.01,
       },
     );
-    filterSection.addInput(
+    section.addInput(
       'Green',
       'range',
       '1',
@@ -95,7 +98,7 @@ class SpriteState extends TGameState {
         step: 0.01,
       },
     );
-    filterSection.addInput(
+    section.addInput(
       'Blue',
       'range',
       '1',
@@ -108,7 +111,7 @@ class SpriteState extends TGameState {
         step: 0.01,
       },
     );
-    filterSection.addInput(
+    section.addInput(
       'Alpha',
       'range',
       '1',
@@ -122,7 +125,6 @@ class SpriteState extends TGameState {
       },
     );
 
-    const section = engine.debugPanel.addSection('Animation', true);
     section.addButtons('Toggle Animation', {
       label: 'Toggle',
       onClick: () => {

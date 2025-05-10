@@ -13,6 +13,7 @@ import {
   TTransform,
   TTransformComponent,
   TVisibilityComponent,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class SpriteState extends TGameState {
@@ -34,8 +35,8 @@ class SpriteState extends TGameState {
       layer: TSpriteLayer.Foreground_0,
     });
 
-    const asteroid = this.world.createEntity();
-    this.world.addComponents(asteroid, [
+    this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       asteroidSprite,
       new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
@@ -49,8 +50,8 @@ class SpriteState extends TGameState {
       layer: TSpriteLayer.Background_0,
     });
 
-    const crystal = this.world.createEntity();
-    this.world.addComponents(crystal, [
+    this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
       crystalSprite,
       new TTextureComponent(engine.resources.get<TTexture>(crystalTexture)!),

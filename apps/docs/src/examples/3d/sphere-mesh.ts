@@ -15,6 +15,7 @@ import {
   TProjectionType,
   TOrbitCameraSystem,
   TMouseInputSystem,
+  TTransformBundle,
 } from '@tedengine/ted';
 
 class SphereState extends TGameState {
@@ -30,18 +31,18 @@ class SphereState extends TGameState {
     this.world.addSystem(
       new TMouseInputSystem(this.world, engine.inputManager),
     );
-    const sphere = this.world.createEntity();
-
-    const mesh = createSphereMesh(0.5, 12, 12);
-    this.world.addComponents(sphere, [
+    const sphere = createSphereMesh(0.5, 12, 12);
+    this.world.createEntity([
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
-      new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
-      new TMaterialComponent(mesh.material),
+      new TMeshComponent({ source: 'inline', geometry: sphere.geometry }),
+      new TMaterialComponent(sphere.material),
       new TVisibilityComponent(),
     ]);
 
     const camera = this.world.createEntity();
     this.world.addComponents(camera, [
+      TTransformBundle,
       new TTransformComponent(new TTransform(vec3.fromValues(0, 0, 0))),
       new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
       new TActiveCameraComponent(),
