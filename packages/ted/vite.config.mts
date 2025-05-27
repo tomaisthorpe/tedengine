@@ -5,10 +5,15 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 import dts from 'vite-plugin-dts';
 import { joinPathFragments } from '@nx/devkit';
 import { codecovVitePlugin } from '@codecov/vite-plugin';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory name of the current module
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname);
+const workspaceRoot = path.resolve(__dirname, '../..');
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/ted',
-
   plugins: [
     dts({
       entryRoot: 'src',
@@ -16,7 +21,7 @@ export default defineConfig({
     }),
     react(),
     viteTsConfigPaths({
-      root: '../../',
+      root: workspaceRoot,
     }),
     codecovVitePlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
@@ -32,7 +37,7 @@ export default defineConfig({
     format: 'es',
     plugins: () => [
       viteTsConfigPaths({
-        root: '../../',
+        root: workspaceRoot,
       }),
     ],
   },
@@ -41,12 +46,12 @@ export default defineConfig({
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     assetsDir: 'workers',
-    outDir: '../../dist/packages/ted',
+    outDir: joinPathFragments(workspaceRoot, 'dist/packages/ted'),
     reportCompressedSize: true,
     commonjsOptions: { transformMixedEsModules: true },
     lib: {
       // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
+      entry: joinPathFragments(projectRoot, 'src/index.ts'),
       name: 'ted',
       fileName: 'index',
       // Change this to the formats you want to support.
