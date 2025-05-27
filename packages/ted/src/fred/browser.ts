@@ -16,7 +16,7 @@ export default class TBrowser {
     try {
       const canvas = document.createElement('canvas');
       return !!canvas.getContext('webgl2');
-    } catch (e) {
+    } catch {
       return false;
     }
   }
