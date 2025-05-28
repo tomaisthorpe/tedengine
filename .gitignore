@@ -47,5 +47,7 @@ Thumbs.db
 # Generated Docusaurus files
 .docusaurus/
 .cache-loader/
-.cursor/rules/nx-rules.mdc
+
+.vscode/
+.cursor/
 .github/instructions/nx.instructions.md
