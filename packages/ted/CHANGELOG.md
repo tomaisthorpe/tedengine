@@ -1,5 +1,29 @@
 # @tedengine/ted
 
+## 0.14.0
+
+### Minor Changes
+
+- 08bcf5b: Add bundles for creating entities with a set of components
+- 943b3ad: Add bundle component overrides
+- 19369fc: Remove unused update stats
+- 12cd85e: Merge ECS into TWorld
+- cafac80: Add transform bundle
+- d671dab: Add global transforms
+- 5cc2a54: Add support for double nested entities
+- 10ac88d: Update dependencies
+- 54017e1: Add subscriptions to queries
+- 56cbfd0: Add required components field
+- 75eced5: Add priority to systems
+- b25a7a1: Change ShouldRender to VisibilityComponent
+- e614020: Entity query now properly chains 'exclude'
+- 0d67180: Add bundles to world create entity
+
+### Patch Changes
+
+- 0bef178: Fix game resizing incorrectly at low browser heights
+- 1423153: Reduce z-index of debug panel
+
 ## 0.13.0
 
 ### Minor Changes
