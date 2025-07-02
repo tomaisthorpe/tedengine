@@ -11,7 +11,7 @@ export interface IJobAsset {
 export default class TResourceManager {
   private resources = new Map<string, IAsset | IJobAsset>();
 
-  constructor(private jobs: TJobManager) {}
+  constructor(private jobs: TJobManager) { }
 
   /**
    * Checks if a resource is already loaded into the cache
@@ -28,7 +28,10 @@ export default class TResourceManager {
    * Must be loaded, otherwise undefined will be returned.
    */
   public get<T extends IAsset | IJobAsset>(key: string): T | undefined {
-    return this.resources.get(key) as T;
+    const asset = this.resources.get(key);
+    if (asset !== undefined) {
+      return this.resources.get(key) as T;
+    }
   }
 
   /**
@@ -41,7 +44,7 @@ export default class TResourceManager {
    * @returns A promise that resolves to the loaded resource of type T.
    */
   public async load<T extends IAsset | IJobAsset>(
-    type: { new (): T },
+    type: { new(): T },
     key: string,
     config?: unknown,
   ): Promise<T> {
