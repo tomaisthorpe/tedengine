@@ -14,23 +14,23 @@ export interface TEventQueueContextData {
   events: TEventQueue | undefined;
 }
 
-export const TEventQueueContext = React.createContext<TEventQueueContextData>(
-  undefined!,
-);
+export const TEventQueueContext = React.createContext<TEventQueueContextData>({
+  events: undefined,
+});
 
 export interface TGameContextData {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export const TGameContext = React.createContext<TGameContextData>(undefined!);
+export const TGameContext = React.createContext<TGameContextData>({});
 
 export interface TEngineContextData {
   loading: boolean;
 }
 
-export const TEngineContext = React.createContext<TEngineContextData>(
-  undefined!,
-);
+export const TEngineContext = React.createContext<TEngineContextData>({
+  loading: true,
+});
 
 export interface TUIContextData {
   renderingSize: {
@@ -42,4 +42,12 @@ export interface TUIContextData {
   showAudioToggle: boolean;
 }
 
-export const TUIContext = React.createContext<TUIContextData>(undefined!);
+export const TUIContext = React.createContext<TUIContextData>({
+  renderingSize: {
+    width: 0,
+    height: 0,
+  },
+  scaling: 1,
+  showFullscreenToggle: false,
+  showAudioToggle: false,
+});
