@@ -1,15 +1,15 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders ErrorScreen component 1`] = `
 <div>
   <div
-    class="sc-bXdtCk hwBjWM"
+    class="sc-bRKDuR hfEcZr"
   >
     <div>
       It's all gone wrong...try refresh.
     </div>
     <div
-      class="sc-hKDTPf egyGzG"
+      class="sc-hvigdm hpayFD"
     >
       Something went wrong
     </div>
