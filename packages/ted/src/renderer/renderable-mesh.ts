@@ -79,7 +79,11 @@ export default class TRenderableMesh implements IAsset {
     gl.uniform1f(colorProgram.uniforms.uPaletteSize, this.paletteSize);
 
     // Send the m
-    gl.uniformMatrix4fv(colorProgram.uniforms.uMMatrix, false, m);
+    gl.uniformMatrix4fv(
+      colorProgram.uniforms.uMMatrix,
+      false,
+      m as Float32Array,
+    );
 
     const vertexCount = this.indexes.length;
     const type = gl.UNSIGNED_SHORT;

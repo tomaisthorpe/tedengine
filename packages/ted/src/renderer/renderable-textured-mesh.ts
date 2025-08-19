@@ -73,9 +73,16 @@ export default class TRenderableTexturedMesh implements IAsset {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
     // Send the m
-    gl.uniformMatrix4fv(texturedProgram.uniforms.uMMatrix, false, m);
+    gl.uniformMatrix4fv(
+      texturedProgram.uniforms.uMMatrix,
+      false,
+      m as Float32Array,
+    );
 
-    gl.uniform4fv(texturedProgram.uniforms.uColorFilter, colorFilter);
+    gl.uniform4fv(
+      texturedProgram.uniforms.uColorFilter,
+      colorFilter as Float32Array,
+    );
 
     gl.uniform1f(
       texturedProgram.uniforms.uEnableInstanceUVs,

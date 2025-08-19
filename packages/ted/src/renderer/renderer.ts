@@ -375,7 +375,7 @@ export default class TRenderer {
               gl.uniformMatrix4fv(
                 depthMatrixUniformLocation,
                 false,
-                depthTextureMatrix,
+                depthTextureMatrix as Float32Array,
               );
 
               const shadowsEnabledUniformLocation =

@@ -96,7 +96,7 @@ export default class TCameraSystem extends TSystem {
       const cameraSpace = mat4.invert(
         mat4.create(),
         camera.transform.getMatrix(),
-      );
+      ) || mat4.identity(mat4.create());
 
       return mat4.multiply(mat4.create(), projection, cameraSpace);
     }
@@ -115,7 +115,7 @@ export default class TCameraSystem extends TSystem {
     const cameraSpace = mat4.invert(
       mat4.create(),
       camera.transform.getMatrix(),
-    );
+    ) || mat4.identity(mat4.create());
 
     return mat4.multiply(mat4.create(), projection, cameraSpace);
   }
@@ -145,7 +145,7 @@ export default class TCameraSystem extends TSystem {
 }
 
 export function clipToWorldSpace(projectionMatrix: mat4, location: vec2): vec3 {
-  const invertProj = mat4.invert(mat4.create(), projectionMatrix);
+  const invertProj = mat4.invert(mat4.create(), projectionMatrix) || mat4.identity(mat4.create());
 
   const worldspace = vec3.transformMat4(
     vec3.create(),

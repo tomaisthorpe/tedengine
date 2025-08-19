@@ -51,7 +51,7 @@ export default class TPhysicsDebug {
     gl.uniformMatrix4fv(
       program.program.getUniformLocation('uMMatrix')!,
       false,
-      mat4.identity(mat4.create()),
+      mat4.identity(mat4.create()) as Float32Array,
     );
 
     gl.drawArrays(gl.LINES, 0, vertices.length / 3);
