@@ -29,6 +29,7 @@ import type {
 } from './messages';
 import { TMessageTypesEngine } from './messages';
 import { TInputManager } from '../input/input-manager';
+import type { TEngineSystem } from './engine-system';
 
 const TIME_PER_ENGINE_TIME_UPDATE = 1000;
 
@@ -65,6 +66,12 @@ export default class TEngine {
   // todo: temporary
   public mouse?: TMouseLocation;
   public inputManager: TInputManager;
+
+  private engineSystems: TEngineSystem[] = [];
+  private engineSystemsMap: Map<
+    new (...args: any[]) => TEngineSystem,
+    TEngineSystem
+  > = new Map();
 
   // @todo move this somewhere more relevant
   public stats: {
@@ -192,6 +199,11 @@ export default class TEngine {
 
     this.inputManager.update(delta);
 
+    // @todo currently doesn't strictly follow the system priority order
+    for (const system of this.engineSystems) {
+      await system.update(this, delta);
+    }
+
     const endGameStateUpdate =
       this.segmentTimer.startSegment('Game State Update');
     await this.gameState.update(delta);
@@ -270,5 +282,44 @@ export default class TEngine {
     };
 
     this.fredPort.postMessage(message);
+  }
+
+  /**
+   * Add a system to the engine.
+   *
+   * @param system - The system to add.
+   */
+  public addEngineSystem(system: TEngineSystem) {
+    this.engineSystems.push(system);
+    this.engineSystemsMap.set(
+      system.constructor as new (...args: any[]) => TEngineSystem,
+      system,
+    );
+
+    this.engineSystems.sort((a, b) => a.priority - b.priority);
+  }
+
+  /**
+   * Remove a system from the engine.
+   *
+   * @param system - The system to remove.
+   */
+  public removeEngineSystem(system: TEngineSystem) {
+    this.engineSystems = this.engineSystems.filter((s) => s !== system);
+    this.engineSystemsMap.delete(
+      system.constructor as new (...args: any[]) => TEngineSystem,
+    );
+  }
+
+  /**
+   * Get a system from the engine.
+   *
+   * @param systemClass - The class of the system to get.
+   * @returns The system, or undefined if it is not found.
+   */
+  public getEngineSystem<T extends TEngineSystem>(
+    systemClass: new (...args: any[]) => TEngineSystem,
+  ): T | undefined {
+    return this.engineSystemsMap.get(systemClass) as T | undefined;
   }
 }
