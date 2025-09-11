@@ -3,6 +3,7 @@ import { TJobContextTypes } from '../jobs/context-types';
 import TJobManager from '../jobs/job-manager';
 import type { TJobsMessageRelay } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
+import { registerPhysicsJobs } from './jobs';
 import type { TPhysicsOutMessageInit } from './messages';
 import { TPhysicsMessageTypes } from './messages';
 import TRapier3DWorld from './rapier3d-world';
@@ -15,6 +16,8 @@ const jobs = new TJobManager([TJobContextTypes.Physics]);
 jobs.additionalContext = {
   world,
 };
+
+registerPhysicsJobs(jobs);
 
 enginePort.onmessage = async (event: MessageEvent) => {
   const { data } = event;

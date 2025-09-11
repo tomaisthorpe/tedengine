@@ -1,4 +1,5 @@
 import TAudio from '../audio/audio';
+import { registerAudioJobs } from '../audio/jobs';
 import type { TEvent } from '../core/event-queue';
 import TEventQueue from '../core/event-queue';
 import { TMessageTypesCore } from '../core/messages';
@@ -19,6 +20,7 @@ import type {
 } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import type { TFrameParams } from '../renderer/frame-params';
+import { registerRendererJobs } from '../renderer/jobs';
 import TRenderer from '../renderer/renderer';
 import type { TEngineContextData, TGameContextData } from '../ui/context';
 import TBrowser from './browser';
@@ -182,6 +184,9 @@ export default class TFred {
       TJobContextTypes.Renderer,
       TJobContextTypes.Audio,
     ]);
+    registerRendererJobs(this.jobs);
+    registerAudioJobs(this.jobs);
+
     this.resources = new TResourceManager(this.jobs);
 
     this.events = new TEventQueue([this.enginePort]);

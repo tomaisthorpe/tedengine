@@ -1,12 +1,9 @@
 import type TAudio from '../audio/audio';
-import { AudioJobs } from '../audio/jobs';
 import type TGameState from '../core/game-state';
 import type TResourceManager from '../core/resource-manager';
-import { PhysicsJobs } from '../physics/jobs';
 import type { TPhysicsWorld } from '../physics/physics-world';
-import { RendererJobs } from '../renderer/jobs';
 import type TRenderer from '../renderer/renderer';
-import type { TJobContextTypes } from './context-types';
+import { TJobContextTypes } from './context-types';
 
 export interface TJobContext {
   resourceManager: TResourceManager;
@@ -28,10 +25,13 @@ export type TGameStateJobContext = {
   gameState: TGameState;
 };
 
-export type TJobFunc<T> = (ctx: T, ...args: any[]) => Promise<unknown>;
+export type TJobFunc<T, TArgs = unknown, TResult = unknown> = (
+  ctx: T,
+  args: TArgs,
+) => Promise<TResult>;
 
-export interface TJobConfig {
-  requiredContext?: TJobContextTypes;
+export interface TJobConfig<TJobArgs = unknown, TJobResult = unknown>
+  extends TRunJobConfig<TJobArgs, TJobResult> {
   func:
     | TJobFunc<TJobContext>
     | TJobFunc<TRenderJobContext>
@@ -40,20 +40,12 @@ export interface TJobConfig {
     | TJobFunc<TGameStateJobContext>;
 }
 
-export interface TJobConfigs {
-  [key: string]: TJobConfig;
+export interface TRunJobConfig<TJobArgs = unknown, TJobResult = unknown> {
+  name: string;
+  requiredContext: TJobContextTypes;
 }
 
-export const GeneralJobs: { [key: string]: TJobConfig } = {
-  load_text: {
-    func: async (_: TJobContext, text: string) => {
-      console.log('text', text);
-    },
-  },
-};
-
-export const AllJobs: TJobConfigs = {
-  ...RendererJobs,
-  ...AudioJobs,
-  ...PhysicsJobs,
+export const TestingJob: TRunJobConfig<string, string> = {
+  name: 'testing',
+  requiredContext: TJobContextTypes.Engine,
 };

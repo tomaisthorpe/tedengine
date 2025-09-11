@@ -1,5 +1,6 @@
 import { TJobContextTypes } from '../jobs/context-types';
-import type { TJobConfigs, TRenderJobContext } from '../jobs/jobs';
+import TJobManager from '../jobs/job-manager';
+import type { TRenderJobContext, TRunJobConfig } from '../jobs/jobs';
 import TProgram from './program';
 import type { TPaletteIndex } from './renderable-mesh';
 import TRenderableMesh from './renderable-mesh';
@@ -7,10 +8,62 @@ import type { TTextureOptions } from './renderable-texture';
 import TRenderableTexture from './renderable-texture';
 import TRenderableTexturedMesh from './renderable-textured-mesh';
 
-export const RendererJobs: TJobConfigs = {
-  load_program: {
+export const RendererJobLoadProgram: TRunJobConfig<string, string> = {
+  name: 'load_program',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export const RendererJobLoadMeshFromUrl: TRunJobConfig<string, string> = {
+  name: 'load_mesh_from_url',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export const RendererJobLoadMesh: TRunJobConfig<
+  {
+    positions: number[];
+    normals: number[];
+    indexes: number[];
+    colors: number[];
+    paletteIndex: TPaletteIndex;
+  },
+  string
+> = {
+  name: 'load_mesh',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export const RendererJobLoadTexturedMeshFromUrl: TRunJobConfig<string, string> =
+  {
+    name: 'load_textured_mesh_from_url',
     requiredContext: TJobContextTypes.Renderer,
-    func: async (ctx: TRenderJobContext, shaderLocation: string) => {
+  };
+
+export const RendererJobLoadTexturedMesh: TRunJobConfig<
+  {
+    positions: number[];
+    normals: number[];
+    indexes: number[];
+    uvs: number[];
+  },
+  string
+> = {
+  name: 'load_textured_mesh',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export const RendererJobLoadTextureFromImageBitmap: TRunJobConfig<
+  { image: ImageBitmap; config?: TTextureOptions },
+  string
+> = {
+  name: 'load_texture_from_imagebitmap',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export function registerRendererJobs(jobManager: TJobManager) {
+  // @todo can we make these types implicit somehow?
+  jobManager.registerJob<TRenderJobContext, string, string>(
+    RendererJobLoadProgram,
+    async (ctx: TRenderJobContext, shaderLocation: string) => {
       const program = await ctx.resourceManager.load<TProgram>(
         TProgram,
         shaderLocation,
@@ -21,12 +74,13 @@ export const RendererJobs: TJobConfigs = {
         ctx.renderer.registerProgram(program);
       }
 
-      return program.uuid;
+      return program.uuid!;
     },
-  },
-  load_mesh_from_url: {
-    requiredContext: TJobContextTypes.Renderer,
-    func: async (ctx: TRenderJobContext, meshLocation: string) => {
+  );
+
+  jobManager.registerJob<TRenderJobContext, string, string>(
+    RendererJobLoadMeshFromUrl,
+    async (ctx: TRenderJobContext, meshLocation: string) => {
       const mesh = await ctx.resourceManager.load<TRenderableMesh>(
         TRenderableMesh,
         meshLocation,
@@ -38,18 +92,36 @@ export const RendererJobs: TJobConfigs = {
 
       return mesh.uuid;
     },
-  },
-  load_mesh: {
-    requiredContext: TJobContextTypes.Renderer,
-    func: async (
+  );
+
+  jobManager.registerJob<
+    TRenderJobContext,
+    {
+      positions: number[];
+      normals: number[];
+      indexes: number[];
+      colors: number[];
+      paletteIndex: TPaletteIndex;
+    },
+    string
+  >(
+    RendererJobLoadMesh,
+    async (
       ctx: TRenderJobContext,
-      positions: number[],
-      normals: number[],
-      indexes: number[],
-      colors: number[],
-      paletteIndex: TPaletteIndex,
+      {
+        positions,
+        normals,
+        indexes,
+        colors,
+        paletteIndex,
+      }: {
+        positions: number[];
+        normals: number[];
+        indexes: number[];
+        colors: number[];
+        paletteIndex: TPaletteIndex;
+      },
     ) => {
-      // todo: ensure resource manager knows this mesh is loaded?
       const mesh = new TRenderableMesh();
       mesh.positions = positions;
       mesh.normals = normals;
@@ -61,10 +133,11 @@ export const RendererJobs: TJobConfigs = {
 
       return mesh.uuid;
     },
-  },
-  load_textured_mesh_from_url: {
-    requiredContext: TJobContextTypes.Renderer,
-    func: async (ctx: TRenderJobContext, meshLocation: string) => {
+  );
+
+  jobManager.registerJob<TRenderJobContext, string, string>(
+    RendererJobLoadTexturedMeshFromUrl,
+    async (ctx: TRenderJobContext, meshLocation: string) => {
       const mesh = await ctx.resourceManager.load<TRenderableTexturedMesh>(
         TRenderableTexturedMesh,
         meshLocation,
@@ -76,17 +149,33 @@ export const RendererJobs: TJobConfigs = {
 
       return mesh.uuid;
     },
-  },
-  load_textured_mesh: {
-    requiredContext: TJobContextTypes.Renderer,
-    func: async (
+  );
+
+  jobManager.registerJob<
+    TRenderJobContext,
+    {
+      positions: number[];
+      normals: number[];
+      indexes: number[];
+      uvs: number[];
+    },
+    string
+  >(
+    RendererJobLoadTexturedMesh,
+    async (
       ctx: TRenderJobContext,
-      positions: number[],
-      normals: number[],
-      indexes: number[],
-      uvs: number[],
+      {
+        positions,
+        normals,
+        indexes,
+        uvs,
+      }: {
+        positions: number[];
+        normals: number[];
+        indexes: number[];
+        uvs: number[];
+      },
     ) => {
-      // todo: ensure resource manager knows this mesh is loaded?
       const mesh = new TRenderableTexturedMesh();
       mesh.positions = positions;
       mesh.normals = normals;
@@ -97,20 +186,22 @@ export const RendererJobs: TJobConfigs = {
 
       return mesh.uuid;
     },
-  },
-  load_texture_from_imagebitmap: {
-    requiredContext: TJobContextTypes.Renderer,
-    func: async (
+  );
+
+  jobManager.registerJob<
+    TRenderJobContext,
+    { image: ImageBitmap; config?: TTextureOptions },
+    string
+  >(
+    RendererJobLoadTextureFromImageBitmap,
+    async (
       ctx: TRenderJobContext,
-      image: ImageBitmap,
-      config?: TTextureOptions,
+      { image, config }: { image: ImageBitmap; config?: TTextureOptions },
     ) => {
       const texture = new TRenderableTexture();
       texture.load(ctx.renderer.context(), image, config);
-
       ctx.renderer.registerTexture(texture);
-
       return texture.uuid;
     },
-  },
-};
+  );
+}
