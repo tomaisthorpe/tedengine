@@ -106,6 +106,13 @@ export default class TEngine {
       [TJobContextTypes.Renderer, TJobContextTypes.Audio],
       this.fredPort,
     );
+
+    // @todo what if game state is not set?
+    this.jobs.setRelay(
+      [TJobContextTypes.GameState, TJobContextTypes.Physics],
+      () => this.gameState.current()!.jobs,
+    );
+
     this.resources = new TResourceManager(this.jobs);
 
     this.jobs.additionalContext = {

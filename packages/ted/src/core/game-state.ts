@@ -62,10 +62,19 @@ export default class TGameState {
   public jobs: TJobManager;
 
   constructor(protected engine: TEngine) {
-    this.jobs = new TJobManager([TJobContextTypes.GameState], engine.jobs);
+    this.jobs = new TJobManager([TJobContextTypes.GameState]);
     this.jobs.additionalContext = {
       gameState: this,
     };
+
+    this.jobs.setRelay(
+      [
+        TJobContextTypes.Engine,
+        TJobContextTypes.Audio,
+        TJobContextTypes.Renderer,
+      ],
+      () => engine.jobs,
+    );
   }
 
   /**
@@ -77,10 +86,7 @@ export default class TGameState {
    * **DO NOT OVERRIDE!** Add [[`onUpdate`]] instead.
    * @hidden
    */
-  public async update(
-    engine: TEngine,
-    delta: number,
-  ): Promise<void> {
+  public async update(engine: TEngine, delta: number): Promise<void> {
     this.events.update();
 
     if (!this.world) return;

@@ -198,7 +198,14 @@ export default class TFred {
       audio: this.audio,
     };
 
-    this.jobs.setRelay([TJobContextTypes.Engine], this.enginePort);
+    this.jobs.setRelay(
+      [
+        TJobContextTypes.Engine,
+        TJobContextTypes.GameState,
+        TJobContextTypes.Physics,
+      ],
+      this.enginePort,
+    );
 
     this.update();
 

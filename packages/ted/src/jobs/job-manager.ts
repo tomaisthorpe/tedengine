@@ -28,7 +28,14 @@ export interface TWrappedJobResult {
   result: unknown;
 }
 
-export type TJobRelay = (job: TWrappedJob) => void;
+export type TJobRelay = (
+  job: TJob,
+  transferList: Transferable[],
+) => Promise<unknown>;
+
+export interface TJobProcessor {
+  do: (job: TJob, transferList: Transferable[]) => Promise<unknown>;
+}
 
 export default class TJobManager {
   private relays: { [key: string]: TJobRelay } = {};
@@ -43,10 +50,7 @@ export default class TJobManager {
     | TPhysicsJobContext
     | TGameStateJobContext;
 
-  constructor(
-    contexts: TJobContextTypes[],
-    private parent?: TJobManager,
-  ) {
+  constructor(contexts: TJobContextTypes[]) {
     for (const context of contexts) {
       this.canProcess[context] = true;
     }
@@ -58,19 +62,49 @@ export default class TJobManager {
    * If a relay function already exists for a given context, it will be replaced.
    *
    * @param contexts - An array of job contexts.
-   * @param port - The message port to which the relay function will send the message.
+   * @param portOrManager - The message port or job manager to which the relay function will send the message.
    */
-  setRelay(contexts: TJobContextTypes[], port: MessagePort) {
-    const func = (wrappedJob: TWrappedJob) => {
-      const message: TJobsMessageRelay = {
-        type: TMessageTypesJobs.RELAY,
-        wrappedJob,
-      };
-      port.postMessage(message, wrappedJob.transferList || []);
-    };
+  setRelay(
+    contexts: TJobContextTypes[],
+    portOrManager: MessagePort | (() => TJobProcessor),
+  ) {
+    if (portOrManager instanceof MessagePort) {
+      const func = (
+        job: TJob,
+        transferList: Transferable[],
+      ): Promise<unknown> => {
+        return new Promise((resolve) => {
+          const message: TJobsMessageRelay = {
+            type: TMessageTypesJobs.RELAY,
+            wrappedJob: {
+              uuid: uuidv4(),
+              job,
+              transferList,
+            },
+          };
+          this.relayedJobs[message.wrappedJob.uuid] = resolve;
 
-    for (const context of contexts) {
-      this.relays[context] = func;
+          portOrManager.postMessage(
+            message,
+            message.wrappedJob.transferList || [],
+          );
+        });
+      };
+
+      for (const context of contexts) {
+        this.relays[context] = func;
+      }
+    } else {
+      const func = (
+        job: TJob,
+        transferList: Transferable[],
+      ): Promise<unknown> => {
+        return portOrManager().do(job, transferList || []);
+      };
+
+      for (const context of contexts) {
+        this.relays[context] = func;
+      }
     }
   }
 
@@ -95,21 +129,14 @@ export default class TJobManager {
 
       // If we can't process it, then check if we have a registered relay for it
       if (this.relays[config.requiredContext || TJobContextTypes.Engine]) {
-        const uuid = uuidv4();
-        this.relayedJobs[uuid] = resolve;
-
-        this.relays[config.requiredContext || TJobContextTypes.Engine]({
-          uuid,
-          job,
-          transferList,
-        });
+        resolve(
+          (await this.relays[config.requiredContext || TJobContextTypes.Engine](
+            job,
+            transferList,
+          )) as T,
+        );
 
         return;
-      }
-
-      // If we still can't process it, pass onto parent job manager
-      if (this.parent) {
-        return await this.parent.do<T>(job, transferList);
       }
 
       reject(new Error(`Job ${job.type} cannot be processed`));
