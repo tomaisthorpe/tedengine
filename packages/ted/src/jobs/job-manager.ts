@@ -1,25 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
-import { TJobContextTypes } from './context-types';
+import type { TJobContextTypes } from './context-types';
 import type {
   TAudioJobContext,
+  TContextTypeMap,
   TGameStateJobContext,
   TJobContext,
   TJobFunc,
   TPhysicsJobContext,
   TRenderJobContext,
+  TJobConfig,
 } from './jobs';
-import { AllJobs } from './jobs';
 import type { TJobsMessageRelay, TJobsMessageRelayResult } from './messages';
 import { TMessageTypesJobs } from './messages';
 
-export interface TJob {
+export interface TJob<TJobArgs = unknown> {
   type: string;
-  args?: unknown[];
+  args?: TJobArgs;
 }
 
-export interface TWrappedJob {
+export interface TWrappedJob<TJobArgs = unknown> {
   uuid: string;
-  job: TJob;
+  job: TJobConfig<TJobContextTypes, TJobArgs>;
+  args: TJobArgs;
   transferList: Transferable[];
 }
 
@@ -28,18 +30,25 @@ export interface TWrappedJobResult {
   result: unknown;
 }
 
-export type TJobRelay = (
-  job: TJob,
+export type TJobRelay<TJobArgs = unknown> = (
+  job: TJobConfig<TJobContextTypes, TJobArgs, unknown>,
+  args: TJobArgs,
   transferList: Transferable[],
 ) => Promise<unknown>;
 
 export interface TJobProcessor {
-  do: (job: TJob, transferList: Transferable[]) => Promise<unknown>;
+  do: (
+    job: TJobConfig<TJobContextTypes, unknown, unknown>,
+    args: unknown,
+    transferList: Transferable[],
+  ) => Promise<unknown>;
 }
 
 export default class TJobManager {
   private relays: { [key: string]: TJobRelay } = {};
   private canProcess: { [key: string]: boolean } = {};
+
+  private jobs: { [key: string]: TJobFunc<any, any, any> } = {};
 
   private relayedJobs: { [key: string]: (_: any) => void } = {};
 
@@ -56,6 +65,17 @@ export default class TJobManager {
     }
   }
 
+  registerJob<
+    TContext extends TJobContextTypes = TJobContextTypes,
+    TJobArgs = unknown,
+    TJobResult = unknown,
+  >(
+    config: TJobConfig<TContext, TJobArgs, TJobResult>,
+    func: TJobFunc<TContextTypeMap[TContext], TJobArgs, TJobResult>,
+  ) {
+    this.jobs[config.name] = func;
+  }
+
   /**
    * Set relay function for the specified job contexts.
    * The relay function sends a message containing the wrapped job to the specified message port.
@@ -70,7 +90,8 @@ export default class TJobManager {
   ) {
     if (portOrManager instanceof MessagePort) {
       const func = (
-        job: TJob,
+        job: TJobConfig,
+        args: unknown,
         transferList: Transferable[],
       ): Promise<unknown> => {
         return new Promise((resolve) => {
@@ -79,6 +100,7 @@ export default class TJobManager {
             wrappedJob: {
               uuid: uuidv4(),
               job,
+              args,
               transferList,
             },
           };
@@ -96,10 +118,11 @@ export default class TJobManager {
       }
     } else {
       const func = (
-        job: TJob,
+        job: TJobConfig<TJobContextTypes, unknown, unknown>,
+        args: unknown,
         transferList: Transferable[],
       ): Promise<unknown> => {
-        return portOrManager().do(job, transferList || []);
+        return portOrManager().do(job, args, transferList || []);
       };
 
       for (const context of contexts) {
@@ -109,47 +132,52 @@ export default class TJobManager {
   }
 
   // @todo jobs don't currently ever reject
-  public do<T>(job: TJob, transferList: Transferable[] = []): Promise<T> {
+  public do<TJobArgs, TJobResult>(
+    job: TJobConfig<TJobContextTypes, TJobArgs, TJobResult>,
+    args: TJobArgs,
+    transferList: Transferable[] = [],
+  ): Promise<TJobResult> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       // Check if we can process this job
-      const config = AllJobs[job.type];
-
-      const args = job.args || [];
+      const func = this.jobs[job.name];
 
       // First check if we can process the job.
-      // If required context is not set, it's an engine job
-      if (this.canProcess[config.requiredContext || TJobContextTypes.Engine]) {
-        // TODO sort this typing using generics instead
-        const func = config.func as TJobFunc<typeof this.additionalContext>;
-        const result = await func.call(this, this.additionalContext, ...args);
-        resolve(result as T);
+      if (this.canProcess[job.requiredContext]) {
+        // @todo can we make this more type safe?
+        const result = await func.call(this, this.additionalContext, args);
+        resolve(result as TJobResult);
         return;
       }
 
       // If we can't process it, then check if we have a registered relay for it
-      if (this.relays[config.requiredContext || TJobContextTypes.Engine]) {
+      if (this.relays[job.requiredContext]) {
         resolve(
-          (await this.relays[config.requiredContext || TJobContextTypes.Engine](
+          (await this.relays[job.requiredContext](
             job,
+            args,
             transferList,
-          )) as T,
+          )) as TJobResult,
         );
 
         return;
       }
 
-      reject(new Error(`Job ${job.type} cannot be processed`));
+      reject(new Error(`Job ${job.name} cannot be processed`));
     });
   }
 
   public async doRelayedJob(
-    wrappedJob: TWrappedJob,
+    wrappedJob: TWrappedJob<unknown>,
     port: {
       postMessage: (result: TJobsMessageRelayResult) => void;
     },
   ) {
-    const result = await this.do(wrappedJob.job, []);
+    const result = await this.do(
+      wrappedJob.job,
+      wrappedJob.args,
+      wrappedJob.transferList,
+    );
 
     const wrappedResult: TWrappedJobResult = {
       uuid: wrappedJob.uuid,

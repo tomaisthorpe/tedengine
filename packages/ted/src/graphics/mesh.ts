@@ -1,6 +1,10 @@
 import type { IJobAsset } from '../core/resource-manager';
 import type TEngine from '../engine/engine';
 import type TJobManager from '../jobs/job-manager';
+import {
+  RendererJobLoadMesh,
+  RendererJobLoadMeshFromUrl,
+} from '../renderer/jobs';
 import type { TPaletteIndex } from '../renderer/renderable-mesh';
 
 export default class TMesh implements IJobAsset {
@@ -8,10 +12,7 @@ export default class TMesh implements IJobAsset {
 
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {
     // Load the mesh on the renderer thread
-    const result = await jobs.do<string>({
-      type: 'load_mesh_from_url',
-      args: [url],
-    });
+    const result = await jobs.do(RendererJobLoadMeshFromUrl, url);
 
     this.uuid = result;
   }
@@ -22,11 +23,14 @@ export default class TMesh implements IJobAsset {
     normals: number[],
     indexes: number[],
     colors: number[],
-    palette: TPaletteIndex,
+    paletteIndex: TPaletteIndex,
   ): Promise<void> {
-    const result = await engine.jobs.do<string>({
-      type: 'load_mesh',
-      args: [positions, normals, indexes, colors, palette],
+    const result = await engine.jobs.do(RendererJobLoadMesh, {
+      positions,
+      normals,
+      indexes,
+      colors,
+      paletteIndex,
     });
 
     this.uuid = result;

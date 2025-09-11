@@ -1,19 +1,40 @@
 import { TJobContextTypes } from '../jobs/context-types';
-import type { TJobConfigs, TAudioJobContext } from '../jobs/jobs';
+import type TJobManager from '../jobs/job-manager';
+import type { TAudioJobContext, TJobConfig } from '../jobs/jobs';
 
-export const AudioJobs: TJobConfigs = {
-  load_sound_from_url: {
-    requiredContext: TJobContextTypes.Audio,
-    func: async (ctx: TAudioJobContext, url: string): Promise<string> => {
+export const AudioJobLoadSoundFromUrl: TJobConfig<
+  TJobContextTypes.Audio,
+  string,
+  string
+> = {
+  name: 'load_sound_from_url',
+  requiredContext: TJobContextTypes.Audio,
+};
+
+export const AudioJobPlaySound: TJobConfig<
+  TJobContextTypes.Audio,
+  { uuid: string; volume: number },
+  void
+> = {
+  name: 'play_sound',
+  requiredContext: TJobContextTypes.Audio,
+};
+
+export function registerAudioJobs(jobManager: TJobManager) {
+  jobManager.registerJob(
+    AudioJobLoadSoundFromUrl,
+    async (ctx: TAudioJobContext, url: string): Promise<string> => {
       const uuid = await ctx.audio.loadSound(url);
-
       return uuid;
     },
-  },
-  play_sound: {
-    requiredContext: TJobContextTypes.Audio,
-    func: async (ctx: TAudioJobContext, uuid: string, volume: number) => {
+  );
+  jobManager.registerJob(
+    AudioJobPlaySound,
+    async (
+      ctx: TAudioJobContext,
+      { uuid, volume }: { uuid: string; volume: number },
+    ) => {
       ctx.audio.play(uuid, volume);
     },
-  },
-};
+  );
+}

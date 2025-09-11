@@ -1,13 +1,9 @@
 import type TAudio from '../audio/audio';
-import { AudioJobs } from '../audio/jobs';
 import type TGameState from '../core/game-state';
 import type TResourceManager from '../core/resource-manager';
-import { PhysicsJobs } from '../physics/jobs';
 import type { TPhysicsWorld } from '../physics/physics-world';
-import { RendererJobs } from '../renderer/jobs';
 import type TRenderer from '../renderer/renderer';
 import type { TJobContextTypes } from './context-types';
-
 export interface TJobContext {
   resourceManager: TResourceManager;
 }
@@ -28,32 +24,29 @@ export type TGameStateJobContext = {
   gameState: TGameState;
 };
 
-export type TJobFunc<T> = (ctx: T, ...args: any[]) => Promise<unknown>;
+export type TJobFunc<T, TArgs = unknown, TResult = unknown> = (
+  ctx: T,
+  args: TArgs,
+) => Promise<TResult>;
 
-export interface TJobConfig {
-  requiredContext?: TJobContextTypes;
-  func:
-    | TJobFunc<TJobContext>
-    | TJobFunc<TRenderJobContext>
-    | TJobFunc<TAudioJobContext>
-    | TJobFunc<TPhysicsJobContext>
-    | TJobFunc<TGameStateJobContext>;
-}
-
-export interface TJobConfigs {
-  [key: string]: TJobConfig;
-}
-
-export const GeneralJobs: { [key: string]: TJobConfig } = {
-  load_text: {
-    func: async (_: TJobContext, text: string) => {
-      console.log('text', text);
-    },
-  },
+// Type mapping from context enum to actual context types
+export type TContextTypeMap = {
+  [TJobContextTypes.Engine]: TJobContext;
+  [TJobContextTypes.Renderer]: TRenderJobContext;
+  [TJobContextTypes.Audio]: TAudioJobContext;
+  [TJobContextTypes.Physics]: TPhysicsJobContext;
+  [TJobContextTypes.GameState]: TGameStateJobContext;
 };
 
-export const AllJobs: TJobConfigs = {
-  ...RendererJobs,
-  ...AudioJobs,
-  ...PhysicsJobs,
-};
+export interface TJobConfig<
+  TContext extends TJobContextTypes = TJobContextTypes,
+  TJobArgs = unknown,
+  TJobResult = unknown,
+> {
+  name: string;
+  requiredContext: TContext;
+  // These phantom types ensure type safety when using the job config
+  readonly _jobArgs?: TJobArgs;
+  readonly _jobResult?: TJobResult;
+  readonly _context?: TContextTypeMap[TContext];
+}

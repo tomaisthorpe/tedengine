@@ -10,6 +10,7 @@ import type {
   TRenderJobContext,
   TGameStateJobContext,
 } from '../jobs/jobs';
+import { RendererJobLoadTextureFromImageBitmap } from '../renderer/jobs';
 
 function hasResourceManager(
   additionalContext:
@@ -58,13 +59,10 @@ export default class TTexture implements IJobAsset {
       throw new Error('image not loaded');
     }
 
-    const result = await jobs.do<string>(
-      {
-        type: 'load_texture_from_imagebitmap',
-        args: [image.image, { filter: this.filter }],
-      },
-      [image.image],
-    );
+    const result = await jobs.do(RendererJobLoadTextureFromImageBitmap, {
+      image: image.image,
+      config: { filter: this.filter },
+    });
 
     this.uuid = result;
   }
@@ -78,13 +76,10 @@ export default class TTexture implements IJobAsset {
       this._filter = options.filter;
     }
 
-    const result = await jobs.do<string>(
-      {
-        type: 'load_texture_from_imagebitmap',
-        args: [image, options],
-      },
-      [image],
-    );
+    const result = await jobs.do(RendererJobLoadTextureFromImageBitmap, {
+      image: image,
+      config: options,
+    });
 
     this.uuid = result;
   }

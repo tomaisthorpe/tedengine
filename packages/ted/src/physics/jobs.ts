@@ -1,6 +1,6 @@
 import type { vec3 } from 'gl-matrix';
 import { TJobContextTypes } from '../jobs/context-types';
-import type { TJobConfigs, TPhysicsJobContext } from '../jobs/jobs';
+import type { TPhysicsJobContext, TJobConfig } from '../jobs/jobs';
 import type {
   TPhysicsQueryOptions,
   TPhysicsQueryLineResult,
@@ -17,6 +17,7 @@ import type {
   TPhysicsStateChange,
 } from './state-changes';
 import { TPhysicsStateChangeType } from './state-changes';
+import type TJobManager from '../jobs/job-manager';
 
 export interface TPhysicsSimulateStepResult {
   bodies: TPhysicsBody[];
@@ -25,38 +26,110 @@ export interface TPhysicsSimulateStepResult {
   debug?: TPhysicsWorldDebug;
 }
 
-export const PhysicsJobs: TJobConfigs = {
-  query_line: {
-    requiredContext: TJobContextTypes.Physics,
-    func: async (
+export const PhysicsJobQueryLine: TJobConfig<
+  TJobContextTypes.Physics,
+  {
+    from: vec3;
+    to: vec3;
+    options?: TPhysicsQueryOptions;
+  },
+  TPhysicsQueryLineResult[]
+> = {
+  name: 'query_line',
+  requiredContext: TJobContextTypes.Physics,
+};
+
+export const PhysicsJobQueryArea: TJobConfig<
+  TJobContextTypes.Physics,
+  {
+    from: vec3;
+    to: vec3;
+    options?: TPhysicsQueryOptions;
+  },
+  TPhysicsQueryAreaResult[]
+> = {
+  name: 'query_area',
+  requiredContext: TJobContextTypes.Physics,
+};
+
+export const PhysicsJobCreateWorld: TJobConfig<
+  TJobContextTypes.Physics,
+  TWorldConfig,
+  void
+> = {
+  name: 'create_world',
+  requiredContext: TJobContextTypes.Physics,
+};
+
+export const PhysicsJobSimulateStep: TJobConfig<
+  TJobContextTypes.Physics,
+  {
+    delta: number;
+    newBodies: TPhysicsRegisterBody[];
+    removeBodies: TPhysicsRemoveBody[];
+    stateChanges: TPhysicsStateChange[];
+    debug?: boolean;
+  },
+  TPhysicsSimulateStepResult
+> = {
+  name: 'simulate_step',
+  requiredContext: TJobContextTypes.Physics,
+};
+
+export function registerPhysicsJobs(jobManager: TJobManager) {
+  jobManager.registerJob(
+    PhysicsJobQueryLine,
+    async (
       ctx: TPhysicsJobContext,
-      from: vec3,
-      to: vec3,
-      options?: TPhysicsQueryOptions,
+      {
+        from,
+        to,
+        options,
+      }: {
+        from: vec3;
+        to: vec3;
+        options?: TPhysicsQueryOptions;
+      },
     ): Promise<TPhysicsQueryLineResult[]> => {
       return ctx.world.queryLine(from, to, options);
     },
-  },
-  query_area: {
-    requiredContext: TJobContextTypes.Physics,
-    func: async (
+  );
+
+  jobManager.registerJob(
+    PhysicsJobQueryArea,
+    async (
       ctx: TPhysicsJobContext,
-      from: vec3,
-      to: vec3,
-      options?: TPhysicsQueryOptions,
+      {
+        from,
+        to,
+        options,
+      }: {
+        from: vec3;
+        to: vec3;
+        options?: TPhysicsQueryOptions;
+      },
     ): Promise<TPhysicsQueryAreaResult[]> => {
       return ctx.world.queryArea(from, to, options);
     },
-  },
-  simulate_step: {
-    requiredContext: TJobContextTypes.Physics,
-    func: async (
+  );
+
+  jobManager.registerJob(
+    PhysicsJobSimulateStep,
+    async (
       ctx: TPhysicsJobContext,
-      delta: number,
-      newBodies: TPhysicsRegisterBody[],
-      removeBodies: TPhysicsRemoveBody[],
-      stateChanges: TPhysicsStateChange[],
-      debug?: boolean,
+      {
+        delta,
+        newBodies,
+        removeBodies,
+        stateChanges,
+        debug,
+      }: {
+        delta: number;
+        newBodies: TPhysicsRegisterBody[];
+        removeBodies: TPhysicsRemoveBody[];
+        stateChanges: TPhysicsStateChange[];
+        debug?: boolean;
+      },
     ): Promise<TPhysicsSimulateStepResult> => {
       const now = performance.now();
 
@@ -88,18 +161,15 @@ export const PhysicsJobs: TJobConfigs = {
         stepElapsedTime: performance.now() - now,
       };
     },
-  },
+  );
 
-  create_world: {
-    requiredContext: TJobContextTypes.Physics,
-    func: async (
-      ctx: TPhysicsJobContext,
-      config: TWorldConfig,
-    ): Promise<void> => {
+  jobManager.registerJob(
+    PhysicsJobCreateWorld,
+    async (ctx: TPhysicsJobContext, config: TWorldConfig): Promise<void> => {
       await ctx.world.create(config);
     },
-  },
-};
+  );
+}
 
 function applyStateChange(
   world: TPhysicsWorld,

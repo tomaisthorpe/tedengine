@@ -3,8 +3,6 @@ import type TEngine from '../engine/engine';
 import type {
   TPhysicsBodyOptions,
   TPhysicsQueryOptions,
-  TPhysicsQueryLineResult,
-  TPhysicsQueryAreaResult,
   TPhysicsWorldDebug,
 } from '../physics/physics-world';
 import type { TSerializedLighting } from '../renderer/frame-params';
@@ -29,7 +27,13 @@ import type TJobManager from '../jobs/job-manager';
 import type { TJobsMessageRelayResult } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import type TGameState from './game-state';
-import type { TPhysicsSimulateStepResult } from '../physics/jobs';
+import {
+  PhysicsJobCreateWorld,
+  PhysicsJobQueryArea,
+  PhysicsJobQueryLine,
+  PhysicsJobSimulateStep,
+  type TPhysicsSimulateStepResult,
+} from '../physics/jobs';
 import type { TComponent, TComponentConstructor } from './component';
 import { TComponentContainer } from './component';
 import { TEntityQuery } from './entity-query';
@@ -295,7 +299,7 @@ export default class TWorld {
    * Sends the world config once the worker has been created
    */
   private async setupWorld() {
-    await this.jobs.do<void>({ type: 'create_world', args: [this.config] });
+    await this.jobs.do(PhysicsJobCreateWorld, this.config);
 
     if (this.onCreatedResolve) {
       this.onCreatedResolve();
@@ -315,9 +319,12 @@ export default class TWorld {
     this.queuedRemoveBodies = [];
     this.queuedStateChanges = [];
 
-    const result = await this.jobs.do<TPhysicsSimulateStepResult>({
-      type: 'simulate_step',
-      args: [delta, newBodies, removeBodies, stateChanges, this.physicsDebug],
+    const result = await this.jobs.do(PhysicsJobSimulateStep, {
+      delta,
+      newBodies,
+      removeBodies,
+      stateChanges,
+      debug: this.physicsDebug,
     });
 
     this.lastPhysicsDebug = result.debug;
@@ -430,10 +437,11 @@ export default class TWorld {
     to: vec3,
     options?: TPhysicsQueryOptions,
   ): Promise<TWorldQueryLineResult[]> {
-    const hits = (await this.jobs.do({
-      type: 'query_line',
-      args: [from, to, options],
-    })) as TPhysicsQueryLineResult[];
+    const hits = await this.jobs.do(PhysicsJobQueryLine, {
+      from,
+      to,
+      options,
+    });
 
     const result: TWorldQueryLineResult[] = [];
 
@@ -452,10 +460,11 @@ export default class TWorld {
     to: vec3,
     options?: TPhysicsQueryOptions,
   ): Promise<TWorldQueryAreaResult[]> {
-    const hits = (await this.jobs.do({
-      type: 'query_area',
-      args: [from, to, options],
-    })) as TPhysicsQueryAreaResult[];
+    const hits = await this.jobs.do(PhysicsJobQueryArea, {
+      from,
+      to,
+      options,
+    });
 
     const result: TWorldQueryAreaResult[] = [];
 
