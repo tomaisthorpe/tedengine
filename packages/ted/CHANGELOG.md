@@ -1,5 +1,20 @@
 # @tedengine/ted
 
+## 0.15.0
+
+### Minor Changes
+
+- f5ca7a3: Correctly return undefined in resource manager
+- f0a8587: Add ability to register jobs and improve job typing
+- 26ade4a: Add defaults for UI contexts
+- 18357e1: Relay jobs from UI all the way to the game state
+- 1ef9e10: Update dependencies
+- e689fdf: Add engine systems for persist systems
+
+### Patch Changes
+
+- 9d04af1: Update gl-matrix to 3.4.4
+
 ## 0.14.0
 
 ### Minor Changes
