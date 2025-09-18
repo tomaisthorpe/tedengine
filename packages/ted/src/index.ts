@@ -32,6 +32,12 @@ export * from './core/game-state';
 
 export { default as TGameStateManager } from './core/game-state-manager';
 
+export { default as TJobManager } from './jobs/job-manager';
+export * from './jobs/job-manager';
+export * from './jobs/jobs';
+export * from './jobs/messages';
+export * from './jobs/context-types';
+
 export * from './components';
 export * from './components/global-transform';
 export * from './core/component';
@@ -52,6 +58,7 @@ export * from './debug/segment-timer';
 export * from './engine/config';
 export { default as TEngine } from './engine/engine';
 export * from './engine/engine';
+export * from './engine/engine-system';
 
 export * from './fred/events';
 export { default as TFred } from './fred/fred';
