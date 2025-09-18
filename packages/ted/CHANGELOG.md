@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.15.1
+
+### Patch Changes
+
+- dd8a2ee: Export missing job types
+
 ## 0.15.0
 
 ### Minor Changes
