@@ -133,11 +133,6 @@ export function registerPhysicsJobs(jobManager: TJobManager) {
     ): Promise<TPhysicsSimulateStepResult> => {
       const now = performance.now();
 
-      // Remove bodies
-      for (const body of removeBodies) {
-        ctx.world.removeBody(body.uuid);
-      }
-
       // Add new bodies
       for (const body of newBodies) {
         ctx.world.addBody(
@@ -152,6 +147,11 @@ export function registerPhysicsJobs(jobManager: TJobManager) {
       // Apply state changes
       for (const stateChange of stateChanges) {
         applyStateChange(ctx.world, stateChange);
+      }
+
+      // Remove bodies last incase they are referenced in the state changes
+      for (const body of removeBodies) {
+        ctx.world.removeBody(body.uuid);
       }
 
       const worldState = ctx.world.step(delta, debug);
