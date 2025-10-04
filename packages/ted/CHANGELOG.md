@@ -1,5 +1,16 @@
 # @tedengine/ted
 
+## 0.15.2
+
+### Patch Changes
+
+- 384a708: Remove bodies after state changes
+- 697cfb7: Clear input states on window blur
+- 9c24a2d: Fix physics bodies not being removed
+- d5ec3f6: Allow setting isTrigger to false during update body options
+- 41d9aa6: Fix aspect ratio not working in fullscreen mode
+- 646aa76: Export physics world types
+
 ## 0.15.1
 
 ### Patch Changes
