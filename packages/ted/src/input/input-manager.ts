@@ -1,5 +1,6 @@
 import type TEventQueue from '../core/event-queue';
-import { TEventTypesWindow, TWindowBlurEvent } from '../fred/events';
+import { TEventTypesWindow } from '../fred/events';
+import type { TWindowBlurEvent } from '../fred/events';
 import type {
   TKeyDownEvent,
   TKeyUpEvent,

@@ -100,6 +100,7 @@ export * from './physics/colliders';
 export * from './physics/events';
 export * from './physics/rigid-body-component';
 export * from './physics/physics-system';
+export * from './physics/physics-world';
 
 export * from './renderer/events';
 export { default as TProgram } from './renderer/program';
