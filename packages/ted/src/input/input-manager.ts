@@ -1,4 +1,5 @@
 import type TEventQueue from '../core/event-queue';
+import { TEventTypesWindow, TWindowBlurEvent } from '../fred/events';
 import type {
   TKeyDownEvent,
   TKeyUpEvent,
@@ -70,6 +71,18 @@ export class TInputManager {
       TEventTypesInput.MouseDown,
       this.handleMouseDown.bind(this),
     );
+
+    this.inputEventQueue.addListener<TWindowBlurEvent>(
+      TEventTypesWindow.Blur,
+      this.handleWindowBlur.bind(this),
+    );
+  }
+
+  private handleWindowBlur() {
+    // Clear all input states
+    for (const [key] of this.rawInputStates.entries()) {
+      this.setInputState(key, false);
+    }
   }
 
   public mapInput(action: string, key: TInputKey): void {
