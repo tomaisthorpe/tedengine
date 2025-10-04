@@ -29,6 +29,13 @@ const Container = styled.div`
 
 const OuterContainer = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:fullscreen {
+    width: 100vw;
+    height: 100vh;
+  }
 `;
 
 const TGame = ({
@@ -56,6 +63,7 @@ const TGame = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [scaling, setScaling] = useState(1);
   const [renderingSize, setRenderingSize] = useState({ width: 1, height: 1 });
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const fred = new TFred(
@@ -76,10 +84,31 @@ const TGame = ({
     };
   }, []);
 
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      // True when this component's outer container is the fullscreen element
+      setIsFullscreen(
+        document.fullscreenElement === fullscreenContainer.current,
+      );
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    onFullscreenChange();
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+    };
+  }, []);
+
   const events = fred && fred.events ? fred.events : undefined;
 
-  const containerWidth = '100%';
-  const containerHeight = aspectRatio === 'auto' ? '100%' : 'auto';
+  let containerWidth = '100%';
+  let containerHeight = aspectRatio === 'auto' ? '100%' : 'auto';
+
+  if (isFullscreen && aspectRatio && aspectRatio !== 'auto') {
+    // Letterbox to preserve aspect ratio within the viewport in fullscreen
+    const ratioExpr = aspectRatio; // Expect formats like "4 / 3" or "16 / 9"
+    containerWidth = `min(100vw, calc(100vh * (${ratioExpr})))`;
+    containerHeight = `min(100vh, calc(100vw / (${ratioExpr})))`;
+  }
 
   return (
     <TFredContext.Provider value={{ fred }}>
