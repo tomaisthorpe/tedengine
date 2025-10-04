@@ -400,8 +400,8 @@ export default class TRapier3DWorld implements TPhysicsWorld {
       );
     }
 
-    if (options.isTrigger) {
-      collider.setSensor(true);
+    if (options.isTrigger !== undefined) {
+      collider.setSensor(options.isTrigger);
     }
   }
 
