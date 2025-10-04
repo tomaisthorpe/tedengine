@@ -23,6 +23,13 @@ export class TPhysicsSystem extends TSystem {
     super();
 
     this.query = world.createQuery([TRigidBodyComponent, TTransformComponent]);
+    this.query.subscribe((changes) => {
+      const { removed } = changes;
+
+      for (const entity of removed) {
+        world.removeRigidBody(entity);
+      }
+    });
   }
 
   public async update(
@@ -65,6 +72,8 @@ export class TPhysicsSystem extends TSystem {
     for (const body of result.bodies) {
       const rigidBody = bodies[body.uuid];
       if (!rigidBody) {
+        // If the rigid body is not found, it means it has been removed and we might have missed it
+        world.removeRigidBody(parseInt(body.uuid));
         continue;
       }
 
