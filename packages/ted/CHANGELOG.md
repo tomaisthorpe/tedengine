@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.16.1
+
+### Patch Changes
+
+- 1f91e0e: Ensure sounds stay muted when setting volume
+
 ## 0.16.0
 
 ### Minor Changes
