@@ -414,6 +414,13 @@ export default class TRenderer {
       } else if (task.material.type === 'textured') {
         gl.useProgram(this.texturedProgram!.program!.program!);
 
+        // Ensure textured draws sample from texture unit 0
+        const uTextureLoc = this.texturedProgram?.uniforms?.uTexture;
+        if (uTextureLoc) {
+          gl.uniform1i(uTextureLoc, 0);
+        }
+        gl.activeTexture(gl.TEXTURE0);
+
         const mesh = this.registeredTexturedMeshes[task.uuid];
         const texture = this.registeredTextures[task.material.options.texture];
         mesh.render(
@@ -437,6 +444,12 @@ export default class TRenderer {
     }
 
     gl.useProgram(this.texturedProgram!.program!.program!);
+    // Ensure textured draws sample from texture unit 0
+    const uTextureLoc = this.texturedProgram?.uniforms?.uTexture;
+    if (uTextureLoc) {
+      gl.uniform1i(uTextureLoc, 0);
+    }
+    gl.activeTexture(gl.TEXTURE0);
     for (const layer of layers) {
       for (const task of layer) {
         const mesh = this.registeredTexturedMeshes[task.uuid];
