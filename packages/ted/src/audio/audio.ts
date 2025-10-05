@@ -34,5 +34,9 @@ export default class TAudio {
 
   public setVolume(uuid: string, volume: number) {
     this.sounds[uuid].volume(volume);
+    // Ensure mute state is maintained after volume change
+    if (this._muted) {
+      this.sounds[uuid].mute(true);
+    }
   }
 }
