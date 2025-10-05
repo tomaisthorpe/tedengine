@@ -8,8 +8,16 @@ export enum TTextureFilter {
   Linear = 0x2601,
 }
 
+export enum TTextureWrap {
+  Repeat = 0x2901,
+  ClampToEdge = 0x812f,
+  MirroredRepeat = 0x8370,
+}
+
 export interface TTextureOptions {
   filter?: TTextureFilter;
+  wrapS?: TTextureWrap;
+  wrapT?: TTextureWrap;
 }
 
 export default class TRenderableTexture {
@@ -17,6 +25,8 @@ export default class TRenderableTexture {
   public texture?: WebGLTexture;
 
   public filter: TTextureFilter = TTextureFilter.Linear;
+  public wrapS: TTextureWrap = TTextureWrap.Repeat;
+  public wrapT: TTextureWrap = TTextureWrap.Repeat;
 
   /**
    * Returns the WebGL texture so it can be bound.
@@ -34,11 +44,19 @@ export default class TRenderableTexture {
       this.filter = options.filter;
     }
 
+    if (options?.wrapS !== undefined) {
+      this.wrapS = options.wrapS;
+    }
+
+    if (options?.wrapT !== undefined) {
+      this.wrapT = options.wrapT;
+    }
+
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.filter);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.filter);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.generateMipmap(gl.TEXTURE_2D);
   }
