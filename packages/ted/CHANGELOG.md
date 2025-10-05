@@ -1,5 +1,17 @@
 # @tedengine/ted
 
+## 0.16.0
+
+### Minor Changes
+
+- d6a40da: Add option to loop sounds
+- 86cadee: Allow setting volume of already playing sounds
+
+### Patch Changes
+
+- 0fc2648: Fix renderable meshes not updating palette texture
+- 14251c6: Add wrap options for textures
+
 ## 0.15.3
 
 ### Patch Changes
