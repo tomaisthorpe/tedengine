@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.15.3
+
+### Patch Changes
+
+- f38ff7b: Fix textured meshes not using texture unit 0
+
 ## 0.15.2
 
 ### Patch Changes
