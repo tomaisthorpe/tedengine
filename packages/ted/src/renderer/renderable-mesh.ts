@@ -33,6 +33,7 @@ export default class TRenderableMesh implements IAsset {
   private source?: string;
   private texture?: WebGLTexture;
   private paletteSize = 0;
+  private cachedPalette?: TPalette;
 
   public async load(response: Response): Promise<void> {
     this.source = await response.text();
@@ -51,6 +52,11 @@ export default class TRenderableMesh implements IAsset {
 
       // Create the VAO for the vertex and color buffers
       this.createVAO(gl, colorProgram.program!, palette);
+    }
+
+    // Check if palette has changed and update texture if needed
+    if (this.hasPaletteChanged(palette)) {
+      this.updatePaletteTexture(gl, palette);
     }
 
     if (
@@ -188,6 +194,9 @@ export default class TRenderableMesh implements IAsset {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    // Cache the initial palette
+    this.cachedPalette = JSON.parse(JSON.stringify(palette));
   }
 
   /**
@@ -237,5 +246,79 @@ export default class TRenderableMesh implements IAsset {
     this.palette = obj.palette;
 
     this.loaded = true;
+  }
+
+  /**
+   * Check if the palette has changed since the last render
+   */
+  private hasPaletteChanged(palette: TPalette): boolean {
+    if (!this.cachedPalette) {
+      return false; // First render, palette will be set in createVAO
+    }
+
+    // Compare each color in the palette
+    for (const key of Object.keys(this.palette)) {
+      const cachedColor = this.cachedPalette[key];
+      const newColor = palette[key];
+
+      if (!cachedColor || !newColor) {
+        return true;
+      }
+
+      // Compare RGBA values
+      for (let i = 0; i < 4; i++) {
+        if (cachedColor[i] !== newColor[i]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Update the palette texture with new colors
+   */
+  private updatePaletteTexture(
+    gl: WebGL2RenderingContext,
+    palette: TPalette,
+  ): void {
+    if (!this.texture) {
+      return;
+    }
+
+    // Build the new palette data
+    const paletteData = [];
+    const colors = [];
+
+    for (const color of Object.keys(this.palette)) {
+      colors[this.palette[color]] = palette[color];
+    }
+
+    this.paletteSize = colors.length;
+
+    for (const color of colors) {
+      paletteData.push(...color.map((c) => c * 255));
+    }
+
+    const data = new Uint8Array(paletteData);
+
+    // Update the existing texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      colors.length,
+      1,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      data,
+    );
+
+    // Cache the new palette
+    this.cachedPalette = JSON.parse(JSON.stringify(palette));
   }
 }
