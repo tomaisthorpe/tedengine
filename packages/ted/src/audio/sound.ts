@@ -1,6 +1,10 @@
 import type { IJobAsset } from '../core/resource-manager';
 import type TJobManager from '../jobs/job-manager';
-import { AudioJobLoadSoundFromUrl, AudioJobPlaySound } from './jobs';
+import {
+  AudioJobLoadSoundFromUrl,
+  AudioJobPlaySound,
+  AudioJobSetVolume,
+} from './jobs';
 
 export default class TSound implements IJobAsset {
   private uuid?: string;
@@ -31,6 +35,16 @@ export default class TSound implements IJobAsset {
       uuid: this.uuid,
       volume: this.volume,
       loop: this.loop,
+    });
+  }
+
+  public setVolume(volume: number) {
+    if (!this.uuid || !this.jobs) return;
+
+    this.volume = volume;
+    this.jobs.do(AudioJobSetVolume, {
+      uuid: this.uuid,
+      volume: this.volume,
     });
   }
 }

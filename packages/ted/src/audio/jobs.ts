@@ -20,6 +20,15 @@ export const AudioJobPlaySound: TJobConfig<
   requiredContext: TJobContextTypes.Audio,
 };
 
+export const AudioJobSetVolume: TJobConfig<
+  TJobContextTypes.Audio,
+  { uuid: string; volume: number },
+  void
+> = {
+  name: 'set_volume',
+  requiredContext: TJobContextTypes.Audio,
+};
+
 export function registerAudioJobs(jobManager: TJobManager) {
   jobManager.registerJob(
     AudioJobLoadSoundFromUrl,
@@ -35,6 +44,15 @@ export function registerAudioJobs(jobManager: TJobManager) {
       { uuid, volume, loop }: { uuid: string; volume: number; loop: boolean },
     ) => {
       ctx.audio.play(uuid, volume, loop);
+    },
+  );
+  jobManager.registerJob(
+    AudioJobSetVolume,
+    async (
+      ctx: TAudioJobContext,
+      { uuid, volume }: { uuid: string; volume: number },
+    ) => {
+      ctx.audio.setVolume(uuid, volume);
     },
   );
 }

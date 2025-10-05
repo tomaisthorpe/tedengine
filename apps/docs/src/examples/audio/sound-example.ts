@@ -43,7 +43,7 @@ class ExampleState extends TGameState {
       'range',
       '0.7',
       (value: string) => {
-        clip.volume = parseFloat(value);
+        clip.setVolume(parseFloat(value));
       },
       { max: 1, min: 0, step: 0.1 },
     );
