@@ -24,7 +24,18 @@ class ExampleState extends TGameState {
     const section = engine.debugPanel.addSection('Audio', true);
     section.addButtons('Play Audio', {
       label: 'Play Once',
-      onClick: () => clip.play(),
+      onClick: () => {
+        clip.loop = false;
+        clip.play();
+      },
+    });
+
+    section.addButtons('Loop Audio', {
+      label: 'Play Looping',
+      onClick: () => {
+        clip.loop = true;
+        clip.play();
+      },
     });
 
     section.addInput(

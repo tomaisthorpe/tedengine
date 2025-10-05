@@ -13,7 +13,7 @@ export const AudioJobLoadSoundFromUrl: TJobConfig<
 
 export const AudioJobPlaySound: TJobConfig<
   TJobContextTypes.Audio,
-  { uuid: string; volume: number },
+  { uuid: string; volume: number; loop: boolean },
   void
 > = {
   name: 'play_sound',
@@ -32,9 +32,9 @@ export function registerAudioJobs(jobManager: TJobManager) {
     AudioJobPlaySound,
     async (
       ctx: TAudioJobContext,
-      { uuid, volume }: { uuid: string; volume: number },
+      { uuid, volume, loop }: { uuid: string; volume: number; loop: boolean },
     ) => {
-      ctx.audio.play(uuid, volume);
+      ctx.audio.play(uuid, volume, loop);
     },
   );
 }

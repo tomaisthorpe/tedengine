@@ -11,6 +11,11 @@ export default class TSound implements IJobAsset {
    */
   public volume = 1.0;
 
+  /**
+   * Whether the sound should loop when played
+   */
+  public loop = false;
+
   // @todo look at AudioBuffers
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {
     const result = await jobs.do(AudioJobLoadSoundFromUrl, url);
@@ -25,6 +30,7 @@ export default class TSound implements IJobAsset {
     this.jobs.do(AudioJobPlaySound, {
       uuid: this.uuid,
       volume: this.volume,
+      loop: this.loop,
     });
   }
 }

@@ -26,8 +26,9 @@ export default class TAudio {
     return uuid;
   }
 
-  public play(uuid: string, volume: number) {
+  public play(uuid: string, volume: number, loop: boolean = false) {
     this.sounds[uuid].volume(volume);
+    this.sounds[uuid].loop(loop);
     this.sounds[uuid].play();
   }
 }
