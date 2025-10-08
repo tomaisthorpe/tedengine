@@ -113,7 +113,10 @@ export default class TEngine {
       () => this.gameState.current()!.jobs,
     );
 
-    this.resources = new TResourceManager(this.jobs);
+    this.resources = new TResourceManager(
+      this.jobs,
+      this.config.defaultTextureOptions,
+    );
 
     this.jobs.additionalContext = {
       resourceManager: this.resources,

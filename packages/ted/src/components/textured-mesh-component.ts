@@ -18,6 +18,7 @@ export interface TAssetTexturedMeshData {
   source: 'path';
   path: string;
 }
+
 export class TTextureComponent extends TComponent {
   constructor(
     public texture: TTexture,

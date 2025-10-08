@@ -23,14 +23,7 @@ import {
 class SpriteState extends TGameState {
   public async onCreate(engine: TEngine) {
     const rp = new TResourcePack(engine, {
-      textures: [
-        {
-          url: personTexture,
-          config: {
-            filter: TTextureFilter.Nearest,
-          },
-        },
-      ],
+      textures: [personTexture],
     });
     await rp.load();
 
@@ -140,6 +133,9 @@ const config = {
   },
   defaultState: 'game',
   debugPanelOpen: true,
+  defaultTextureOptions: {
+    filter: TTextureFilter.Nearest,
+  },
 };
 
 new TEngine(config, self as DedicatedWorkerGlobalScope);

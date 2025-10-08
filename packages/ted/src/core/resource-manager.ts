@@ -1,4 +1,5 @@
 import type TJobManager from '../jobs/job-manager';
+import type { TTextureOptions } from '../renderer/renderable-texture';
 
 export interface IAsset {
   load(response: Response): Promise<void>;
@@ -11,7 +12,10 @@ export interface IJobAsset {
 export default class TResourceManager {
   private resources = new Map<string, IAsset | IJobAsset>();
 
-  constructor(private jobs: TJobManager) { }
+  constructor(
+    private jobs: TJobManager,
+    private defaultTextureOptions?: TTextureOptions,
+  ) {}
 
   /**
    * Checks if a resource is already loaded into the cache
@@ -44,7 +48,7 @@ export default class TResourceManager {
    * @returns A promise that resolves to the loaded resource of type T.
    */
   public async load<T extends IAsset | IJobAsset>(
-    type: { new(): T },
+    type: { new (): T },
     key: string,
     config?: unknown,
   ): Promise<T> {
@@ -56,7 +60,22 @@ export default class TResourceManager {
     const resource = new type();
 
     if (isJobAsset(resource)) {
-      await resource.loadWithJob(this.jobs, key, config);
+      // For texture resources, merge default options with provided config
+      let finalConfig = config;
+      if (
+        resource.constructor.name === 'TTexture' &&
+        this.defaultTextureOptions
+      ) {
+        if (config) {
+          // Merge provided config with defaults, giving priority to provided config
+          finalConfig = { ...this.defaultTextureOptions, ...config };
+        } else {
+          // Use defaults if no config provided
+          finalConfig = this.defaultTextureOptions;
+        }
+      }
+
+      await resource.loadWithJob(this.jobs, key, finalConfig);
     } else {
       const response = await fetch(key);
       await resource.load(response);
