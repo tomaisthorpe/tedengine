@@ -178,9 +178,13 @@ export default class TWorld {
     this.entities.get(entity)?.remove(componentClass);
   }
 
-  public addSystem(system: TSystem): void {
-    this.systems.push(system);
+  public addSystems(systems: TSystem[]): void {
+    this.systems.push(...systems);
     this.systems.sort((a, b) => a.priority - b.priority);
+  }
+
+  public addSystem(system: TSystem): void {
+    this.addSystems(([system]))
   }
 
   public removeSystem(system: TSystem): void {
