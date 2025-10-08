@@ -39,6 +39,9 @@ const config = {
     game: BoxState,
   },
   defaultState: 'game',
+  rendering: {
+    clearColor: { r: 0.2, g: 0.1, b: 0.1, a: 1 },
+  },
 };
 
 new TEngine(config, self as DedicatedWorkerGlobalScope);

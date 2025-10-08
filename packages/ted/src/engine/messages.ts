@@ -10,6 +10,7 @@ export enum TMessageTypesEngine {
 
 export interface TEngineMessageBootstrap {
   type: TMessageTypesEngine.BOOTSTRAP;
+  clearColor?: { r: number; g: number; b: number; a: number };
 }
 
 // @todo should this go through the event queue?

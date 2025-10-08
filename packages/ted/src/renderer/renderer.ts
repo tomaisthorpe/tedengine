@@ -54,11 +54,16 @@ export default class TRenderer {
     directionalLight: 0,
   };
 
+  private clearColor: { r: number; g: number; b: number; a: number };
+
   constructor(
     private canvas: HTMLCanvasElement,
     private resourceManager: TResourceManager,
     private eventQueue: TEventQueue,
-  ) {}
+    clearColor?: { r: number; g: number; b: number; a: number },
+  ) {
+    this.clearColor = clearColor ?? { r: 0.2, g: 0.2, b: 0.4, a: 1 };
+  }
 
   public async load(): Promise<void> {
     // Setup the WebGL context
@@ -69,7 +74,13 @@ export default class TRenderer {
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 
-    gl.clearColor(0.2, 0.2, 0.4, 1);
+    // Set clear color from config or use default
+    gl.clearColor(
+      this.clearColor.r,
+      this.clearColor.g,
+      this.clearColor.b,
+      this.clearColor.a,
+    );
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
     // gl.depthFunc(gl.LEQUAL);

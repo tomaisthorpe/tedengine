@@ -2,6 +2,7 @@
 
 Simple example to show what can be configured.
 This example shows 100% container width with fixed 4:3 ratio and rendering at 400x300.
+It also shows how to configure the colors for the loading screen and clear color.
 
 import useBrowserOnly from '@docusaurus/useIsBrowser';
 import { TGame } from '@tedengine/ted';
@@ -19,6 +20,10 @@ export const Game = () => {
         renderWidth: 400,
         renderHeight: 300,
         imageRendering: 'pixelated',
+        loadingScreen: {
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          textColor: 'red',
+        }
       }}
       game={new Worker(new URL('@examples/game-config.ts', import.meta.url))}
     />

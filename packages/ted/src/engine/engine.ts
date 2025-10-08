@@ -271,6 +271,7 @@ export default class TEngine {
   ) {
     const message: TEngineMessageBootstrap = {
       type: TMessageTypesEngine.BOOTSTRAP,
+      clearColor: this.config.rendering?.clearColor,
     };
 
     postMessage(message, [channel.port2]);

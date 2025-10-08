@@ -6,4 +6,7 @@ export interface TConfig {
   defaultState: string;
   debugPanelOpen?: boolean;
   defaultTextureOptions?: TTextureOptions;
+  rendering?: {
+    clearColor?: { r: number; g: number; b: number; a: number };
+  };
 }

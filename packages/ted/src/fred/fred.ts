@@ -41,6 +41,10 @@ export interface TFredConfig {
   imageRendering: 'auto' | 'pixelated' | 'crisp-edges';
   showFullscreenToggle?: boolean;
   showAudioToggle?: boolean;
+  loadingScreen?: {
+    backgroundColor?: string;
+    textColor?: string;
+  };
 }
 
 /**
@@ -68,6 +72,7 @@ export default class TFred {
   };
 
   private enginePort!: MessagePort;
+  private clearColor?: { r: number; g: number; b: number; a: number };
 
   constructor(
     engineWorker: Worker,
@@ -92,6 +97,7 @@ export default class TFred {
     switch (data.type) {
       case TMessageTypesEngine.BOOTSTRAP:
         this.enginePort = ev.ports[0];
+        this.clearColor = data.clearColor;
         this.bootstrap();
         break;
       case TMessageTypesCore.EVENT_RELAY:
@@ -191,7 +197,12 @@ export default class TFred {
 
     this.events = new TEventQueue([this.enginePort]);
 
-    this.renderer = new TRenderer(this.canvas, this.resources, this.events);
+    this.renderer = new TRenderer(
+      this.canvas,
+      this.resources,
+      this.events,
+      this.clearColor,
+    );
     await this.renderer.load();
 
     this.keyboard = new TKeyboard(this.events);

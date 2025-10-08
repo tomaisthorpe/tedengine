@@ -1,14 +1,19 @@
 import styled from 'styled-components';
 
-const Container = styled.div`
+interface LoadingScreenProps {
+  backgroundColor?: string;
+  textColor?: string;
+}
+
+const Container = styled.div<LoadingScreenProps>`
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(51, 51, 102, 1);
+  background: ${(props) => props.backgroundColor || 'rgba(51, 51, 102, 1)'};
   width: 100%;
   height: 100%;
   font-family: sans-serif;
-  color: white;
+  color: ${(props) => props.textColor || 'white'};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,6 +22,13 @@ const Container = styled.div`
   font-weight: bold;
 `;
 
-export default function LoadingScreen() {
-  return <Container>Loading...</Container>;
+export default function LoadingScreen({
+  backgroundColor,
+  textColor,
+}: LoadingScreenProps) {
+  return (
+    <Container backgroundColor={backgroundColor} textColor={textColor}>
+      Loading...
+    </Container>
+  );
 }

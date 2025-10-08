@@ -62,6 +62,7 @@ export * from './engine/engine-system';
 
 export * from './fred/events';
 export { default as TFred } from './fred/fred';
+export * from './fred/fred';
 export * from './fred/browser';
 export { default as TBrowser } from './fred/browser';
 

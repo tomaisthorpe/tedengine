@@ -142,7 +142,12 @@ const TGame = ({
                     </>
                   )}
                   {fred && <GameControls fred={fred} />}
-                  {engineData.loading && <LoadingScreen />}
+                  {engineData.loading && (
+                    <LoadingScreen
+                      backgroundColor={config?.loadingScreen?.backgroundColor}
+                      textColor={config?.loadingScreen?.textColor}
+                    />
+                  )}
                   <PointerLock />
                   {errorMessage && <ErrorScreen error={errorMessage} />}
                 </Container>
