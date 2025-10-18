@@ -20,11 +20,13 @@ const RowContainer = styled.div`
   padding: 2px 0;
 `;
 
-const RowLabel = styled.div`
+const RowLabel = styled.div<{ clickable?: boolean }>`
   color: #ddd;
   white-space: nowrap;
   min-width: 100px;
   margin-right: 10px;
+  cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
+  user-select: none;
 `;
 
 const RowValue = styled.div`
@@ -330,14 +332,17 @@ export function DebugPanelRow({ row, events, fredValues }: Props) {
     return null;
   }
 
+  const handleToggle = () => {
+    if (hasChildren) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   return (
     <>
       <RowContainer>
         {hasChildren && (
-          <ExpandArrow
-            isExpanded={isExpanded}
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
+          <ExpandArrow isExpanded={isExpanded} onClick={handleToggle}>
             ▼
           </ExpandArrow>
         )}
@@ -349,7 +354,11 @@ export function DebugPanelRow({ row, events, fredValues }: Props) {
             }}
           />
         )}
-        {row.label && <RowLabel>{row.label}</RowLabel>}
+        {row.label && (
+          <RowLabel clickable={hasChildren} onClick={handleToggle}>
+            {row.label}
+          </RowLabel>
+        )}
         <RowComponent row={row} events={events} fredValues={fredValues} />
       </RowContainer>
       {hasChildren && isExpanded && row.children && (
