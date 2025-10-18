@@ -16,18 +16,20 @@ interface Props {
 const RowContainer = styled.div`
   display: flex;
   min-width: 100px;
-  justify-content: space-between;
   align-items: center;
   padding: 2px 0;
 `;
 
 const RowLabel = styled.div`
-  margin-right: 10px;
   color: #ddd;
+  white-space: nowrap;
+  min-width: 100px;
+  margin-right: 10px;
 `;
 
 const RowValue = styled.div`
   font-weight: bold;
+  margin-left: auto;
 `;
 
 const RowButton = styled.button`
@@ -279,22 +281,68 @@ const typeToComponent: {
   colorPicker: ColorPickerRow,
 };
 
+const ExpandArrow = styled.span<{ isExpanded: boolean }>`
+  cursor: pointer;
+  user-select: none;
+  display: inline-block;
+  opacity: 0.5;
+  transition: transform 0.2s;
+  transform: rotate(${(props) => (props.isExpanded ? '0deg' : '-90deg')});
+  font-size: 0.7rem !important;
+  line-height: 1;
+  margin-right: 5px;
+
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
 export function DebugPanelRow({ row, events, fredValues }: Props) {
+  const hasChildren =
+    row.hasChildren && row.children && row.children.length > 0;
+  const [isExpanded, setIsExpanded] = useState<boolean>(
+    !!(hasChildren && row.children && row.children.length <= 10),
+  ); // Auto-expand if 10 or fewer children
   const RowComponent = typeToComponent[row.type];
 
   if (!RowComponent) {
     return null;
   }
+
   return (
-    <RowContainer
-      style={{
-        paddingLeft: row.data.indentLevel
-          ? `${row.data.indentLevel * 10}px`
-          : 0,
-      }}
-    >
-      {row.label && <RowLabel>{row.label}</RowLabel>}
-      <RowComponent row={row} events={events} fredValues={fredValues} />
-    </RowContainer>
+    <>
+      <RowContainer>
+        {hasChildren && (
+          <ExpandArrow
+            isExpanded={isExpanded}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            ▼
+          </ExpandArrow>
+        )}
+        {!hasChildren && (
+          <span
+            style={{
+              width: '10px',
+              display: 'inline-block',
+            }}
+          />
+        )}
+        {row.label && <RowLabel>{row.label}</RowLabel>}
+        <RowComponent row={row} events={events} fredValues={fredValues} />
+      </RowContainer>
+      {hasChildren && isExpanded && row.children && (
+        <div style={{ marginLeft: '15px' }}>
+          {row.children.map((child) => (
+            <DebugPanelRow
+              key={child.uuid}
+              row={child}
+              events={events}
+              fredValues={fredValues}
+            />
+          ))}
+        </div>
+      )}
+    </>
   );
 }

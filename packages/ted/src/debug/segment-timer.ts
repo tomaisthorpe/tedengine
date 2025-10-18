@@ -1,10 +1,10 @@
 import type { TDebugPanel } from './debug-panel';
 import type { TDebugPanelSection } from './debug-panel-section';
+import { TDebugPanelValue } from './debug-panel-value';
 
 interface TSegment {
   name: string;
   path: string; // Full hierarchical path (e.g., "Update/Physics/Collision")
-  depth: number; // Depth in hierarchy (0 = root)
 
   // Timing stats
   inclusiveAverage: number; // Average time including children
@@ -17,6 +17,9 @@ interface TSegment {
   lastStartTime: number;
   lastEndTime: number | null;
   lastChildrenTime: number;
+
+  // UI
+  debugRow?: TDebugPanelValue;
 }
 
 /**
@@ -159,7 +162,7 @@ export class TSegmentTimer {
    * updateSegment.end();
    */
   startSegment(name: string): TSegmentTimingContext {
-    return this.createSegmentContext(name, null, 0);
+    return this.createSegmentContext(name, null);
   }
 
   /**
@@ -169,25 +172,22 @@ export class TSegmentTimer {
     name: string,
     parent: TSegmentTimingContext,
   ): TSegmentTimingContext {
-    const parentSegment = parent.getSegment();
-    const depth = parentSegment.depth + 1;
-    return this.createSegmentContext(name, parent, depth);
+    return this.createSegmentContext(name, parent);
   }
 
   private createSegmentContext(
     name: string,
     parentContext: TSegmentTimingContext | null,
-    depth: number,
   ): TSegmentTimingContext {
     const parentSegment = parentContext?.getSegment();
     const path = parentSegment ? `${parentSegment.path}/${name}` : name;
 
     let segment = this.segments.get(path);
+
     if (!segment) {
       segment = {
         name,
         path,
-        depth,
         inclusiveAverage: 0,
         exclusiveAverage: 0,
         inclusiveSamples: [],
@@ -198,30 +198,35 @@ export class TSegmentTimer {
         lastChildrenTime: 0,
       };
       this.segments.set(path, segment);
-      this.addSegmentToDebugPanel(segment);
-    }
 
-    return new TSegmentTimingContext(this, segment, parentContext);
-  }
-
-  private addSegmentToDebugPanel(segment: TSegment) {
-    this.debugSection.addValue(
-      segment.name,
-      () => {
-        if (segment.lastEndTime === null) {
+      // Create the debug row
+      const updateFn = () => {
+        const seg = this.segments.get(path);
+        if (!seg || seg.lastEndTime === null) {
           return 'Running...';
         }
 
-        const inclusiveP99 = this.calculateP99(segment.inclusiveSamples);
+        const inclusiveP99 = this.calculateP99(seg.inclusiveSamples);
 
         // Show both inclusive and exclusive times
         return (
-          `${segment.inclusiveAverage.toFixed(2)}ms (P99: ${inclusiveP99.toFixed(2)}ms) | ` +
-          `Exc: ${segment.exclusiveAverage.toFixed(2)}ms`
+          `${seg.inclusiveAverage.toFixed(2)}ms (P99: ${Math.round(inclusiveP99)}ms) | ` +
+          `Exc: ${seg.exclusiveAverage.toFixed(2)}ms`
         );
-      },
-      segment.depth,
-    );
+      };
+
+      // If this has a parent, create the row directly and add as child
+      // Otherwise, use addValue which adds to the section's root rows
+      if (parentSegment && parentSegment.debugRow) {
+        const debugRow = new TDebugPanelValue(name, updateFn);
+        segment.debugRow = debugRow;
+        parentSegment.debugRow.addChild(debugRow);
+      } else {
+        segment.debugRow = this.debugSection.addValue(name, updateFn);
+      }
+    }
+
+    return new TSegmentTimingContext(this, segment, parentContext);
   }
 
   private calculateP99(samples: number[]): number {
@@ -252,24 +257,6 @@ export class TSegmentTimer {
       segment.exclusiveSamples = [];
       segment.sampleCount = 0;
     }
-  }
-
-  /**
-   * Debug method to log sample values for a specific segment
-   */
-  logSamples(segmentPath: string) {
-    const segment = this.segments.get(segmentPath);
-    if (!segment) {
-      console.warn(`Segment "${segmentPath}" not found`);
-      return;
-    }
-    console.log(`Samples for "${segmentPath}":`);
-    console.log('Inclusive:', segment.inclusiveSamples);
-    console.log('Exclusive:', segment.exclusiveSamples);
-    console.log(
-      'P99 index:',
-      Math.ceil(segment.inclusiveSamples.length * 0.99) - 1,
-    );
   }
 
   /**

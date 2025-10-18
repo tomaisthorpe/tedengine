@@ -12,7 +12,6 @@ export class TDebugPanelValue extends TDebugPanelRow implements IDebugPanelRow {
   constructor(
     label: string,
     private updateFunction: TUpdateFunction,
-    private indentLevel: number,
   ) {
     super(label);
   }
@@ -22,6 +21,11 @@ export class TDebugPanelValue extends TDebugPanelRow implements IDebugPanelRow {
    */
   public update(engine: TEngine, delta: number) {
     this.value = this.updateFunction(engine, delta);
+
+    // Update children too
+    for (const child of this.children) {
+      child.update(engine, delta);
+    }
   }
 
   public getData(): TDebugPanelRowSerializedData {
@@ -30,7 +34,6 @@ export class TDebugPanelValue extends TDebugPanelRow implements IDebugPanelRow {
       type: this.type,
       data: {
         value: this.value,
-        indentLevel: this.indentLevel,
       },
     };
   }

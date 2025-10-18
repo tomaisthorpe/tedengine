@@ -55,9 +55,8 @@ export class TDebugPanelSection {
   public addValue(
     label: string,
     updateFunction: TUpdateFunction,
-    indentLevel = 0,
   ): TDebugPanelValue {
-    const row = new TDebugPanelValue(label, updateFunction, indentLevel);
+    const row = new TDebugPanelValue(label, updateFunction);
     this.rows.push(row);
 
     return row;
