@@ -106,9 +106,30 @@ const FredValueRow = ({
   fredValues: TFredStats;
 }) => <RowValue>{(fredValues as any)[row.data.value]}</RowValue>;
 
-const ValueRow = ({ row }: { row: TDebugPanelRowSerializedData }) => (
-  <RowValue>{row.data.value}</RowValue>
-);
+const ValueRow = ({ row }: { row: TDebugPanelRowSerializedData }) => {
+  const value = row.data.value;
+
+  // If the value contains parentheses, style them as subtle/secondary info
+  if (typeof value === 'string' && value.includes('(')) {
+    const parts = value.split(/(\([^)]*\))/);
+    return (
+      <RowValue>
+        {parts.map((part, i) => {
+          if (part.match(/\([^)]*\)/)) {
+            return (
+              <span key={i} style={{ opacity: 0.5, fontSize: '0.9em' }}>
+                {part}
+              </span>
+            );
+          }
+          return part;
+        })}
+      </RowValue>
+    );
+  }
+
+  return <RowValue>{value}</RowValue>;
+};
 
 const ButtonsRow = ({
   row,
