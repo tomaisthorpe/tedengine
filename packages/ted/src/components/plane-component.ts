@@ -1,4 +1,4 @@
-import TColorMaterial from '../graphics/color-material';
+import { TColorMaterial } from '../graphics/color-material';
 import type { TMeshGeometry } from './mesh-component';
 
 export function createPlaneMesh(

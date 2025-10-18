@@ -44,7 +44,7 @@ export interface TJobProcessor {
   ) => Promise<unknown>;
 }
 
-export default class TJobManager {
+export class TJobManager {
   private relays: { [key: string]: TJobRelay } = {};
   private canProcess: { [key: string]: boolean } = {};
 

@@ -1,9 +1,9 @@
 import type { TInputManager } from './input-manager';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TWorld from '../core/world';
+import type { TWorld } from '../core/world';
 import { TComponent } from '../core/component';
 import type { TEntityQuery } from '../core/entity-query';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import type { TMouseLocation, TMouseMovement } from './events';
 
 export class TMouseInputComponent extends TComponent {

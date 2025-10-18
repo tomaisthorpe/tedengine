@@ -1,9 +1,9 @@
-import type TEventQueue from '../core/event-queue';
-import type TEngine from '../engine/engine';
+import type { TEventQueue } from '../core/event-queue';
+import type { TEngine } from '../engine/engine';
 import type { TKeyUpEvent } from '../input/events';
 import { TEventTypesInput } from '../input/events';
 import type { TDebugPanelSectionSerializedData } from './debug-panel-section';
-import TDebugPanelSection from './debug-panel-section';
+import { TDebugPanelSection } from './debug-panel-section';
 import type { TDebugUpdateEvent } from './events';
 import { TEventTypesDebug } from './events';
 
@@ -21,7 +21,7 @@ export interface TDebugPanelSerializedData {
  * The debug panel holds a number of stats to display on the UI.
  * The panel also acts as the default section.
  */
-export default class TDebugPanel extends TDebugPanelSection {
+export class TDebugPanel extends TDebugPanelSection {
   private sections: TDebugPanelSection[] = [];
 
   constructor(

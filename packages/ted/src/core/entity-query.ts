@@ -1,5 +1,5 @@
 import type { TComponentConstructor } from './component';
-import type TWorld from './world';
+import type { TWorld } from './world';
 
 export type TEntityQueryChange = {
   added: number[];

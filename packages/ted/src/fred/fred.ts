@@ -1,19 +1,19 @@
-import TAudio from '../audio/audio';
+import { TAudio } from '../audio/audio';
 import { registerAudioJobs } from '../audio/jobs';
 import type { TEvent } from '../core/event-queue';
-import TEventQueue from '../core/event-queue';
+import { TEventQueue } from '../core/event-queue';
 import { TMessageTypesCore } from '../core/messages';
-import TResourceManager from '../core/resource-manager';
+import { TResourceManager } from '../core/resource-manager';
 import type {
   TEngineMessageFrameReady,
   TEngineMessageUpdateEngineContext,
   TEngineMessageUpdateGameContext,
 } from '../engine/messages';
 import { TMessageTypesEngine } from '../engine/messages';
-import TKeyboard from '../input/keyboard';
-import TMouse from '../input/mouse';
+import { TKeyboard } from '../input/keyboard';
+import { TMouse } from '../input/mouse';
 import { TJobContextTypes } from '../jobs/context-types';
-import TJobManager from '../jobs/job-manager';
+import { TJobManager } from '../jobs/job-manager';
 import type {
   TJobsMessageRelay,
   TJobsMessageRelayResult,
@@ -21,9 +21,9 @@ import type {
 import { TMessageTypesJobs } from '../jobs/messages';
 import type { TFrameParams } from '../renderer/frame-params';
 import { registerRendererJobs } from '../renderer/jobs';
-import TRenderer from '../renderer/renderer';
+import { TRenderer } from '../renderer/renderer';
 import type { TEngineContextData, TGameContextData } from '../ui/context';
-import TBrowser from './browser';
+import { TBrowser } from './browser';
 import type { TWindowBlurEvent, TWindowFocusEvent } from './events';
 import { TEventTypesWindow } from './events';
 import type { TFredMessageReady, TFredMessageShutdown } from './messages';
@@ -50,7 +50,7 @@ export interface TFredConfig {
 /**
  * TFred runs on the main browser thread and handles rendering, input and the UI context
  */
-export default class TFred {
+export class TFred {
   public canvas?: HTMLCanvasElement;
   public events!: TEventQueue;
   private keyboard!: TKeyboard;

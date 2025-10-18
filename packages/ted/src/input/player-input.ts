@@ -3,8 +3,8 @@ import { TComponent } from '../core/component';
 import { TInputDevice, type TInputManager } from './input-manager';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
 
 export enum TPlayerInputAction {
   MoveForward = 'MoveForward',

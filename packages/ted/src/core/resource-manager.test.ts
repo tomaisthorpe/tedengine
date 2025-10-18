@@ -1,6 +1,6 @@
 import type { IAsset } from './resource-manager';
-import TResourceManager from './resource-manager';
-import TJobManager from '../jobs/job-manager';
+import { TResourceManager } from './resource-manager';
+import { TJobManager } from '../jobs/job-manager';
 
 describe('TResourceManager', () => {
   let resourceManager: TResourceManager;

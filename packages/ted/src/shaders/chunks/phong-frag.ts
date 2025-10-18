@@ -1,4 +1,4 @@
-export default {
+export const phongFragChunk = {
   vertex: {
     before: `
         out highp vec4 vLightSpacePosition;

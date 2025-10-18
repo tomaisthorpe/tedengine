@@ -40,7 +40,7 @@ interface Material {
   dissolve: number;
 }
 
-export default class MTLFile {
+export class MTLFile {
   private materials: Material[] = [];
   private currentMaterial?: string;
   private lineNumber = 0;

@@ -1,14 +1,16 @@
-import TAnimatedSpriteComponent from '../components/animated-sprite-component';
-import TMeshComponent, {
+import { TAnimatedSpriteComponent } from '../components/animated-sprite-component';
+import {
+  TMeshComponent,
   TMaterialComponent,
 } from '../components/mesh-component';
-import TSpriteComponent, {
+import {
+  TSpriteComponent,
   TSpriteInstancesComponent,
 } from '../components/sprite-component';
 import { TTextureComponent } from '../components/textured-mesh-component';
-import TTexturedMeshComponent from '../components/textured-mesh-component';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
+import { TTexturedMeshComponent } from '../components/textured-mesh-component';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
 import type {
   TSerializedRenderTask,
   TSerializedTexturedMaterial,

@@ -1,8 +1,8 @@
 import type { TTextureOptions } from '../renderer/renderable-texture';
 import { TTextureFilter, TTextureWrap } from '../renderer/renderable-texture';
-import TImage from './image';
+import { TImage } from './image';
 import type { IJobAsset } from '../core/resource-manager';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import type {
   TAudioJobContext,
   TJobContext,
@@ -23,7 +23,7 @@ function hasResourceManager(
   return (additionalContext as TJobContext).resourceManager !== undefined;
 }
 
-export default class TTexture implements IJobAsset {
+export class TTexture implements IJobAsset {
   public uuid?: string;
 
   private _filter: TTextureFilter = TTextureFilter.Linear;

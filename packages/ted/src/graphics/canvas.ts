@@ -1,8 +1,8 @@
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import type { TTextureOptions } from '../renderer/renderable-texture';
-import TTexture from './texture';
+import { TTexture } from './texture';
 
-export default class TCanvas {
+export class TCanvas {
   private canvas: OffscreenCanvas;
   constructor(
     private engine: TEngine,

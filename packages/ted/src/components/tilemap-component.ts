@@ -1,14 +1,14 @@
 import { TComponent } from '../core/component';
-import type TWorld from '../core/world';
+import type { TWorld } from '../core/world';
 import { TTransformComponent } from '.';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TEngine from '../engine/engine';
-import TCanvas from '../graphics/canvas';
-import type TImage from '../graphics/image';
-import type TTilemap from '../graphics/tilemap';
+import type { TEngine } from '../engine/engine';
+import { TCanvas } from '../graphics/canvas';
+import type { TImage } from '../graphics/image';
+import type { TTilemap } from '../graphics/tilemap';
 import { TTextureComponent } from './textured-mesh-component';
-import TSpriteComponent from './sprite-component';
+import { TSpriteComponent } from './sprite-component';
 
 export interface TTileset {
   id: number;

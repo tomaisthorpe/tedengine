@@ -1,13 +1,13 @@
 import type { vec3 } from 'gl-matrix';
-import type TEventQueue from '../core/event-queue';
-import type TEngine from '../engine/engine';
+import type { TEventQueue } from '../core/event-queue';
+import type { TEngine } from '../engine/engine';
 import type { TDebugPanelRowSerializedData } from './debug-panel-row';
-import TDebugPanelRow from './debug-panel-row';
+import { TDebugPanelRow } from './debug-panel-row';
 import type { IDebugPanelRow } from './debug-panel-row';
 import type { TDebugActionEvent } from './events';
 import { TEventTypesDebug } from './events';
 
-export default class TDebugPanelColorPicker
+export class TDebugPanelColorPicker
   extends TDebugPanelRow
   implements IDebugPanelRow
 {

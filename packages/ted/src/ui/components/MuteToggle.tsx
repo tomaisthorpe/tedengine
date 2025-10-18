@@ -35,7 +35,7 @@ const Button = styled.div`
   }
 `;
 
-export default function MuteToggle() {
+export function MuteToggle() {
   const fred = useFred();
   const [muted, setMuted] = useState(false);
   const { showAudioToggle } = useUIContext();

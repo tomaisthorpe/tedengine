@@ -22,7 +22,7 @@ const Container = styled.div<LoadingScreenProps>`
   font-weight: bold;
 `;
 
-export default function LoadingScreen({
+export function LoadingScreen({
   backgroundColor,
   textColor,
 }: LoadingScreenProps) {

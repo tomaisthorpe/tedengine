@@ -2,13 +2,13 @@ import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
 import type { TCameraView } from './camera-view';
 import { TCameraComponent, TActiveCameraComponent } from './camera-component';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import type { vec2 } from 'gl-matrix';
 import { mat4, vec3 } from 'gl-matrix';
-import type TWorld from '../core/world';
+import type { TWorld } from '../core/world';
 import type { TEntity } from '../core/world';
 import { TTransformComponent } from '../components';
-import TTransform from '../math/transform';
+import { TTransform } from '../math/transform';
 import { TProjectionType } from '../graphics';
 
 export interface TCamera {
@@ -16,7 +16,7 @@ export interface TCamera {
   component: TCameraComponent;
 }
 
-export default class TCameraSystem extends TSystem {
+export class TCameraSystem extends TSystem {
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;
@@ -93,10 +93,9 @@ export default class TCameraSystem extends TSystem {
         camera.component.cameraConfig.zFar || 100,
       );
 
-      const cameraSpace = mat4.invert(
-        mat4.create(),
-        camera.transform.getMatrix(),
-      ) || mat4.identity(mat4.create());
+      const cameraSpace =
+        mat4.invert(mat4.create(), camera.transform.getMatrix()) ||
+        mat4.identity(mat4.create());
 
       return mat4.multiply(mat4.create(), projection, cameraSpace);
     }
@@ -112,10 +111,9 @@ export default class TCameraSystem extends TSystem {
       camera.component.cameraConfig.zFar || 100,
     );
 
-    const cameraSpace = mat4.invert(
-      mat4.create(),
-      camera.transform.getMatrix(),
-    ) || mat4.identity(mat4.create());
+    const cameraSpace =
+      mat4.invert(mat4.create(), camera.transform.getMatrix()) ||
+      mat4.identity(mat4.create());
 
     return mat4.multiply(mat4.create(), projection, cameraSpace);
   }
@@ -145,7 +143,9 @@ export default class TCameraSystem extends TSystem {
 }
 
 export function clipToWorldSpace(projectionMatrix: mat4, location: vec2): vec3 {
-  const invertProj = mat4.invert(mat4.create(), projectionMatrix) || mat4.identity(mat4.create());
+  const invertProj =
+    mat4.invert(mat4.create(), projectionMatrix) ||
+    mat4.identity(mat4.create());
 
   const worldspace = vec3.transformMat4(
     vec3.create(),

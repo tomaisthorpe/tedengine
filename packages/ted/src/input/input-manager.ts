@@ -1,4 +1,4 @@
-import type TEventQueue from '../core/event-queue';
+import type { TEventQueue } from '../core/event-queue';
 import { TEventTypesWindow } from '../fred/events';
 import type { TWindowBlurEvent } from '../fred/events';
 import type {

@@ -1,5 +1,5 @@
 import type { TWorldConfig } from '../core/world';
-import TRapier3DWorld from './rapier3d-world';
+import { TRapier3DWorld } from './rapier3d-world';
 import { v4 as uuidv4 } from 'uuid';
 import { createBoxCollider } from './colliders';
 

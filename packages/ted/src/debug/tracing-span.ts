@@ -1,5 +1,5 @@
-import type TDebugPanel from './debug-panel';
-import type TDebugPanelSection from './debug-panel-section';
+import type { TDebugPanel } from './debug-panel';
+import type { TDebugPanelSection } from './debug-panel-section';
 
 interface TSpan {
   name: string;
@@ -10,7 +10,7 @@ interface TSpan {
   sampleCount: number;
 }
 
-export default class TTracingSpan {
+export class TTracingSpan {
   private spans: Map<string, TSpan> = new Map();
   private activeSpans: TSpan[] = [];
   private debugSection: TDebugPanelSection;
@@ -60,8 +60,7 @@ export default class TTracingSpan {
       if (span.average === 0) {
         span.average = duration;
       } else {
-        span.average =
-          this.alpha * duration + (1 - this.alpha) * span.average;
+        span.average = this.alpha * duration + (1 - this.alpha) * span.average;
       }
 
       // Update samples for p99 calculation
@@ -71,9 +70,7 @@ export default class TTracingSpan {
       span.samples.push(duration);
       span.sampleCount++;
     } else {
-      console.warn(
-        `Attempted to end span "${span.name}" that was not active.`,
-      );
+      console.warn(`Attempted to end span "${span.name}" that was not active.`);
     }
   }
 
@@ -93,4 +90,4 @@ export default class TTracingSpan {
     const index = Math.floor(samples.length * 0.99);
     return sortedSamples[index];
   }
-} 
+}

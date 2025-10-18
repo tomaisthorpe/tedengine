@@ -1,4 +1,4 @@
-export default {
+export const colorChunk = {
   vertex: {
     before: `
         in vec4 aVertexColor;

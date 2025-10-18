@@ -1,16 +1,16 @@
-import type TCameraSystem from '../cameras/camera-system';
-import type TEngine from '../engine/engine';
+import type { TCameraSystem } from '../cameras/camera-system';
+import type { TEngine } from '../engine/engine';
 import type {
   TSerializedLighting,
   TSerializedRenderTask,
 } from '../renderer/frame-params';
-import type TGameState from './game-state';
+import type { TGameState } from './game-state';
 
 export interface TGameStateType {
   new (engine: TEngine): TGameState;
 }
 
-export default class TGameStateManager {
+export class TGameStateManager {
   private stateFactories: { [key: string]: TGameStateType } = {};
   private states: { [key: string]: TGameState } = {};
   private stack: TGameState[] = [];

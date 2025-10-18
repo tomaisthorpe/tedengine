@@ -1,9 +1,9 @@
-import TMeshComponent from '../components/mesh-component';
-import TTexturedMeshComponent from '../components/textured-mesh-component';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
-import TMesh from './mesh';
-import TTexturedMesh from './textured-mesh';
+import { TMeshComponent } from '../components/mesh-component';
+import { TTexturedMeshComponent } from '../components/textured-mesh-component';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
+import { TMesh } from './mesh';
+import { TTexturedMesh } from './textured-mesh';
 import {
   TMeshReadyComponent,
   TSpriteReadyComponent,
@@ -11,7 +11,7 @@ import {
 } from '../components';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import TSpriteComponent from '../components/sprite-component';
+import { TSpriteComponent } from '../components/sprite-component';
 
 export class TMeshLoadSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PreUpdate;

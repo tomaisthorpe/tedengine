@@ -1,5 +1,5 @@
 import { createBoxMesh } from './box-component';
-import TColorMaterial from '../graphics/color-material';
+import { TColorMaterial } from '../graphics/color-material';
 
 describe('createBoxMesh', () => {
   it('should create a box mesh with correct dimensions', () => {

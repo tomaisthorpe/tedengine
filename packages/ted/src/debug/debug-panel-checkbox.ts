@@ -1,12 +1,12 @@
-import type TEventQueue from '../core/event-queue';
-import type TEngine from '../engine/engine';
+import type { TEventQueue } from '../core/event-queue';
+import type { TEngine } from '../engine/engine';
 import type { TDebugPanelRowSerializedData } from './debug-panel-row';
-import TDebugPanelRow from './debug-panel-row';
+import { TDebugPanelRow } from './debug-panel-row';
 import type { IDebugPanelRow } from './debug-panel-row';
 import type { TDebugActionEvent } from './events';
 import { TEventTypesDebug } from './events';
 
-export default class TDebugPanelCheckbox
+export class TDebugPanelCheckbox
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
@@ -17,7 +17,7 @@ export default class TDebugPanelCheckbox
     private events: TEventQueue,
     label: string,
     startingValue: boolean,
-    private onValueChange: (value: boolean) => void
+    private onValueChange: (value: boolean) => void,
   ) {
     super(label);
 
@@ -30,7 +30,7 @@ export default class TDebugPanelCheckbox
       this.uuid,
       (e: TDebugActionEvent) => {
         this.onChange(e.data);
-      }
+      },
     );
   }
 

@@ -1,9 +1,9 @@
 import { generateShader } from '../shaders/chunked-shader';
-import texturedChunk from '../shaders/chunks/textured-chunk';
-import mainBase from '../shaders/bases/main';
+import { texturedChunk } from '../shaders/chunks/textured-chunk';
+import { mainShader } from '../shaders/bases/main';
 import type { TShaderAttributes } from './program';
-import TProgram from './program';
-import type TRenderer from './renderer';
+import { TProgram } from './program';
+import type { TRenderer } from './renderer';
 import { TUniformBlockBinding } from './uniform-manager';
 
 export interface TexturedProgramUniforms {
@@ -14,7 +14,7 @@ export interface TexturedProgramUniforms {
   uEnableInstanceUVs: WebGLUniformLocation | null;
 }
 
-export default class TTexturedProgram {
+export class TTexturedProgram {
   public program?: TProgram;
   public uniforms?: TexturedProgramUniforms;
 
@@ -60,7 +60,7 @@ export default class TTexturedProgram {
   constructor(private renderer: TRenderer) {}
 
   public async load() {
-    this.program = TProgram.from(generateShader(mainBase, [texturedChunk]));
+    this.program = TProgram.from(generateShader(mainShader, [texturedChunk]));
 
     const gl = this.renderer.context();
     this.program.compile(gl);

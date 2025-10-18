@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import ErrorScreen from './ErrorScreen';
+import { ErrorScreen } from './ErrorScreen';
 
 test('renders ErrorScreen component', () => {
   const error = 'Something went wrong';

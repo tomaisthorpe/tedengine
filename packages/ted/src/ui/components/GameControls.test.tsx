@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { TUIContext } from '../context';
-import GameControls from './GameControls';
+import { GameControls } from './GameControls';
 
 test('renders GameControls component with scaling', () => {
   const { container } = render(

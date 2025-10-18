@@ -1,5 +1,5 @@
 import { TJobContextTypes } from '../jobs/context-types';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import type { TAudioJobContext, TJobConfig } from '../jobs/jobs';
 
 export const AudioJobLoadSoundFromUrl: TJobConfig<

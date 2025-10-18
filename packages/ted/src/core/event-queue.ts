@@ -16,7 +16,7 @@ export interface IChildEventQueue {
  *
  * You can provide Web Workers to the constructor to relay any events this queue receives.
  */
-export default class TEventQueue {
+export class TEventQueue {
   private queue: TEvent[] = [];
   private listeners: { [key: string]: Array<(event: TEvent) => void> } = {};
 

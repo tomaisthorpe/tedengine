@@ -3,7 +3,7 @@ export interface TFrameBufferOptions {
   height: number;
 }
 
-export default class TFrameBuffer {
+export class TFrameBuffer {
   private frameBuffer: WebGLFramebuffer;
   private texture: WebGLTexture;
   public depthTexture: WebGLTexture;

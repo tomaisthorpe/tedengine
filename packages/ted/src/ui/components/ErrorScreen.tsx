@@ -24,7 +24,7 @@ const Muted = styled.div`
   margin-top: 4px;
 `;
 
-export default function ErrorScreen({ error }: { error: string }) {
+export function ErrorScreen({ error }: { error: string }) {
   return (
     <Container>
       <div>It's all gone wrong...try refresh.</div>

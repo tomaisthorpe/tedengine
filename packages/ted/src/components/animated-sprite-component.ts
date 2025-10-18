@@ -1,9 +1,9 @@
 import { TComponent } from '../core/component';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
-import TSpriteComponent from './sprite-component';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
+import { TSpriteComponent } from './sprite-component';
 
 export interface TSpriteSheetOptions {
   frameCount: number;
@@ -16,7 +16,7 @@ export interface TSpriteSheetOptions {
   step?: number;
 }
 
-export default class TAnimatedSpriteComponent extends TComponent {
+export class TAnimatedSpriteComponent extends TComponent {
   public frame = 0;
   public paused = false;
   public timeSinceLastFrame = 0;

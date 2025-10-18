@@ -1,4 +1,4 @@
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import type { TTextureOptions } from '../renderer/renderable-texture';
 
 export interface IAsset {
@@ -9,7 +9,7 @@ export interface IJobAsset {
   loadWithJob(jobs: TJobManager, url: string, config?: unknown): Promise<void>;
 }
 
-export default class TResourceManager {
+export class TResourceManager {
   private resources = new Map<string, IAsset | IJobAsset>();
 
   constructor(

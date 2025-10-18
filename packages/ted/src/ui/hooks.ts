@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type TEventQueue from '../core/event-queue';
+import type { TEventQueue } from '../core/event-queue';
 import {
   TEngineContext,
   TEventQueueContext,
@@ -8,7 +8,7 @@ import {
   TUIContext,
 } from './context';
 import type { TEngineContextData, TGameContextData } from './context';
-import type TFred from '../fred/fred';
+import type { TFred } from '../fred/fred';
 
 export function useGameContext(): TGameContextData {
   return React.useContext(TGameContext);

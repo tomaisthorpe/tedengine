@@ -1,5 +1,5 @@
 import { vec3 } from 'gl-matrix';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import type {
   TPhysicsBodyOptions,
   TPhysicsQueryOptions,
@@ -23,10 +23,10 @@ import type {
 import { TPhysicsStateChangeType } from '../physics/state-changes';
 import { createPhysicsWorker } from '../physics/create-worker';
 import { TJobContextTypes } from '../jobs/context-types';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import type { TJobsMessageRelayResult } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
-import type TGameState from './game-state';
+import type { TGameState } from './game-state';
 import {
   PhysicsJobCreateWorld,
   PhysicsJobQueryArea,
@@ -45,9 +45,9 @@ import {
 } from '../graphics/mesh-load-system';
 import { TMeshRenderSystem } from '../graphics/render-tasks-system';
 import { TAnimatedSpriteSystem } from '../components/animated-sprite-component';
-import TCameraSystem from '../cameras/camera-system';
+import { TCameraSystem } from '../cameras/camera-system';
 import type { TRigidBodyComponent } from '../physics/rigid-body-component';
-import type TTransform from '../math/transform';
+import type { TTransform } from '../math/transform';
 import { TPhysicsSystem } from '../physics/physics-system';
 import { TBundle } from './bundle';
 import { TGlobalTransformSystem } from '../components/global-transform';
@@ -73,7 +73,7 @@ export interface TCollisionClass {
   ignores?: string[];
 }
 
-export default class TWorld {
+export class TWorld {
   private entities: Map<TEntity, TComponentContainer> = new Map();
   public systems: TSystem[] = [];
   private nextEntityId = 0;
@@ -184,7 +184,7 @@ export default class TWorld {
   }
 
   public addSystem(system: TSystem): void {
-    this.addSystems(([system]))
+    this.addSystems([system]);
   }
 
   public removeSystem(system: TSystem): void {

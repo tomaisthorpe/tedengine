@@ -35,7 +35,7 @@ export interface TRapierObject {
   body: RigidBody;
 }
 
-export default class TRapier3DWorld implements TPhysicsWorld {
+export class TRapier3DWorld implements TPhysicsWorld {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   // TODO fix this
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports

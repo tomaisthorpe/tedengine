@@ -1,9 +1,9 @@
 import { mat4 } from 'gl-matrix';
-import type TPhysicsDebugProgram from './physics-debug-program';
-import type TProgram from './program';
+import type { TPhysicsDebugProgram } from './physics-debug-program';
+import type { TProgram } from './program';
 import type { TAttributeBuffer } from './program';
 
-export default class TPhysicsDebug {
+export class TPhysicsDebug {
   private positionBuffer?: WebGLBuffer;
   private colorBuffer?: WebGLBuffer;
 

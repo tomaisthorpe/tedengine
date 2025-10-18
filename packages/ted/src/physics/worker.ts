@@ -1,12 +1,12 @@
 /* eslint-disable no-restricted-globals */
 import { TJobContextTypes } from '../jobs/context-types';
-import TJobManager from '../jobs/job-manager';
+import { TJobManager } from '../jobs/job-manager';
 import type { TJobsMessageRelay } from '../jobs/messages';
 import { TMessageTypesJobs } from '../jobs/messages';
 import { registerPhysicsJobs } from './jobs';
 import type { TPhysicsOutMessageInit } from './messages';
 import { TPhysicsMessageTypes } from './messages';
-import TRapier3DWorld from './rapier3d-world';
+import { TRapier3DWorld } from './rapier3d-world';
 
 const world = new TRapier3DWorld();
 

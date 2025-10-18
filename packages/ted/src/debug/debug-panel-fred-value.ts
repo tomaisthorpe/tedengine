@@ -1,14 +1,17 @@
 import type { TDebugPanelRowSerializedData } from './debug-panel-row';
-import TDebugPanelRow from './debug-panel-row';
+import { TDebugPanelRow } from './debug-panel-row';
 import type { IDebugPanelRow } from './debug-panel-row';
 
-export default class TDebugPanelFredValue
+export class TDebugPanelFredValue
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
   public type = 'fredValue';
 
-  constructor(label: string, private value: string) {
+  constructor(
+    label: string,
+    private value: string,
+  ) {
     super(label);
   }
 

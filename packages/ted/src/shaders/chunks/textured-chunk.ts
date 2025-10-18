@@ -1,4 +1,4 @@
-export default {
+export const texturedChunk = {
   vertex: {
     before: `
       in vec2 aVertexUV;

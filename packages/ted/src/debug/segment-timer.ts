@@ -1,5 +1,5 @@
-import type TDebugPanel from './debug-panel';
-import type TDebugPanelSection from './debug-panel-section';
+import type { TDebugPanel } from './debug-panel';
+import type { TDebugPanelSection } from './debug-panel-section';
 
 interface TSegment {
   name: string;
@@ -10,7 +10,7 @@ interface TSegment {
   sampleCount: number;
 }
 
-export default class TSegmentTimer {
+export class TSegmentTimer {
   private segments: Map<string, TSegment> = new Map();
   private activeSegments: TSegment[] = [];
   private debugSection: TDebugPanelSection;

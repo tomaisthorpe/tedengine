@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import type TEventQueue from '../../core/event-queue';
+import type { TEventQueue } from '../../core/event-queue';
 import type { TDebugPanelSectionSerializedData } from '../../debug/debug-panel-section';
 import type { TFredStats } from '../../fred/fred';
-import DebugPanelRow from './DebugPanelRow';
+import { DebugPanelRow } from './DebugPanelRow';
 
 const SectionContainer = styled.div`
   padding: 10px 0;
@@ -43,11 +43,7 @@ interface Props {
   fredValues: TFredStats;
 }
 
-export default function DebugPanelSection({
-  section,
-  events,
-  fredValues,
-}: Props) {
+export function DebugPanelSection({ section, events, fredValues }: Props) {
   const [open, setOpen] = useState(section.startOpen);
   return (
     <SectionContainer>

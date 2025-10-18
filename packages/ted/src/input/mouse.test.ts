@@ -1,4 +1,4 @@
-import TMouse from './mouse';
+import { TMouse } from './mouse';
 import { TEventQueue } from '../index';
 describe('TMouse', () => {
   const eventQueue = new TEventQueue();

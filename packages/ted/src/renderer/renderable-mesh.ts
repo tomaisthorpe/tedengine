@@ -3,16 +3,16 @@ import type { mat4 } from 'gl-matrix';
 import { v4 as uuidv4 } from 'uuid';
 import type { IAsset } from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
-import OBJParser from '../utils/obj-parser';
-import type TColorProgram from './color-program';
-import type TProgram from './program';
+import { OBJParser } from '../utils/obj-parser';
+import type { TColorProgram } from './color-program';
+import type { TProgram } from './program';
 import type { TAttributeBuffer } from './program';
 
 export interface TPaletteIndex {
   [key: string]: number;
 }
 
-export default class TRenderableMesh implements IAsset {
+export class TRenderableMesh implements IAsset {
   public uuid: string = uuidv4();
 
   public positions: number[] = [];

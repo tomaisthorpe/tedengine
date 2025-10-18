@@ -3,9 +3,9 @@ import { TBundle } from '../core/bundle';
 import { TComponent } from '../core/component';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
-import type TTransform from '../math/transform';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
+import type { TTransform } from '../math/transform';
 
 export class TGlobalTransformComponent extends TComponent {
   public transform?: TTransform;

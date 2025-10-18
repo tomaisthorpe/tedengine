@@ -3,8 +3,8 @@ import { TTransformComponent } from '../components';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
 import { TActiveCameraComponent, TCameraComponent } from './camera-component';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
 
 export class TFollowComponentCameraComponent extends TComponent {}
 

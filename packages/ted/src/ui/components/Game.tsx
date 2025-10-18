@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import type { TFredConfig } from '../../fred/fred';
-import TFred from '../../fred/fred';
+import { TFred } from '../../fred/fred';
 import {
   TGameContext,
   TEngineContext,
@@ -11,11 +11,11 @@ import {
   TFredContext,
 } from '../context';
 import type { TGameContextData, TEngineContextData } from '../context';
-import DebugPanel from './DebugPanel';
-import LoadingScreen from './LoadingScreen';
-import ErrorScreen from './ErrorScreen';
-import PointerLock from './PointerLock';
-import GameControls from './GameControls';
+import { DebugPanel } from './DebugPanel';
+import { LoadingScreen } from './LoadingScreen';
+import { ErrorScreen } from './ErrorScreen';
+import { PointerLock } from './PointerLock';
+import { GameControls } from './GameControls';
 
 const Container = styled.div`
   display: block;
@@ -160,4 +160,4 @@ const TGame = ({
   );
 };
 
-export default TGame;
+export { TGame };

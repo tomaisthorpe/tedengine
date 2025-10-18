@@ -1,5 +1,5 @@
-import type TWorld from './world';
-import type TEngine from '../engine/engine';
+import type { TWorld } from './world';
+import type { TEngine } from '../engine/engine';
 
 export enum TSystemPriority {
   First = 0,

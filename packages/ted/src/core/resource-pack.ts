@@ -1,11 +1,11 @@
-import TTSound from '../audio/sound';
-import type TEngine from '../engine/engine';
-import TColorMaterial from '../graphics/color-material';
-import TImage from '../graphics/image';
-import TMesh from '../graphics/mesh';
-import TTexture from '../graphics/texture';
-import TTexturedMesh from '../graphics/textured-mesh';
-import TTilemap from '../graphics/tilemap';
+import { TSound } from '../audio/sound';
+import type { TEngine } from '../engine/engine';
+import { TColorMaterial } from '../graphics/color-material';
+import { TImage } from '../graphics/image';
+import { TMesh } from '../graphics/mesh';
+import { TTexture } from '../graphics/texture';
+import { TTexturedMesh } from '../graphics/textured-mesh';
+import { TTilemap } from '../graphics/tilemap';
 import type { IAsset, IJobAsset } from './resource-manager';
 
 export interface TResourceWithConfig {
@@ -25,7 +25,7 @@ export interface TResourcePackConfig {
   tilemaps?: TResource[];
 }
 
-export default class TResourcePack {
+export class TResourcePack {
   public resources: TResourcePackConfig;
 
   constructor(
@@ -89,7 +89,7 @@ export default class TResourcePack {
       materials: TColorMaterial,
       images: TImage,
       textures: TTexture,
-      sounds: TTSound,
+      sounds: TSound,
       tilemaps: TTilemap,
     };
 

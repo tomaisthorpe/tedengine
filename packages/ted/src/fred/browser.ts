@@ -1,6 +1,6 @@
 export type TBrowserFeature = 'webgl2' | 'offscreencanvas';
 
-export default class TBrowser {
+export class TBrowser {
   public supports(feature: TBrowserFeature): boolean {
     switch (feature) {
       case 'webgl2':

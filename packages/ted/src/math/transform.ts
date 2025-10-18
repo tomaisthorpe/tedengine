@@ -4,7 +4,7 @@ import { mat4, quat, vec3 } from 'gl-matrix';
  * A transform describes an option in 3D space
  */
 
-export default class TTransform {
+export class TTransform {
   public translation: vec3;
   public rotation: quat;
   public scale: vec3;

@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import type TEventQueue from '../../core/event-queue';
+import type { TEventQueue } from '../../core/event-queue';
 import type { TDebugPanelRowSerializedData } from '../../debug/debug-panel-row';
 import type { TDebugActionEvent } from '../../debug/events';
 import { TEventTypesDebug } from '../../debug/events';
 import type { TFredStats } from '../../fred/fred';
-import DebugPanelColorPickerRow from './DebugPanelColorPickerRow';
+import { DebugPanelColorPickerRow } from './DebugPanelColorPickerRow';
 
 interface Props {
   row: TDebugPanelRowSerializedData;
@@ -279,7 +279,7 @@ const typeToComponent: {
   colorPicker: ColorPickerRow,
 };
 
-export default function DebugPanelRow({ row, events, fredValues }: Props) {
+export function DebugPanelRow({ row, events, fredValues }: Props) {
   const RowComponent = typeToComponent[row.type];
 
   if (!RowComponent) {

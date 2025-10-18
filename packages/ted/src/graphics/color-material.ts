@@ -1,6 +1,6 @@
 import type { IAsset } from '../core/resource-manager';
 import type { TSerializedMaterial } from '../renderer/frame-params';
-import MTLParser from '../utils/mtl-parser';
+import { MTLParser } from '../utils/mtl-parser';
 import type { IMaterial } from './material';
 
 export type TColor = [number, number, number, number];
@@ -8,7 +8,7 @@ export interface TPalette {
   [key: string]: [number, number, number, number];
 }
 
-export default class TColorMaterial implements IAsset, IMaterial {
+export class TColorMaterial implements IAsset, IMaterial {
   public type = 'unknown';
 
   public palette?: TPalette;

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import type TEventQueue from '../../core/event-queue';
+import type { TEventQueue } from '../../core/event-queue';
 import type { TDebugPanelSerializedData } from '../../debug/debug-panel';
 import type { TDebugUpdateEvent } from '../../debug/events';
 import { TEventTypesDebug } from '../../debug/events';
 import type { TFredStats } from '../../fred/fred';
-import DebugPanelSection from './DebugPanelSection';
+import { DebugPanelSection } from './DebugPanelSection';
 
 const Container = styled.div`
   position: absolute;
@@ -26,7 +26,7 @@ interface Props {
   stats: TFredStats;
 }
 
-export default function DebugPanel({ events, stats }: Props) {
+export function DebugPanel({ events, stats }: Props) {
   const [data, setData] = useState<TDebugPanelSerializedData | undefined>(
     undefined,
   );

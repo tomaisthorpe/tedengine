@@ -1,5 +1,5 @@
 import { vec2, vec3, vec4 } from 'gl-matrix';
-import TTransform from '../math/transform';
+import { TTransform } from '../math/transform';
 import type { TTexturedMeshGeometry } from './textured-mesh-component';
 import { TComponent } from '../core/component';
 
@@ -36,7 +36,7 @@ export enum TSpriteLayer {
   Foreground_4,
 }
 
-export default class TSpriteComponent extends TComponent {
+export class TSpriteComponent extends TComponent {
   public width: number;
   public height: number;
   public origin: TOriginPoint;

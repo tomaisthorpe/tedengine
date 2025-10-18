@@ -65,5 +65,3 @@ export const DebugPanelColorPickerRow = ({
     </RowContainer>
   );
 };
-
-export default DebugPanelColorPickerRow;

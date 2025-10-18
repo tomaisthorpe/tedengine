@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 
 export interface IDebugPanelRow {
   uuid: string;
@@ -17,7 +17,7 @@ export interface TDebugPanelRowSerializedData {
   data: any;
 }
 
-export default class TDebugPanelRow {
+export class TDebugPanelRow {
   public uuid: string;
   public dead = false;
 

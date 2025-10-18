@@ -1,12 +1,12 @@
 import type { IJobAsset } from '../core/resource-manager';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import {
   AudioJobLoadSoundFromUrl,
   AudioJobPlaySound,
   AudioJobSetVolume,
 } from './jobs';
 
-export default class TSound implements IJobAsset {
+export class TSound implements IJobAsset {
   private uuid?: string;
   private jobs?: TJobManager;
 

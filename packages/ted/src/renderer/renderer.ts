@@ -1,25 +1,25 @@
 // @todo has limited error handling
 import { mat4, vec3 } from 'gl-matrix';
 import { TSpriteLayer } from '../components/sprite-component';
-import type TResourceManager from '../core/resource-manager';
+import type { TResourceManager } from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
-import TColorProgram from './color-program';
+import { TColorProgram } from './color-program';
 import type { TFrameParams, TSerializedSpriteInstance } from './frame-params';
 import { TRenderTask } from './frame-params';
-import type TProgram from './program';
-import type TRenderableMesh from './renderable-mesh';
-import type TRenderableTexture from './renderable-texture';
-import type TRenderableTexturedMesh from './renderable-textured-mesh';
-import TTexturedProgram from './textured-program';
-import type TEventQueue from '../core/event-queue';
+import type { TProgram } from './program';
+import type { TRenderableMesh } from './renderable-mesh';
+import type { TRenderableTexture } from './renderable-texture';
+import type { TRenderableTexturedMesh } from './renderable-textured-mesh';
+import { TTexturedProgram } from './textured-program';
+import type { TEventQueue } from '../core/event-queue';
 import type { TRenderingSizeChangedEvent } from './events';
 import { TEventTypesRenderer } from './events';
-import TPhysicsDebugProgram from './physics-debug-program';
-import TPhysicsDebug from './physics-debug';
-import TProbeProgram from './probe-program';
-import TFrameBuffer from './frame-buffer';
+import { TPhysicsDebugProgram } from './physics-debug-program';
+import { TPhysicsDebug } from './physics-debug';
+import { TProbeProgram } from './probe-program';
+import { TFrameBuffer } from './frame-buffer';
 
-export default class TRenderer {
+export class TRenderer {
   private registeredPrograms: { [key: string]: TProgram } = {};
   private registeredMeshes: { [key: string]: TRenderableMesh } = {};
   private registeredTexturedMeshes: { [key: string]: TRenderableTexturedMesh } =

@@ -1,5 +1,5 @@
 import type { IChildEventQueue, TEvent } from './event-queue';
-import TProxyEventQueue from './proxy-event-queue';
+import { TProxyEventQueue } from './proxy-event-queue';
 
 describe('TProxyEventQueue', () => {
   let broadcast: jest.Mock<IChildEventQueue['broadcast']>;

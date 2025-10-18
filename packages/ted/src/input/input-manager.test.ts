@@ -1,6 +1,6 @@
 import { TInputManager, TInputDevice } from './input-manager';
 import type { TInputKey } from './input-manager';
-import TEventQueue from '../core/event-queue';
+import { TEventQueue } from '../core/event-queue';
 import { TEventTypesInput } from './events';
 import type {
   TKeyDownEvent,

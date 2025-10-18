@@ -1,12 +1,12 @@
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import type { IJobAsset } from '../core/resource-manager';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import {
   RendererJobLoadTexturedMesh,
   RendererJobLoadTexturedMeshFromUrl,
 } from '../renderer/jobs';
 
-export default class TTexturedMesh implements IJobAsset {
+export class TTexturedMesh implements IJobAsset {
   public uuid?: string;
 
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {

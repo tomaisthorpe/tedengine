@@ -1,5 +1,5 @@
 import { TComponent } from '../core/component';
-import type TColorMaterial from '../graphics/color-material';
+import type { TColorMaterial } from '../graphics/color-material';
 import type { TPaletteIndex } from '../renderer/renderable-mesh';
 
 export interface TMeshGeometry {
@@ -20,7 +20,7 @@ export interface TAssetMeshData {
   path: string;
 }
 
-export default class TMeshComponent extends TComponent {
+export class TMeshComponent extends TComponent {
   public uuid?: string;
 
   constructor(public data: TInlineMeshData | TAssetMeshData) {

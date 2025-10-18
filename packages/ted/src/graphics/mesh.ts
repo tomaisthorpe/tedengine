@@ -1,13 +1,13 @@
 import type { IJobAsset } from '../core/resource-manager';
-import type TEngine from '../engine/engine';
-import type TJobManager from '../jobs/job-manager';
+import type { TEngine } from '../engine/engine';
+import type { TJobManager } from '../jobs/job-manager';
 import {
   RendererJobLoadMesh,
   RendererJobLoadMeshFromUrl,
 } from '../renderer/jobs';
 import type { TPaletteIndex } from '../renderer/renderable-mesh';
 
-export default class TMesh implements IJobAsset {
+export class TMesh implements IJobAsset {
   public uuid?: string;
 
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {

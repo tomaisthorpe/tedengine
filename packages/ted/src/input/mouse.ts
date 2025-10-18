@@ -1,6 +1,6 @@
 import type { mat4 } from 'gl-matrix';
 import { vec2 } from 'gl-matrix';
-import type TEventQueue from '../core/event-queue';
+import type { TEventQueue } from '../core/event-queue';
 import type {
   TMouseMoveEvent,
   TMouseUpEvent,
@@ -14,7 +14,7 @@ export interface IProjectionContext {
   projectionMatrix?: mat4;
 }
 
-export default class TMouse {
+export class TMouse {
   private mouseMoveListener: (e: MouseEvent) => void;
   private mouseUpListener: (e: MouseEvent) => void;
   private mouseDownListener: (e: MouseEvent) => void;

@@ -1,9 +1,9 @@
 import type { IJobAsset } from '../core/resource-manager';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import type { TSerializedShader } from '../renderer/frame-params';
 import { RendererJobLoadProgram } from '../renderer/jobs';
 
-export default class TShader implements IJobAsset {
+export class TShader implements IJobAsset {
   private uuid?: string;
 
   public async loadWithJob(jobs: TJobManager, url: string): Promise<void> {

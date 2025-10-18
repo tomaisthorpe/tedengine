@@ -2,13 +2,13 @@ import type { mat4, vec2 } from 'gl-matrix';
 import { vec4 } from 'gl-matrix';
 import { v4 as uuidv4 } from 'uuid';
 import type { IAsset } from '../core/resource-manager';
-import OBJParser from '../utils/obj-parser';
-import type TProgram from './program';
+import { OBJParser } from '../utils/obj-parser';
+import type { TProgram } from './program';
 import type { TAttributeBuffer } from './program';
-import type TRenderableTexture from './renderable-texture';
-import type TTexturedProgram from './textured-program';
+import type { TRenderableTexture } from './renderable-texture';
+import type { TTexturedProgram } from './textured-program';
 
-export default class TRenderableTexturedMesh implements IAsset {
+export class TRenderableTexturedMesh implements IAsset {
   public uuid: string = uuidv4();
 
   public positions: number[] = [];

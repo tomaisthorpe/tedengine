@@ -1,5 +1,5 @@
 import { vec2 } from 'gl-matrix';
-import type TEventQueue from '../core/event-queue';
+import type { TEventQueue } from '../core/event-queue';
 import type {
   TMouseLocation,
   TMouseMovement,
@@ -10,7 +10,7 @@ import type {
 } from './events';
 import { TEventTypesInput } from './events';
 
-export default class TMouse {
+export class TMouse {
   private touchMoveListener: (e: TouchEvent) => void;
   private touchStartListener: (e: TouchEvent) => void;
   private touchEndListener: (e: TouchEvent) => void;

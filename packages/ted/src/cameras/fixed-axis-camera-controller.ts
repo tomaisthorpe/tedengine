@@ -1,6 +1,6 @@
 import { vec3, quat } from 'gl-matrix';
-import type TEngine from '../engine/engine';
-import type TWorld from '../core/world';
+import type { TEngine } from '../engine/engine';
+import type { TWorld } from '../core/world';
 import { TComponent } from '../core/component';
 import { TSystem, TSystemPriority } from '../core/system';
 import type { TEntityQuery } from '../core/entity-query';

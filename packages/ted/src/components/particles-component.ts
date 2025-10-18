@@ -1,9 +1,9 @@
 import { vec3 } from 'gl-matrix';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
 import { TComponent } from '../core/component';
 import type { TEntityQuery } from '../core/entity-query';
-import TTransform from '../math/transform';
+import { TTransform } from '../math/transform';
 import { TSystem, TSystemPriority } from '../core/system';
 import { TSpriteInstancesComponent } from './sprite-component';
 import type { quat, vec4 } from 'gl-matrix';

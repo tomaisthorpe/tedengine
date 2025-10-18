@@ -1,9 +1,9 @@
 import { TComponent } from '../core/component';
-import type TWorld from '../core/world';
+import type { TWorld } from '../core/world';
 import { TTransformComponent } from '../components';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import { TMouseInputComponent } from './mouse-input';
 
 export class TTopDownInputComponent extends TComponent {

@@ -1,14 +1,11 @@
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import type { TDebugPanelRowSerializedData } from './debug-panel-row';
-import TDebugPanelRow from './debug-panel-row';
+import { TDebugPanelRow } from './debug-panel-row';
 import type { IDebugPanelRow } from './debug-panel-row';
 
 export type TUpdateFunction = (engine: TEngine, delta: number) => string;
 
-export default class TDebugPanelValue
-  extends TDebugPanelRow
-  implements IDebugPanelRow
-{
+export class TDebugPanelValue extends TDebugPanelRow implements IDebugPanelRow {
   public type = 'value';
   public value = '';
 

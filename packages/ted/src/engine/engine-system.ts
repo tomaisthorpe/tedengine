@@ -1,5 +1,5 @@
 import { TSystemPriority } from '../core/system';
-import type TEngine from './engine';
+import type { TEngine } from './engine';
 
 /**
  * Base class for all engine systems.

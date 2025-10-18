@@ -1,7 +1,7 @@
 import type { TShaderAttributes } from './program';
-import TProgram from './program';
-import type TRenderer from './renderer';
-import mainBase from '../shaders/bases/main';
+import { TProgram } from './program';
+import type { TRenderer } from './renderer';
+import { mainShader } from '../shaders/bases/main';
 import { generateShader } from '../shaders/chunked-shader';
 import { TUniformBlockBinding } from './uniform-manager';
 
@@ -23,7 +23,7 @@ export interface ProbeProgramUniforms {
   };
 }
 
-export default class TProbeProgram {
+export class TProbeProgram {
   public program?: TProgram;
   public uniforms?: ProbeProgramUniforms;
 
@@ -42,7 +42,7 @@ export default class TProbeProgram {
   constructor(private renderer: TRenderer) {}
 
   public async load() {
-    const probeShader = generateShader(mainBase, []);
+    const probeShader = generateShader(mainShader, []);
     this.program = TProgram.from(probeShader);
 
     const gl = this.renderer.context();

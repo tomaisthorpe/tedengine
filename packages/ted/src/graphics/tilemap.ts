@@ -15,7 +15,7 @@ export interface TTilesetDef {
   tileSize: number;
 }
 
-export default class TTilemap implements IAsset {
+export class TTilemap implements IAsset {
   public displayWidth = 0;
   public displayHeight = 0;
 

@@ -1,5 +1,5 @@
 import { vec3, quat } from 'gl-matrix';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import { TCameraComponent, TActiveCameraComponent } from './camera-component';
 import { TComponent } from '../core/component';
 import type { TEntityQuery } from '../core/entity-query';
@@ -7,8 +7,8 @@ import { TSystem, TSystemPriority } from '../core/system';
 import { TMouseInputComponent } from '../input/mouse-input';
 import type { TInputManager } from '../input/input-manager';
 import { TInputDevice } from '../input/input-manager';
-import type TWorld from '../core/world';
-import TTransform from '../math/transform';
+import type { TWorld } from '../core/world';
+import { TTransform } from '../math/transform';
 import { TTransformComponent } from '../components';
 
 export interface TOrbitCameraConfig {

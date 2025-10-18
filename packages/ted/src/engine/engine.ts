@@ -1,16 +1,16 @@
-import TEventQueue from '../core/event-queue';
+import { TEventQueue } from '../core/event-queue';
 import type { TEvent } from '../core/event-queue';
-import TGameStateManager from '../core/game-state-manager';
+import { TGameStateManager } from '../core/game-state-manager';
 import { TMessageTypesCore } from '../core/messages';
-import TProxyEventQueue from '../core/proxy-event-queue';
-import TResourceManager from '../core/resource-manager';
-import TDebugPanel from '../debug/debug-panel';
+import { TProxyEventQueue } from '../core/proxy-event-queue';
+import { TResourceManager } from '../core/resource-manager';
+import { TDebugPanel } from '../debug/debug-panel';
 import type { TConfig } from '../engine/config';
 import { TFredMessageTypes } from '../fred/messages';
 import type { TMouseLocation, TMouseMoveEvent } from '../input/events';
 import { TEventTypesInput } from '../input/events';
 import { TJobContextTypes } from '../jobs/context-types';
-import TJobManager from '../jobs/job-manager';
+import { TJobManager } from '../jobs/job-manager';
 import type {
   TJobsMessageRelay,
   TJobsMessageRelayResult,
@@ -20,7 +20,7 @@ import type { TRenderingSizeChangedEvent } from '../renderer/events';
 import { TEventTypesRenderer } from '../renderer/events';
 import type { TFrameParams } from '../renderer/frame-params';
 import type { TGameContextData, TEngineContextData } from '../ui/context';
-import TSegmentTimer from '../debug/segment-timer';
+import { TSegmentTimer } from '../debug/segment-timer';
 import type {
   TEngineMessageBootstrap,
   TEngineMessageFrameReady,
@@ -37,7 +37,7 @@ export type TPostMessageFunc =
   | ((message: unknown, transfer?: Transferable[]) => void)
   | ((message: unknown) => void);
 
-export default class TEngine {
+export class TEngine {
   /**
    * Event queue for the engine which will recieve all events.
    * Events are broadcast to the active game state queue and any workers.

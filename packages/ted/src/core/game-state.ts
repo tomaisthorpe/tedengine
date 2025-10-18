@@ -1,10 +1,10 @@
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import { TJobContextTypes } from '../jobs/context-types';
-import TJobManager from '../jobs/job-manager';
+import { TJobManager } from '../jobs/job-manager';
 import type { TSerializedLighting } from '../renderer/frame-params';
-import TEventQueue from './event-queue';
+import { TEventQueue } from './event-queue';
 import { TEventTypesCore } from './events';
-import TWorld from './world';
+import { TWorld } from './world';
 
 export interface TGameStateWithOnUpdate extends TGameState {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -50,7 +50,7 @@ const hasBeforeWorldCreate = (
 ): state is TGameStateWithBeforeWorldCreate =>
   (state as TGameStateWithBeforeWorldCreate).beforeWorldCreate !== undefined;
 
-export default class TGameState {
+export class TGameState {
   public created = false;
   public world?: TWorld;
 

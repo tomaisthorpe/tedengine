@@ -1,6 +1,6 @@
 import type { IAsset } from '../core/resource-manager';
 
-export default class TImage implements IAsset {
+export class TImage implements IAsset {
   public image?: ImageBitmap;
 
   public width?: number;

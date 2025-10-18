@@ -1,10 +1,10 @@
-import TResourcePack from './resource-pack';
-import TMesh from '../graphics/mesh';
-import TColorMaterial from '../graphics/color-material';
-import TImage from '../graphics/image';
-import TTexture from '../graphics/texture';
-import TTSound from '../audio/sound';
-import TTilemap from '../graphics/tilemap';
+import { TResourcePack } from './resource-pack';
+import { TMesh } from '../graphics/mesh';
+import { TColorMaterial } from '../graphics/color-material';
+import { TImage } from '../graphics/image';
+import { TTexture } from '../graphics/texture';
+import { TSound } from '../audio/sound';
+import { TTilemap } from '../graphics/tilemap';
 
 describe('TResourcePack', () => {
   let resourcePack: TResourcePack;
@@ -63,8 +63,8 @@ describe('TResourcePack', () => {
     expect(loadMock).toHaveBeenCalledWith(TImage, 'image2');
     expect(loadMock).toHaveBeenCalledWith(TTexture, 'texture1');
     expect(loadMock).toHaveBeenCalledWith(TTexture, 'texture2');
-    expect(loadMock).toHaveBeenCalledWith(TTSound, 'sound1');
-    expect(loadMock).toHaveBeenCalledWith(TTSound, 'sound2');
+    expect(loadMock).toHaveBeenCalledWith(TSound, 'sound1');
+    expect(loadMock).toHaveBeenCalledWith(TSound, 'sound2');
     expect(loadMock).toHaveBeenCalledWith(TTilemap, 'tilemap1');
     expect(loadMock).toHaveBeenCalledWith(TTilemap, 'tilemap2');
   });

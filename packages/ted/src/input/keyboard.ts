@@ -1,4 +1,4 @@
-import type TEventQueue from '../core/event-queue';
+import type { TEventQueue } from '../core/event-queue';
 import type { TKeyUpEvent, TKeyDownEvent } from './events';
 import { TEventTypesInput } from './events';
 
@@ -11,7 +11,7 @@ const preventDefaultBehaviour = [
   ' ', // Space key
 ];
 
-export default class TKeyboard {
+export class TKeyboard {
   private keyupListener: (e: KeyboardEvent) => void;
   private keydownListener: (e: KeyboardEvent) => void;
 

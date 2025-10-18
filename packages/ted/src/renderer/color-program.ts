@@ -1,10 +1,10 @@
 import type { TShaderAttributes } from './program';
-import TProgram from './program';
-import type TRenderer from './renderer';
+import { TProgram } from './program';
+import type { TRenderer } from './renderer';
 import { generateShader } from '../shaders/chunked-shader';
-import mainBase from '../shaders/bases/main';
-import paletteChunk from '../shaders/chunks/palette-vert';
-import phongFrag from '../shaders/chunks/phong-frag';
+import { mainShader } from '../shaders/bases/main';
+import { paletteVertChunk } from '../shaders/chunks/palette-vert';
+import { phongFragChunk } from '../shaders/chunks/phong-frag';
 import { TUniformBlockBinding } from './uniform-manager';
 
 export interface ColorProgramUniforms {
@@ -16,7 +16,7 @@ export interface ColorProgramUniforms {
   uMMatrix: WebGLUniformLocation | null;
 }
 
-export default class TColorProgram {
+export class TColorProgram {
   public program?: TProgram;
   public uniforms?: ColorProgramUniforms;
 
@@ -56,7 +56,10 @@ export default class TColorProgram {
   constructor(private renderer: TRenderer) {}
 
   public async load() {
-    const paletteShader = generateShader(mainBase, [paletteChunk, phongFrag]);
+    const paletteShader = generateShader(mainShader, [
+      paletteVertChunk,
+      phongFragChunk,
+    ]);
     this.program = TProgram.from(paletteShader);
 
     const gl = this.renderer.context();

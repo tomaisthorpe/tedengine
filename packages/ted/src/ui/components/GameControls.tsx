@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import type TFred from '../../fred/fred';
-import FullscreenToggle from './FullscreenToggle';
-import MuteToggle from './MuteToggle';
+import type { TFred } from '../../fred/fred';
+import { FullscreenToggle } from './FullscreenToggle';
+import { MuteToggle } from './MuteToggle';
 import { useUIContext } from '../hooks';
 
 export type GameControlsProps = {
@@ -15,7 +15,7 @@ const Container = styled.div`
   padding: 8px;
 `;
 
-export default function GameControls({ fred }: GameControlsProps) {
+export function GameControls({ fred }: GameControlsProps) {
   const { scaling } = useUIContext();
   return (
     <Container

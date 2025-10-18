@@ -1,8 +1,8 @@
-import type TAudio from '../audio/audio';
-import type TGameState from '../core/game-state';
-import type TResourceManager from '../core/resource-manager';
+import type { TAudio } from '../audio/audio';
+import type { TGameState } from '../core/game-state';
+import type { TResourceManager } from '../core/resource-manager';
 import type { TPhysicsWorld } from '../physics/physics-world';
-import type TRenderer from '../renderer/renderer';
+import type { TRenderer } from '../renderer/renderer';
 import type { TJobContextTypes } from './context-types';
 export interface TJobContext {
   resourceManager: TResourceManager;

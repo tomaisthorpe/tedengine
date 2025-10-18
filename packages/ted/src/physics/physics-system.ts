@@ -1,14 +1,14 @@
 import { quat } from 'gl-matrix';
 import { vec3 } from 'gl-matrix';
-import type TWorld from '../core/world';
+import type { TWorld } from '../core/world';
 import { TTransformComponent } from '../components';
 import type { TEntity } from '../core/world';
 import type { TEntityQuery } from '../core/entity-query';
 import { TSystem, TSystemPriority } from '../core/system';
-import type TEngine from '../engine/engine';
+import type { TEngine } from '../engine/engine';
 import { TRigidBodyComponent } from './rigid-body-component';
 import type { TPhysicsCollision } from './physics-world';
-import type TEventQueue from '../core/event-queue';
+import type { TEventQueue } from '../core/event-queue';
 import { TEventTypesPhysics } from './events';
 
 export class TPhysicsSystem extends TSystem {

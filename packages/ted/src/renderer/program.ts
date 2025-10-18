@@ -61,7 +61,7 @@ const createProgram = (
   return program!;
 };
 
-export default class TProgram implements IAsset {
+export class TProgram implements IAsset {
   /**
    * Boolean to save whether the program has been compiled yet.
    */

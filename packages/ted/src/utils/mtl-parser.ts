@@ -1,6 +1,6 @@
-import MTLFile from './mtl-file-parser/mtl-file';
+import { MTLFile } from './mtl-file-parser/mtl-file';
 
-export default class MTLParser {
+export class MTLParser {
   public static parse(content: string): {
     [key: string]: [number, number, number, number];
   } {

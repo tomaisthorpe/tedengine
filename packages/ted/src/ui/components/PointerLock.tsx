@@ -20,7 +20,7 @@ const FocusBox = styled.div`
   font-weight: bold;
 `;
 
-export default function PointerLock() {
+export function PointerLock() {
   const [desired, setDesired] = useState(false);
   const [acquired, setAcquired] = useState(false);
 

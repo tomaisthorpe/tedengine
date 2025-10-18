@@ -4,7 +4,7 @@
  * Ported to TypeScript
  */
 
-export default class OBJFile {
+export class OBJFile {
   private defaultModelName: string;
   private result: {
     models: any[];
@@ -18,7 +18,10 @@ export default class OBJFile {
   private currentGroup?: string;
   private smoothingGroup?: number;
 
-  constructor(private fileContents: string, defaultModelName?: string) {
+  constructor(
+    private fileContents: string,
+    defaultModelName?: string,
+  ) {
     this._reset();
 
     this.defaultModelName = defaultModelName || 'untitled';

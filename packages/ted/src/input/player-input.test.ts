@@ -5,11 +5,11 @@ import {
   setPlayerInputMapping,
 } from './player-input';
 import { TInputManager } from './input-manager';
-import TEventQueue from '../core/event-queue';
+import { TEventQueue } from '../core/event-queue';
 import { TEventTypesInput } from './events';
 import type { TKeyDownEvent, TKeyUpEvent } from './events';
-import type TWorld from '../core/world';
-import type TEngine from '../engine/engine';
+import type { TWorld } from '../core/world';
+import type { TEngine } from '../engine/engine';
 import { vec2 } from 'gl-matrix';
 
 describe('TPlayerInputComponent', () => {

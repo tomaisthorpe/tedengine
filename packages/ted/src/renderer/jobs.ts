@@ -1,12 +1,12 @@
 import { TJobContextTypes } from '../jobs/context-types';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 import type { TRenderJobContext, TJobConfig } from '../jobs/jobs';
-import TProgram from './program';
+import { TProgram } from './program';
 import type { TPaletteIndex } from './renderable-mesh';
-import TRenderableMesh from './renderable-mesh';
+import { TRenderableMesh } from './renderable-mesh';
 import type { TTextureOptions } from './renderable-texture';
-import TRenderableTexture from './renderable-texture';
-import TRenderableTexturedMesh from './renderable-textured-mesh';
+import { TRenderableTexture } from './renderable-texture';
+import { TRenderableTexturedMesh } from './renderable-textured-mesh';
 
 export const RendererJobLoadProgram: TJobConfig<
   TJobContextTypes.Renderer,

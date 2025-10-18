@@ -1,5 +1,5 @@
 import type { vec4, vec2 } from 'gl-matrix';
-import type TTexture from '../graphics/texture';
+import type { TTexture } from '../graphics/texture';
 import { TComponent } from '../core/component';
 
 export interface TTexturedMeshGeometry {
@@ -29,7 +29,7 @@ export class TTextureComponent extends TComponent {
   }
 }
 
-export default class TTexturedMeshComponent extends TComponent {
+export class TTexturedMeshComponent extends TComponent {
   public uuid?: string;
 
   constructor(public data: TInlineTexturedMeshData | TAssetTexturedMeshData) {

@@ -1,7 +1,7 @@
-import type TEventQueue from '../core/event-queue';
-import type TEngine from '../engine/engine';
+import type { TEventQueue } from '../core/event-queue';
+import type { TEngine } from '../engine/engine';
 import type { TDebugPanelRowSerializedData } from './debug-panel-row';
-import TDebugPanelRow from './debug-panel-row';
+import { TDebugPanelRow } from './debug-panel-row';
 import type { IDebugPanelRow } from './debug-panel-row';
 import type { TDebugActionEvent } from './events';
 import { TEventTypesDebug } from './events';
@@ -11,7 +11,7 @@ export interface TDebugSelectOption {
   value: string;
 }
 
-export default class TDebugPanelSelect
+export class TDebugPanelSelect
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
@@ -23,7 +23,7 @@ export default class TDebugPanelSelect
     label: string,
     public options: TDebugSelectOption[],
     startingValue: string,
-    private onValueChange: (value: string) => void
+    private onValueChange: (value: string) => void,
   ) {
     super(label);
 
@@ -36,7 +36,7 @@ export default class TDebugPanelSelect
       this.uuid,
       (e: TDebugActionEvent) => {
         this.onChange(e.data);
-      }
+      },
     );
   }
 

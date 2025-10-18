@@ -1,21 +1,21 @@
 import { v4 as uuid } from 'uuid';
-import type TEventQueue from '../core/event-queue';
-import type TEngine from '../engine/engine';
+import type { TEventQueue } from '../core/event-queue';
+import type { TEngine } from '../engine/engine';
 import type { TButton } from './debug-panel-buttons';
-import TDebugPanelButtons from './debug-panel-buttons';
-import TDebugPanelCheckbox from './debug-panel-checkbox';
-import TDebugPanelFredValue from './debug-panel-fred-value';
+import { TDebugPanelButtons } from './debug-panel-buttons';
+import { TDebugPanelCheckbox } from './debug-panel-checkbox';
+import { TDebugPanelFredValue } from './debug-panel-fred-value';
 import type { TDebugInputTypes, TDebugInputProps } from './debug-panel-input';
-import TDebugPanelInput from './debug-panel-input';
+import { TDebugPanelInput } from './debug-panel-input';
 import type {
   IDebugPanelRow,
   TDebugPanelRowSerializedData,
 } from './debug-panel-row';
 import type { TDebugSelectOption } from './debug-panel-select';
-import TDebugPanelSelect from './debug-panel-select';
-import TDebugPanelValue from './debug-panel-value';
+import { TDebugPanelSelect } from './debug-panel-select';
+import { TDebugPanelValue } from './debug-panel-value';
 import type { TUpdateFunction } from './debug-panel-value';
-import TDebugPanelColorPicker from './debug-panel-color-picker';
+import { TDebugPanelColorPicker } from './debug-panel-color-picker';
 import type { vec3 } from 'gl-matrix';
 
 export interface TDebugPanelSectionSerializedData {
@@ -25,7 +25,7 @@ export interface TDebugPanelSectionSerializedData {
   rows: TDebugPanelRowSerializedData[];
 }
 
-export default class TDebugPanelSection {
+export class TDebugPanelSection {
   public rows: IDebugPanelRow[] = [];
   public dead = false;
   public uuid: string;

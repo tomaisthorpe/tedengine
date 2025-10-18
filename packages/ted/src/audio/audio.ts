@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Howl } from 'howler';
 
-export default class TAudio {
+export class TAudio {
   private sounds: { [key: string]: Howl } = {};
 
   private _muted = false;

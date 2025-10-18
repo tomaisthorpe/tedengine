@@ -1,8 +1,8 @@
 import { v4 as uuid } from 'uuid';
-import type TEventQueue from '../core/event-queue';
-import type TEngine from '../engine/engine';
+import type { TEventQueue } from '../core/event-queue';
+import type { TEngine } from '../engine/engine';
 import type { TDebugPanelRowSerializedData } from './debug-panel-row';
-import TDebugPanelRow from './debug-panel-row';
+import { TDebugPanelRow } from './debug-panel-row';
 import type { IDebugPanelRow } from './debug-panel-row';
 import type { TDebugActionEvent } from './events';
 import { TEventTypesDebug } from './events';
@@ -16,7 +16,7 @@ type TButtonWithCallback = TButton & {
   uuid: string;
 };
 
-export default class TDebugPanelButtons
+export class TDebugPanelButtons
   extends TDebugPanelRow
   implements IDebugPanelRow
 {

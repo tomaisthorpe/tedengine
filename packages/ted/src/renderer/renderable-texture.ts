@@ -20,7 +20,7 @@ export interface TTextureOptions {
   wrapT?: TTextureWrap;
 }
 
-export default class TRenderableTexture {
+export class TRenderableTexture {
   public uuid: string = uuidv4();
   public texture?: WebGLTexture;
 

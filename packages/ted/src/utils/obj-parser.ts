@@ -1,4 +1,4 @@
-import OBJFile from './obj-file-parser/obj-file';
+import { OBJFile } from './obj-file-parser/obj-file';
 
 interface Vertex {
   x: number;
@@ -12,7 +12,7 @@ interface UV {
   w: number;
 }
 
-export default class OBJParser {
+export class OBJParser {
   public static parse(content: string) {
     let vertices: Vertex[] = [];
     let normals: Vertex[] = [];

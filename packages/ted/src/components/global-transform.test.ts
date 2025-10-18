@@ -3,10 +3,10 @@ import {
   TGlobalTransformComponent,
   TGlobalTransformSystem,
 } from './global-transform';
-import TWorld from '../core/world';
-import TTransform from '../math/transform';
-import type TEngine from '../engine/engine';
-import type TGameState from '../core/game-state';
+import { TWorld } from '../core/world';
+import { TTransform } from '../math/transform';
+import type { TEngine } from '../engine/engine';
+import type { TGameState } from '../core/game-state';
 import { vec3 } from 'gl-matrix';
 
 describe('TGlobalTransformSystem', () => {

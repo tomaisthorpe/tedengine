@@ -17,7 +17,7 @@ import type {
   TPhysicsStateChange,
 } from './state-changes';
 import { TPhysicsStateChangeType } from './state-changes';
-import type TJobManager from '../jobs/job-manager';
+import type { TJobManager } from '../jobs/job-manager';
 
 export interface TPhysicsSimulateStepResult {
   bodies: TPhysicsBody[];

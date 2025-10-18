@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import TWorld from './world';
+import { TWorld } from './world';
 import { TComponent } from './component';
 import { TSystem } from './system';
-import type TEngine from '../engine/engine';
-import type TGameState from './game-state';
+import type { TEngine } from '../engine/engine';
+import type { TGameState } from './game-state';
 import { TBundle } from './bundle';
 
 class TestComponent extends TComponent {

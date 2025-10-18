@@ -34,7 +34,7 @@ const Button = styled.div`
   }
 `;
 
-export default function FullscreenToggle({
+export function FullscreenToggle({
   toggleFullscreen,
 }: {
   toggleFullscreen: () => void;

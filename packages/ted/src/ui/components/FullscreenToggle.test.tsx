@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { render } from '@testing-library/react';
-import FullscreenToggle from './FullscreenToggle';
+import { FullscreenToggle } from './FullscreenToggle';
 import { TUIContext } from '../context';
 
 test('renders FullscreenToggle component', () => {

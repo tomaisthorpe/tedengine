@@ -37,7 +37,7 @@ void main() {
 ${after}
 `;
 
-export default {
+export const mainShader = {
   vertexShader,
   fragmentShader,
 };
