@@ -203,9 +203,9 @@ export class TEngine {
 
     this.debugPanel.update(this, delta);
 
-    const endEventUpdate = this.segmentTimer.startSegment('Event Update');
+    const eventUpdateSegment = this.segmentTimer.startSegment('Event Update');
     this.events.update();
-    endEventUpdate();
+    eventUpdateSegment.end();
 
     this.inputManager.update(delta);
 
@@ -214,12 +214,12 @@ export class TEngine {
       await system.update(this, delta);
     }
 
-    const endGameStateUpdate =
+    const gameStateUpdateSegment =
       this.segmentTimer.startSegment('Game State Update');
     await this.gameState.update(delta);
-    endGameStateUpdate();
+    gameStateUpdateSegment.end();
 
-    const endFramePreparation =
+    const framePreparationSegment =
       this.segmentTimer.startSegment('Frame Preparation');
     const camera = this.gameState.getActiveCamera();
 
@@ -244,7 +244,7 @@ export class TEngine {
     };
 
     this.fredPort.postMessage(message);
-    endFramePreparation();
+    framePreparationSegment.end();
 
     this.frameNumber++;
 
