@@ -72,10 +72,6 @@ export class TDebugPanel extends TDebugPanelSection {
   }
 
   private createDefaultRows(engine: TEngine) {
-    this.addValue('Engine (ms)', (engine: TEngine) => {
-      return engine.stats.engineTime.toFixed(1);
-    });
-
     this.addFredValue('Render (ms)', 'renderTime');
 
     this.addButtons('Debug Physics', {

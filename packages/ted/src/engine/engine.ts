@@ -31,8 +31,6 @@ import { TMessageTypesEngine } from './messages';
 import { TInputManager } from '../input/input-manager';
 import type { TEngineSystem } from './engine-system';
 
-const TIME_PER_ENGINE_TIME_UPDATE = 1000;
-
 export type TPostMessageFunc =
   | ((message: unknown, transfer?: Transferable[]) => void)
   | ((message: unknown) => void);
@@ -73,13 +71,6 @@ export class TEngine {
     TEngineSystem
   > = new Map();
 
-  // @todo move this somewhere more relevant
-  public stats: {
-    engineTime: number;
-  } = {
-    engineTime: 0,
-  };
-  private lastEngineTimeUpdate = 0;
   private fredPort!: MessagePort;
 
   constructor(
@@ -262,15 +253,6 @@ export class TEngine {
     engineUpdateSegment.end();
 
     this.frameNumber++;
-
-    // Update stats
-    // @todo update stats with segment timer data
-    const elapsed = now - this.lastEngineTimeUpdate;
-    if (elapsed > TIME_PER_ENGINE_TIME_UPDATE) {
-      this.stats.engineTime = performance.now() - now;
-
-      this.lastEngineTimeUpdate = now;
-    }
 
     this.processing = false;
   }
