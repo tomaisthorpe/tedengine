@@ -140,7 +140,7 @@ const ButtonsRow = ({
   row: TDebugPanelRowSerializedData;
   events: TEventQueue;
 }) => (
-  <div>
+  <div style={{ marginLeft: 'auto' }}>
     {row.data.buttons.map((button: any) => (
       <RowButton
         key={button.uuid}
@@ -190,7 +190,7 @@ const InputRow = ({
   ]);
 
   return (
-    <RowInputContainer>
+    <RowInputContainer style={{ marginLeft: 'auto' }}>
       <RowInput
         ref={inputRef}
         type={row.data.inputType}
@@ -222,7 +222,7 @@ const CheckboxRow = ({
   events: TEventQueue;
 }) => {
   return (
-    <RowInputContainer>
+    <RowInputContainer style={{ marginLeft: 'auto' }}>
       <RowInput
         checked={row.data.value}
         type="checkbox"
@@ -246,23 +246,25 @@ const SelectRow = ({
   row: TDebugPanelRowSerializedData;
   events: TEventQueue;
 }) => (
-  <RowSelect
-    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-      const event: TDebugActionEvent = {
-        type: TEventTypesDebug.Action,
-        subType: row.uuid,
-        data: e.target.value,
-      };
-      events.broadcast(event);
-    }}
-    value={row.data.value}
-  >
-    {row.data.options.map((option: any) => (
-      <RowOption value={option.value} key={option.value}>
-        {option.label}
-      </RowOption>
-    ))}
-  </RowSelect>
+  <div style={{ marginLeft: 'auto' }}>
+    <RowSelect
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+        const event: TDebugActionEvent = {
+          type: TEventTypesDebug.Action,
+          subType: row.uuid,
+          data: e.target.value,
+        };
+        events.broadcast(event);
+      }}
+      value={row.data.value}
+    >
+      {row.data.options.map((option: any) => (
+        <RowOption value={option.value} key={option.value}>
+          {option.label}
+        </RowOption>
+      ))}
+    </RowSelect>
+  </div>
 );
 
 const ColorPickerRow = ({
@@ -272,17 +274,19 @@ const ColorPickerRow = ({
   row: TDebugPanelRowSerializedData;
   events: TEventQueue;
 }) => (
-  <DebugPanelColorPickerRow
-    color={row.data.value}
-    onChange={(color) => {
-      const event: TDebugActionEvent = {
-        type: TEventTypesDebug.Action,
-        subType: row.uuid,
-        data: color,
-      };
-      events.broadcast(event);
-    }}
-  />
+  <div style={{ marginLeft: 'auto' }}>
+    <DebugPanelColorPickerRow
+      color={row.data.value}
+      onChange={(color) => {
+        const event: TDebugActionEvent = {
+          type: TEventTypesDebug.Action,
+          subType: row.uuid,
+          data: color,
+        };
+        events.broadcast(event);
+      }}
+    />
+  </div>
 );
 
 const typeToComponent: {
@@ -320,12 +324,28 @@ const ExpandArrow = styled.span<{ isExpanded: boolean }>`
   }
 `;
 
+const getRowStorageKey = (rowLabel: string) => {
+  const pathPrefix = window.location.pathname.replace(/\//g, '_') || 'root';
+  return `debugPanel_${pathPrefix}_row_${rowLabel}`;
+};
+
 export function DebugPanelRow({ row, events, fredValues }: Props) {
   const hasChildren =
     row.hasChildren && row.children && row.children.length > 0;
-  const [isExpanded, setIsExpanded] = useState<boolean>(
-    !!(hasChildren && row.children && row.children.length <= 10),
-  ); // Auto-expand if 10 or fewer children
+
+  const storageKey = getRowStorageKey(row.label);
+
+  const [isExpanded, setIsExpanded] = useState<boolean>(() => {
+    if (!hasChildren) return false;
+
+    const stored = sessionStorage.getItem(storageKey);
+    if (stored !== null) {
+      return stored === 'true';
+    }
+    // Default: auto-expand if 10 or fewer children
+    return !!(row.children && row.children.length <= 10);
+  });
+
   const RowComponent = typeToComponent[row.type];
 
   if (!RowComponent) {
@@ -334,7 +354,9 @@ export function DebugPanelRow({ row, events, fredValues }: Props) {
 
   const handleToggle = () => {
     if (hasChildren) {
-      setIsExpanded(!isExpanded);
+      const newState = !isExpanded;
+      setIsExpanded(newState);
+      sessionStorage.setItem(storageKey, String(newState));
     }
   };
 

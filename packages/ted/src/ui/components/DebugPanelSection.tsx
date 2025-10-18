@@ -43,11 +43,28 @@ interface Props {
   fredValues: TFredStats;
 }
 
+const getStorageKey = (sectionName: string) => {
+  const pathPrefix = window.location.pathname.replace(/\//g, '_') || 'root';
+  return `debugPanel_${pathPrefix}_section_${sectionName}`;
+};
+
 export function DebugPanelSection({ section, events, fredValues }: Props) {
-  const [open, setOpen] = useState(section.startOpen);
+  const storageKey = getStorageKey(section.name);
+
+  const [open, setOpen] = useState(() => {
+    const stored = sessionStorage.getItem(storageKey);
+    return stored !== null ? stored === 'true' : section.startOpen;
+  });
+
+  const handleToggle = () => {
+    const newState = !open;
+    setOpen(newState);
+    sessionStorage.setItem(storageKey, String(newState));
+  };
+
   return (
     <SectionContainer>
-      <SectionLabel open={open} onClick={() => setOpen(!open)}>
+      <SectionLabel open={open} onClick={handleToggle}>
         {section.name}
       </SectionLabel>
       {open &&
