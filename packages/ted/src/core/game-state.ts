@@ -5,6 +5,7 @@ import type { TSerializedLighting } from '../renderer/frame-params';
 import { TEventQueue } from './event-queue';
 import { TEventTypesCore } from './events';
 import { TWorld } from './world';
+import type { TSegmentTimingContext } from '../debug/segment-timer';
 
 export interface TGameStateWithOnUpdate extends TGameState {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -86,12 +87,16 @@ export class TGameState {
    * **DO NOT OVERRIDE!** Add [[`onUpdate`]] instead.
    * @hidden
    */
-  public async update(engine: TEngine, delta: number): Promise<void> {
+  public async update(
+    engine: TEngine,
+    delta: number,
+    timingSegment?: TSegmentTimingContext,
+  ): Promise<void> {
     this.events.update();
 
     if (!this.world) return;
 
-    await this.world.update(engine, delta);
+    await this.world.update(engine, delta, timingSegment);
 
     if (hasOnUpdate(this)) {
       await this.onUpdate(engine, delta);

@@ -48,6 +48,7 @@ import { TAnimatedSpriteSystem } from '../components/animated-sprite-component';
 import { TCameraSystem } from '../cameras/camera-system';
 import type { TRigidBodyComponent } from '../physics/rigid-body-component';
 import type { TTransform } from '../math/transform';
+import type { TSegmentTimingContext } from '../debug/segment-timer';
 import { TPhysicsSystem } from '../physics/physics-system';
 import { TBundle } from './bundle';
 import { TGlobalTransformSystem } from '../components/global-transform';
@@ -338,13 +339,24 @@ export class TWorld {
   /**
    * Called every frame with delta and triggers update on all actors
    */
-  public async update(_: TEngine, delta: number): Promise<void> {
+  public async update(
+    _: TEngine,
+    delta: number,
+    timingSegment?: TSegmentTimingContext,
+  ): Promise<void> {
     if (this.paused) {
       return;
     }
 
     for (const system of this.systems) {
-      await system.update(this.engine, this, delta);
+      if (timingSegment) {
+        const systemName = system.constructor.name;
+        const systemSegment = timingSegment.startSegment(systemName);
+        await system.update(this.engine, this, delta);
+        systemSegment.end();
+      } else {
+        await system.update(this.engine, this, delta);
+      }
     }
   }
 

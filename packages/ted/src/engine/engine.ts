@@ -203,27 +203,40 @@ export class TEngine {
 
     this.debugPanel.update(this, delta);
 
-    const eventUpdateSegment = this.segmentTimer.startSegment('Event Update');
+    const engineUpdateSegment = this.segmentTimer.startSegment('Engine Update');
+
+    const eventUpdateSegment = engineUpdateSegment.startSegment('Event Update');
     this.events.update();
     eventUpdateSegment.end();
 
     this.inputManager.update(delta);
 
     // @todo currently doesn't strictly follow the system priority order
-    for (const system of this.engineSystems) {
-      await system.update(this, delta);
+    if (this.engineSystems.length > 0) {
+      const engineSystemsSegment =
+        engineUpdateSegment.startSegment('Engine Systems');
+      for (const system of this.engineSystems) {
+        const systemName = system.constructor.name;
+        const systemSegment = engineSystemsSegment.startSegment(systemName);
+        await system.update(this, delta);
+        systemSegment.end();
+      }
+      engineSystemsSegment.end();
     }
 
     const gameStateUpdateSegment =
-      this.segmentTimer.startSegment('Game State Update');
-    await this.gameState.update(delta);
+      engineUpdateSegment.startSegment('Game State Update');
+    await this.gameState.update(delta, gameStateUpdateSegment);
     gameStateUpdateSegment.end();
 
     const framePreparationSegment =
-      this.segmentTimer.startSegment('Frame Preparation');
+      engineUpdateSegment.startSegment('Frame Preparation');
     const camera = this.gameState.getActiveCamera();
 
     if (!camera) {
+      framePreparationSegment.end();
+      engineUpdateSegment.end();
+      this.processing = false;
       return;
     }
 
@@ -245,6 +258,8 @@ export class TEngine {
 
     this.fredPort.postMessage(message);
     framePreparationSegment.end();
+
+    engineUpdateSegment.end();
 
     this.frameNumber++;
 

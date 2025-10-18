@@ -5,6 +5,7 @@ import type {
   TSerializedRenderTask,
 } from '../renderer/frame-params';
 import type { TGameState } from './game-state';
+import type { TSegmentTimingContext } from '../debug/segment-timer';
 
 export interface TGameStateType {
   new (engine: TEngine): TGameState;
@@ -112,10 +113,13 @@ export class TGameStateManager {
     this.doneLoading();
   }
 
-  public async update(delta: number): Promise<void> {
+  public async update(
+    delta: number,
+    timingSegment?: TSegmentTimingContext,
+  ): Promise<void> {
     if (this.loading) return;
 
-    await this.current()?.update(this.engine, delta);
+    await this.current()?.update(this.engine, delta, timingSegment);
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {
