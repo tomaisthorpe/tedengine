@@ -62,6 +62,7 @@ export class TFixedAxisCameraComponent extends TComponent {
 export class TFixedAxisCameraTargetComponent extends TComponent {}
 
 export class TFixedAxisCameraSystem extends TSystem {
+  public static readonly systemName: string = 'TFixedAxisCameraSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private activeCameraQuery: TEntityQuery;

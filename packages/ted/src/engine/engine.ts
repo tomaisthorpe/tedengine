@@ -226,7 +226,7 @@ export class TEngine {
       const engineSystemsSegment =
         engineUpdateSegment.startSegment('Engine Systems');
       for (const system of this.engineSystems) {
-        const systemName = system.constructor.name;
+        const systemName = system.name;
         const systemSegment = engineSystemsSegment.startSegment(systemName);
         await system.update(this, delta);
         systemSegment.end();

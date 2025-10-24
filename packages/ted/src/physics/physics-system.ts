@@ -12,6 +12,7 @@ import type { TEventQueue } from '../core/event-queue';
 import { TEventTypesPhysics } from './events';
 
 export class TPhysicsSystem extends TSystem {
+  public static readonly systemName: string = 'TPhysicsSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

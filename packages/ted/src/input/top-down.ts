@@ -11,6 +11,7 @@ export class TTopDownInputComponent extends TComponent {
 }
 
 export class TTopDownInputSystem extends TSystem {
+  public static readonly systemName: string = 'TTopDownInputSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

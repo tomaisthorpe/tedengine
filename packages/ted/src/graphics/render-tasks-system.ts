@@ -29,6 +29,7 @@ import { TSystem, TSystemPriority } from '../core/system';
 import { TGlobalTransformComponent } from '../components/global-transform';
 
 export class TMeshRenderSystem extends TSystem {
+  public static readonly systemName: string = 'TMeshRenderSystem';
   public readonly priority: number = TSystemPriority.PostUpdate;
 
   private meshQuery: TEntityQuery;

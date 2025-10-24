@@ -60,6 +60,7 @@ export class TTilemapComponent extends TComponent {
 }
 
 export class TTilemapSystem extends TSystem {
+  public static readonly systemName: string = 'TTilemapSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

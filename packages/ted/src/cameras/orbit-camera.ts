@@ -47,6 +47,7 @@ export class TOrbitCameraComponent extends TComponent {
 }
 
 export class TOrbitCameraSystem extends TSystem {
+  public static readonly systemName: string = 'TOrbitCameraSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

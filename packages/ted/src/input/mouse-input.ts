@@ -25,6 +25,7 @@ export class TMouseInputComponent extends TComponent {
 }
 
 export class TMouseInputSystem extends TSystem {
+  public static readonly systemName: string = 'TMouseInputSystem';
   public readonly priority: number = TSystemPriority.PreUpdate;
 
   private query: TEntityQuery;

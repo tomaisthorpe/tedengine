@@ -12,6 +12,7 @@ export class TGlobalTransformComponent extends TComponent {
 }
 
 export class TGlobalTransformSystem extends TSystem {
+  public static readonly systemName: string = 'TGlobalTransformSystem';
   private query: TEntityQuery;
   public priority = TSystemPriority.Last;
 

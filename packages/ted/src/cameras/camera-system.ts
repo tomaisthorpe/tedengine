@@ -17,6 +17,7 @@ export interface TCamera {
 }
 
 export class TCameraSystem extends TSystem {
+  public static readonly systemName: string = 'TCameraSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

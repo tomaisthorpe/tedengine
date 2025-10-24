@@ -14,6 +14,7 @@ import { TSystem, TSystemPriority } from '../core/system';
 import { TSpriteComponent } from '../components/sprite-component';
 
 export class TMeshLoadSystem extends TSystem {
+  public static readonly systemName: string = 'TMeshLoadSystem';
   public readonly priority: number = TSystemPriority.PreUpdate;
 
   private query: TEntityQuery;
@@ -65,6 +66,7 @@ export class TMeshLoadSystem extends TSystem {
 }
 
 export class TTexturedMeshLoadSystem extends TSystem {
+  public static readonly systemName: string = 'TTexturedMeshLoadSystem';
   public readonly priority: number = TSystemPriority.PreUpdate;
 
   private query: TEntityQuery;
@@ -110,6 +112,7 @@ export class TTexturedMeshLoadSystem extends TSystem {
 }
 
 export class TSpriteLoadSystem extends TSystem {
+  public static readonly systemName: string = 'TSpriteLoadSystem';
   public readonly priority: number = TSystemPriority.PreUpdate;
 
   private query: TEntityQuery;

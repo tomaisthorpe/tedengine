@@ -350,7 +350,7 @@ export class TWorld {
 
     for (const system of this.systems) {
       if (timingSegment) {
-        const systemName = system.constructor.name;
+        const systemName = system.name;
         const systemSegment = timingSegment.startSegment(systemName);
         await system.update(this.engine, this, delta);
         systemSegment.end();

@@ -27,6 +27,7 @@ export class TPlayerInputComponent extends TComponent {
 }
 
 export class TPlayerInputSystem extends TSystem {
+  public static readonly systemName: string = 'TPlayerInputSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

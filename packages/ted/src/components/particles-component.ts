@@ -66,6 +66,7 @@ export class TParticlesComponent extends TComponent {
 }
 
 export class TParticlesSystem extends TSystem {
+  public static readonly systemName: string = 'TParticlesSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

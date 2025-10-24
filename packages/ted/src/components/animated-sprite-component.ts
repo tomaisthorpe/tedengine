@@ -32,6 +32,7 @@ export class TAnimatedSpriteComponent extends TComponent {
 }
 
 export class TAnimatedSpriteSystem extends TSystem {
+  public static readonly systemName: string = 'TAnimatedSpriteSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private query: TEntityQuery;

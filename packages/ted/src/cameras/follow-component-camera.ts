@@ -9,6 +9,7 @@ import type { TEngine } from '../engine/engine';
 export class TFollowComponentCameraComponent extends TComponent {}
 
 export class TFollowComponentCameraSystem extends TSystem {
+  public static readonly systemName: string = 'TFollowComponentCameraSystem';
   public readonly priority: number = TSystemPriority.Update;
 
   private activeCameraQuery: TEntityQuery;
