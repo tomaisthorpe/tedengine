@@ -6,6 +6,7 @@ import { TProxyEventQueue } from '../core/proxy-event-queue';
 import { TResourceManager } from '../core/resource-manager';
 import { TDebugPanel } from '../debug/debug-panel';
 import type { TConfig } from '../engine/config';
+import type { TFredMessageStats } from '../fred/messages';
 import { TFredMessageTypes } from '../fred/messages';
 import type { TMouseLocation, TMouseMoveEvent } from '../input/events';
 import { TEventTypesInput } from '../input/events';
@@ -73,6 +74,12 @@ export class TEngine {
 
   private fredPort!: MessagePort;
 
+  private renderStats: {
+    total: number;
+  } = {
+    total: 0,
+  };
+
   constructor(
     private config: TConfig,
     private workerScope: DedicatedWorkerGlobalScope,
@@ -116,6 +123,12 @@ export class TEngine {
     this.debugPanel = new TDebugPanel(this.events, config.debugPanelOpen, this);
     this.segmentTimer = new TSegmentTimer(this.debugPanel, 'Performance');
 
+    // Setup rendering stats segments
+    this.segmentTimer.createCustomSegment(
+      'Renderer',
+      () => this.renderStats.total,
+    );
+
     this.inputManager = new TInputManager(this.events);
   }
 
@@ -148,6 +161,12 @@ export class TEngine {
         this.workerScope.close();
 
         break;
+      case TFredMessageTypes.STATS: {
+        const statsMessage = data as TFredMessageStats;
+        this.renderStats.total = statsMessage.render.total;
+
+        break;
+      }
     }
   }
 
@@ -251,6 +270,8 @@ export class TEngine {
     framePreparationSegment.end();
 
     engineUpdateSegment.end();
+
+    this.segmentTimer.updateAllCustomSegments();
 
     this.frameNumber++;
 

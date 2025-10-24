@@ -18,6 +18,10 @@ interface TSegment {
   lastEndTime: number | null;
   lastChildrenTime: number;
 
+  // For custom duration tracking
+  customDurationFunction?: () => number;
+  isCustomDuration: boolean;
+
   // UI
   debugRow?: TDebugPanelValue;
 }
@@ -130,6 +134,62 @@ export class TSegmentTimingContext {
   }
 }
 
+/**
+ * Context object for custom segments that can be updated with duration values
+ * from external sources.
+ */
+export class TCustomSegment {
+  constructor(
+    private timer: TSegmentTimer,
+    private segment: TSegment,
+  ) {}
+
+  /**
+   * Update the segment with the current duration from the provided function.
+   * This should be called whenever you want to update the segment's timing data.
+   */
+  updateDuration(): void {
+    if (!this.segment.customDurationFunction) {
+      console.warn(
+        `Custom segment "${this.segment.name}" has no duration function`,
+      );
+      return;
+    }
+
+    const duration = this.segment.customDurationFunction();
+    this.timer.updateCustomSegment(this.segment, duration);
+  }
+
+  /**
+   * Create a child custom segment under this segment.
+   *
+   * @param name - Name of the child segment
+   * @param durationFunction - Function that returns the current duration in milliseconds
+   * @returns A child custom segment
+   *
+   * @example
+   * const parentCustom = segmentTimer.createCustomSegment("Update", () => updateTime);
+   * const childCustom = parentCustom.createChildSegment("Physics", () => physicsTime);
+   *
+   * // Update both segments
+   * parentCustom.updateDuration();
+   * childCustom.updateDuration();
+   */
+  createChildSegment(
+    name: string,
+    durationFunction: () => number,
+  ): TCustomSegment {
+    return this.timer.createCustomSegment(name, durationFunction, this.segment);
+  }
+
+  /**
+   * Get the segment being tracked by this custom segment
+   */
+  getSegment(): Readonly<TSegment> {
+    return this.segment;
+  }
+}
+
 export class TSegmentTimer {
   private segments: Map<string, TSegment> = new Map();
   private debugSection: TDebugPanelSection;
@@ -138,6 +198,8 @@ export class TSegmentTimer {
   private alpha = 0.1;
   // Maximum number of samples to keep for p99 calculation
   private maxSamples = 100;
+  // For frame-based custom segment updates
+  private lastCustomUpdate = 0;
 
   constructor(
     private debugPanel: TDebugPanel,
@@ -166,6 +228,47 @@ export class TSegmentTimer {
   }
 
   /**
+   * Create a segment that can be updated with custom duration values.
+   * This allows you to initialize a segment once and then provide
+   * duration updates via a function.
+   *
+   * @param name - Name of this segment (e.g., "CustomTimer")
+   * @param durationFunction - Function that returns the current duration in milliseconds
+   * @param parentSegment - Optional parent segment for hierarchical organization
+   * @returns A segment that can be updated with custom durations
+   *
+   * @example
+   * // Root-level custom segment
+   * const customSegment = segmentTimer.createCustomSegment("MyTimer", () => {
+   *   return myCustomDuration; // Return duration in milliseconds
+   * });
+   *
+   * // Child custom segment
+   * const parentSegment = segmentTimer.startSegment("Update");
+   * const childCustomSegment = segmentTimer.createCustomSegment("Physics", () => {
+   *   return physicsDuration;
+   * }, parentSegment.getSegment());
+   * parentSegment.end();
+   *
+   * // Later, update the segment with new duration
+   * customSegment.updateDuration();
+   * childCustomSegment.updateDuration();
+   */
+  createCustomSegment(
+    name: string,
+    durationFunction: () => number,
+    parentSegment?: TSegment | null,
+  ): TCustomSegment {
+    const segment = this.getOrCreateSegment(name, parentSegment || null);
+    segment.customDurationFunction = durationFunction;
+    segment.isCustomDuration = true;
+    segment.lastStartTime = performance.now();
+    segment.lastEndTime = performance.now(); // Mark as "ended" for custom segments
+
+    return new TCustomSegment(this, segment);
+  }
+
+  /**
    * Internal method to start a child segment
    */
   startChildSegment(
@@ -179,7 +282,15 @@ export class TSegmentTimer {
     name: string,
     parentContext: TSegmentTimingContext | null,
   ): TSegmentTimingContext {
-    const parentSegment = parentContext?.getSegment();
+    const parentSegment = parentContext?.getSegment() || null;
+    const segment = this.getOrCreateSegment(name, parentSegment);
+    return new TSegmentTimingContext(this, segment, parentContext);
+  }
+
+  private getOrCreateSegment(
+    name: string,
+    parentSegment: TSegment | null,
+  ): TSegment {
     const path = parentSegment ? `${parentSegment.path}/${name}` : name;
 
     let segment = this.segments.get(path);
@@ -196,13 +307,14 @@ export class TSegmentTimer {
         lastStartTime: 0,
         lastEndTime: null,
         lastChildrenTime: 0,
+        isCustomDuration: false,
       };
       this.segments.set(path, segment);
 
       // Create the debug row
       const updateFn = () => {
         const seg = this.segments.get(path);
-        if (!seg || seg.lastEndTime === null) {
+        if (!seg || (seg.lastEndTime === null && !seg.isCustomDuration)) {
           return 'Running...';
         }
 
@@ -226,7 +338,75 @@ export class TSegmentTimer {
       }
     }
 
-    return new TSegmentTimingContext(this, segment, parentContext);
+    return segment;
+  }
+
+  /**
+   * Internal method to update a custom segment with a new duration value
+   */
+  updateCustomSegment(segment: TSegment, duration: number): void {
+    const currentTime = performance.now();
+    segment.lastEndTime = currentTime;
+
+    // Calculate children time for proper exclusive timing
+    const childrenTime = this.calculateChildrenTime(segment);
+    segment.lastChildrenTime = childrenTime;
+
+    const inclusiveDuration = duration;
+    const exclusiveDuration = inclusiveDuration - childrenTime;
+
+    // Update inclusive average
+    if (segment.inclusiveAverage === 0) {
+      segment.inclusiveAverage = inclusiveDuration;
+    } else {
+      segment.inclusiveAverage =
+        this.alpha * inclusiveDuration +
+        (1 - this.alpha) * segment.inclusiveAverage;
+    }
+
+    // Update exclusive average
+    if (segment.exclusiveAverage === 0) {
+      segment.exclusiveAverage = exclusiveDuration;
+    } else {
+      segment.exclusiveAverage =
+        this.alpha * exclusiveDuration +
+        (1 - this.alpha) * segment.exclusiveAverage;
+    }
+
+    // Update samples for p99 calculation
+    const maxSamples = this.maxSamples;
+    if (segment.inclusiveSamples.length >= maxSamples) {
+      segment.inclusiveSamples.shift();
+      segment.exclusiveSamples.shift();
+    }
+    segment.inclusiveSamples.push(inclusiveDuration);
+    segment.exclusiveSamples.push(exclusiveDuration);
+    segment.sampleCount++;
+  }
+
+  /**
+   * Calculate the total time spent in child segments
+   */
+  private calculateChildrenTime(segment: TSegment): number {
+    let childrenTime = 0;
+
+    for (const childSegment of this.segments.values()) {
+      // Check if this is a child of the given segment
+      if (
+        childSegment.path.startsWith(segment.path + '/') &&
+        childSegment.path !== segment.path &&
+        childSegment.lastEndTime !== null
+      ) {
+        // Get the immediate children (not grandchildren)
+        const childPath = childSegment.path.substring(segment.path.length + 1);
+        if (!childPath.includes('/')) {
+          // This is an immediate child, add its inclusive time
+          childrenTime += childSegment.inclusiveAverage;
+        }
+      }
+    }
+
+    return childrenTime;
   }
 
   private calculateP99(samples: number[]): number {
@@ -271,5 +451,39 @@ export class TSegmentTimer {
    */
   getMaxSamples(): number {
     return this.maxSamples;
+  }
+
+  /**
+   * Update all custom segments with their current duration values.
+   * Call this once per frame in your engine's update loop for automatic updates.
+   *
+   * @param maxUpdateRate - Maximum updates per second (default: 60fps)
+   *
+   * @example
+   * // In your engine's main update loop
+   * function gameLoop() {
+   *   // ... your game logic ...
+   *
+   *   // Update all custom segments automatically
+   *   segmentTimer.updateAllCustomSegments();
+   *
+   *   // ... rest of frame ...
+   *   requestAnimationFrame(gameLoop);
+   * }
+   */
+  updateAllCustomSegments(maxUpdateRate = 60): void {
+    const now = performance.now();
+    if (now - this.lastCustomUpdate < 1000 / maxUpdateRate) {
+      return; // Skip update if too soon
+    }
+
+    for (const segment of this.segments.values()) {
+      if (segment.isCustomDuration && segment.customDurationFunction) {
+        const duration = segment.customDurationFunction();
+        this.updateCustomSegment(segment, duration);
+      }
+    }
+
+    this.lastCustomUpdate = now;
   }
 }

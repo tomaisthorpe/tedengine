@@ -26,10 +26,12 @@ import type { TEngineContextData, TGameContextData } from '../ui/context';
 import { TBrowser } from './browser';
 import type { TWindowBlurEvent, TWindowFocusEvent } from './events';
 import { TEventTypesWindow } from './events';
-import type { TFredMessageReady, TFredMessageShutdown } from './messages';
+import type {
+  TFredMessageReady,
+  TFredMessageShutdown,
+  TFredMessageStats,
+} from './messages';
 import { TFredMessageTypes } from './messages';
-
-const TIME_PER_FRAME_TIME_UPDATE = 1000;
 
 export interface TFredStats {
   renderTime: string;
@@ -65,7 +67,6 @@ export class TFred {
   private latestFrame?: TFrameParams;
 
   private frameTime = 0;
-  private lastFrameTimeUpdate = 0;
 
   public stats: TFredStats = {
     renderTime: '0.0',
@@ -257,19 +258,17 @@ export class TFred {
 
     if (this.latestFrame) {
       this.renderer.render(this.latestFrame);
+
+      const statsMessages: TFredMessageStats = {
+        type: TFredMessageTypes.STATS,
+        render: {
+          total: performance.now() - start,
+        },
+      };
+      this.enginePort.postMessage(statsMessages);
     }
 
     window.requestAnimationFrame(this.update);
-
-    const elapsed = start - this.lastFrameTimeUpdate;
-    if (elapsed > TIME_PER_FRAME_TIME_UPDATE) {
-      this.frameTime = performance.now() - start;
-      this.lastFrameTimeUpdate = start;
-
-      this.stats = {
-        renderTime: this.frameTime.toFixed(1),
-      };
-    }
   }
 
   private setupResizeObserver() {
