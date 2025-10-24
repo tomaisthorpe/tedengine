@@ -4,7 +4,6 @@ import type { TEngine } from '../engine/engine';
 import type { TButton } from './debug-panel-buttons';
 import { TDebugPanelButtons } from './debug-panel-buttons';
 import { TDebugPanelCheckbox } from './debug-panel-checkbox';
-import { TDebugPanelFredValue } from './debug-panel-fred-value';
 import type { TDebugInputTypes, TDebugInputProps } from './debug-panel-input';
 import { TDebugPanelInput } from './debug-panel-input';
 import type {
@@ -57,17 +56,6 @@ export class TDebugPanelSection {
     updateFunction: TUpdateFunction,
   ): TDebugPanelValue {
     const row = new TDebugPanelValue(label, updateFunction);
-    this.rows.push(row);
-
-    return row;
-  }
-
-  /**
-   * Add new row to the section with string value from Fred stats
-   * @param label Text label for row
-   */
-  public addFredValue(label: string, valueKey: string): TDebugPanelFredValue {
-    const row = new TDebugPanelFredValue(label, valueKey);
     this.rows.push(row);
 
     return row;

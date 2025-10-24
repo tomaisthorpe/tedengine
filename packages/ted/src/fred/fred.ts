@@ -33,10 +33,6 @@ import type {
 } from './messages';
 import { TFredMessageTypes } from './messages';
 
-export interface TFredStats {
-  renderTime: string;
-}
-
 export interface TFredConfig {
   renderWidth?: number;
   renderHeight?: number;
@@ -65,12 +61,6 @@ export class TFred {
   // Holds the state of the latest frame.
   // This should be rendered when the render loops happens.
   private latestFrame?: TFrameParams;
-
-  private frameTime = 0;
-
-  public stats: TFredStats = {
-    renderTime: '0.0',
-  };
 
   private enginePort!: MessagePort;
   private clearColor?: { r: number; g: number; b: number; a: number };
@@ -135,7 +125,6 @@ export class TFred {
           data as TEngineMessageUpdateGameContext;
         this.updateGameContext({
           ...updateGameContextMessage.data,
-          frameTime: this.frameTime,
         });
         break;
       }

@@ -4,13 +4,11 @@ import type { TEventQueue } from '../../core/event-queue';
 import type { TDebugPanelRowSerializedData } from '../../debug/debug-panel-row';
 import type { TDebugActionEvent } from '../../debug/events';
 import { TEventTypesDebug } from '../../debug/events';
-import type { TFredStats } from '../../fred/fred';
 import { DebugPanelColorPickerRow } from './DebugPanelColorPickerRow';
 
 interface Props {
   row: TDebugPanelRowSerializedData;
   events: TEventQueue;
-  fredValues: TFredStats;
 }
 
 const RowContainer = styled.div`
@@ -99,14 +97,6 @@ const RowOption = styled.option`
   font-weight: bold;
   background-color: #333;
 `;
-
-const FredValueRow = ({
-  row,
-  fredValues,
-}: {
-  row: TDebugPanelRowSerializedData;
-  fredValues: TFredStats;
-}) => <RowValue>{(fredValues as any)[row.data.value]}</RowValue>;
 
 const ValueRow = ({ row }: { row: TDebugPanelRowSerializedData }) => {
   const value = row.data.value;
@@ -296,7 +286,6 @@ const typeToComponent: {
   }: {
     row: TDebugPanelRowSerializedData;
     events: TEventQueue;
-    fredValues: TFredStats;
   }) => JSX.Element;
 } = {
   value: ValueRow,
@@ -304,7 +293,6 @@ const typeToComponent: {
   input: InputRow,
   checkbox: CheckboxRow,
   select: SelectRow,
-  fredValue: FredValueRow,
   colorPicker: ColorPickerRow,
 };
 
@@ -329,7 +317,7 @@ const getRowStorageKey = (rowLabel: string) => {
   return `debugPanel_${pathPrefix}_row_${rowLabel}`;
 };
 
-export function DebugPanelRow({ row, events, fredValues }: Props) {
+export function DebugPanelRow({ row, events }: Props) {
   const hasChildren =
     row.hasChildren && row.children && row.children.length > 0;
 
@@ -381,17 +369,12 @@ export function DebugPanelRow({ row, events, fredValues }: Props) {
             {row.label}
           </RowLabel>
         )}
-        <RowComponent row={row} events={events} fredValues={fredValues} />
+        <RowComponent row={row} events={events} />
       </RowContainer>
       {hasChildren && isExpanded && row.children && (
         <div style={{ marginLeft: '15px' }}>
           {row.children.map((child) => (
-            <DebugPanelRow
-              key={child.uuid}
-              row={child}
-              events={events}
-              fredValues={fredValues}
-            />
+            <DebugPanelRow key={child.uuid} row={child} events={events} />
           ))}
         </div>
       )}

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { TEventQueue } from '../../core/event-queue';
 import type { TDebugPanelSectionSerializedData } from '../../debug/debug-panel-section';
-import type { TFredStats } from '../../fred/fred';
 import { DebugPanelRow } from './DebugPanelRow';
 
 const SectionContainer = styled.div`
@@ -40,7 +39,6 @@ const SectionLabel = styled.div<SectionLabelProps>`
 interface Props {
   section: TDebugPanelSectionSerializedData;
   events: TEventQueue;
-  fredValues: TFredStats;
 }
 
 const getStorageKey = (sectionName: string) => {
@@ -48,7 +46,7 @@ const getStorageKey = (sectionName: string) => {
   return `debugPanel_${pathPrefix}_section_${sectionName}`;
 };
 
-export function DebugPanelSection({ section, events, fredValues }: Props) {
+export function DebugPanelSection({ section, events }: Props) {
   const storageKey = getStorageKey(section.name);
 
   const [open, setOpen] = useState(() => {
@@ -69,12 +67,7 @@ export function DebugPanelSection({ section, events, fredValues }: Props) {
       </SectionLabel>
       {open &&
         section.rows.map((row) => (
-          <DebugPanelRow
-            key={row.uuid}
-            row={row}
-            events={events}
-            fredValues={fredValues}
-          />
+          <DebugPanelRow key={row.uuid} row={row} events={events} />
         ))}
     </SectionContainer>
   );

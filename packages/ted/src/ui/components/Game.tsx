@@ -137,7 +137,7 @@ const TGame = ({
                 >
                   {fred && fred.events && (
                     <>
-                      <DebugPanel events={fred.events} stats={fred.stats} />
+                      <DebugPanel events={fred.events} />
                       {children}
                     </>
                   )}

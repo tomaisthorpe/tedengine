@@ -4,7 +4,6 @@ import type { TEventQueue } from '../../core/event-queue';
 import type { TDebugPanelSerializedData } from '../../debug/debug-panel';
 import type { TDebugUpdateEvent } from '../../debug/events';
 import { TEventTypesDebug } from '../../debug/events';
-import type { TFredStats } from '../../fred/fred';
 import { DebugPanelSection } from './DebugPanelSection';
 
 const Container = styled.div`
@@ -23,10 +22,9 @@ const Container = styled.div`
 
 interface Props {
   events: TEventQueue;
-  stats: TFredStats;
 }
 
-export function DebugPanel({ events, stats }: Props) {
+export function DebugPanel({ events }: Props) {
   const [data, setData] = useState<TDebugPanelSerializedData | undefined>(
     undefined,
   );
@@ -51,7 +49,6 @@ export function DebugPanel({ events, stats }: Props) {
           key={section.uuid}
           section={section}
           events={events}
-          fredValues={stats}
         />
       ))}
     </Container>
