@@ -16,4 +16,5 @@ export default {
     '<rootDir>/src/test/webgl.mock.ts',
     '<rootDir>/jest.setup.ts',
   ],
+  transformIgnorePatterns: ['node_modules/(?!(uuid)/)'],
 };
