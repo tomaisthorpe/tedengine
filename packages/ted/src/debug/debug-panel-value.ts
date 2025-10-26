@@ -6,7 +6,7 @@ import type { IDebugPanelRow } from './debug-panel-row';
 export type TUpdateFunction = (engine: TEngine, delta: number) => string;
 
 export class TDebugPanelValue extends TDebugPanelRow implements IDebugPanelRow {
-  public type = 'value';
+  public readonly type = 'value';
   public value = '';
 
   constructor(

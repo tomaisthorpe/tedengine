@@ -20,7 +20,7 @@ export class TDebugPanelButtons
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
-  public type = 'buttons';
+  public readonly type = 'buttons';
   private buttons: TButtonWithCallback[];
 
   constructor(

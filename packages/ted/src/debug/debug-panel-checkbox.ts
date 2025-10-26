@@ -10,7 +10,7 @@ export class TDebugPanelCheckbox
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
-  public type = 'checkbox';
+  public readonly type = 'checkbox';
   public value: boolean;
 
   constructor(
@@ -25,10 +25,10 @@ export class TDebugPanelCheckbox
 
     this.onChange = this.onChange.bind(this);
 
-    this.events.addListener<TDebugActionEvent>(
+    this.events.addListener<TDebugActionEvent<boolean>>(
       TEventTypesDebug.Action,
       this.uuid,
-      (e: TDebugActionEvent) => {
+      (e: TDebugActionEvent<boolean>) => {
         this.onChange(e.data);
       },
     );

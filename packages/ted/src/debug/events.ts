@@ -10,9 +10,8 @@ export interface TDebugUpdateEvent {
   data: TDebugPanelSerializedData;
 }
 
-// @todo figure out how to remove this any
-export interface TDebugActionEvent {
+export interface TDebugActionEvent<T = unknown> {
   type: TEventTypesDebug.Action;
   subType: string;
-  data?: any;
+  data: T;
 }

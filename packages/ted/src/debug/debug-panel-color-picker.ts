@@ -11,7 +11,7 @@ export class TDebugPanelColorPicker
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
-  public type = 'colorPicker';
+  public readonly type = 'colorPicker';
   public value: vec3;
 
   constructor(
@@ -26,10 +26,10 @@ export class TDebugPanelColorPicker
 
     this.onChange = this.onChange.bind(this);
 
-    this.events.addListener<TDebugActionEvent>(
+    this.events.addListener<TDebugActionEvent<vec3>>(
       TEventTypesDebug.Action,
       this.uuid,
-      (e: TDebugActionEvent) => {
+      (e: TDebugActionEvent<vec3>) => {
         this.onChange(e.data);
       },
     );

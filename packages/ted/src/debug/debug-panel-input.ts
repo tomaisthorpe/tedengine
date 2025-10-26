@@ -9,11 +9,11 @@ import { TEventTypesDebug } from './events';
 export type TDebugInputTypes = 'text' | 'number' | 'range';
 
 export type TDebugInputProps = {
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
 } & { showValueBubble?: boolean };
 
 export class TDebugPanelInput extends TDebugPanelRow implements IDebugPanelRow {
-  public type = 'input';
+  public readonly type = 'input';
   public value: string;
 
   constructor(
@@ -30,10 +30,10 @@ export class TDebugPanelInput extends TDebugPanelRow implements IDebugPanelRow {
 
     this.onChange = this.onChange.bind(this);
 
-    this.events.addListener<TDebugActionEvent>(
+    this.events.addListener<TDebugActionEvent<string>>(
       TEventTypesDebug.Action,
       this.uuid,
-      (e: TDebugActionEvent) => {
+      (e: TDebugActionEvent<string>) => {
         this.onChange(e.data);
       },
     );

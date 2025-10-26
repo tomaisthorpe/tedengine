@@ -5,6 +5,17 @@ import type { TDebugPanelRowSerializedData } from '../../debug/debug-panel-row';
 import type { TDebugActionEvent } from '../../debug/events';
 import { TEventTypesDebug } from '../../debug/events';
 import { DebugPanelColorPickerRow } from './DebugPanelColorPickerRow';
+import type { vec3 } from 'gl-matrix';
+
+interface DebugButton {
+  label: string;
+  uuid: string;
+}
+
+interface DebugSelectOption {
+  label: string;
+  value: string;
+}
 
 interface Props {
   row: TDebugPanelRowSerializedData;
@@ -131,13 +142,14 @@ const ButtonsRow = ({
   events: TEventQueue;
 }) => (
   <div style={{ marginLeft: 'auto' }}>
-    {row.data.buttons.map((button: any) => (
+    {row.data.buttons?.map((button: DebugButton) => (
       <RowButton
         key={button.uuid}
         onClick={() => {
-          const event: TDebugActionEvent = {
+          const event: TDebugActionEvent<void> = {
             type: TEventTypesDebug.Action,
             subType: button.uuid,
+            data: undefined,
           };
           events.broadcast(event);
         }}
@@ -155,7 +167,7 @@ const InputRow = ({
   row: TDebugPanelRowSerializedData;
   events: TEventQueue;
 }) => {
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [left, updateLeft] = useState(0);
 
   useEffect(() => {
@@ -166,19 +178,19 @@ const InputRow = ({
     const input = inputRef.current;
     if (!input) return;
 
-    const width = (input as HTMLElement).clientWidth - 18;
+    const width = input.clientWidth - 18;
 
-    const min = parseFloat(row.data.inputProps.min);
-    const max = parseFloat(row.data.inputProps.max);
-    const val = parseFloat(row.data.value);
+    const min = parseFloat(String(row.data.inputProps?.min || '0'));
+    const max = parseFloat(String(row.data.inputProps?.max || '100'));
+    const val = parseFloat(String(row.data.value));
     const per = (val - min) / (max - min);
 
     updateLeft(per * width + 18);
   }, [
     row.data.value,
     row.data.inputType,
-    row.data.inputProps.min,
-    row.data.inputProps.max,
+    row.data.inputProps?.min,
+    row.data.inputProps?.max,
   ]);
 
   return (
@@ -187,17 +199,17 @@ const InputRow = ({
         ref={inputRef}
         type={row.data.inputType}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          const event: TDebugActionEvent = {
+          const event: TDebugActionEvent<string> = {
             type: TEventTypesDebug.Action,
             subType: row.uuid,
             data: e.target.value,
           };
           events.broadcast(event);
         }}
-        value={row.data.value}
+        value={String(row.data.value)}
         {...row.data.inputProps}
       />
-      {row.data.inputProps.showValueBubble && (
+      {row.data.inputProps?.showValueBubble && (
         <RowInputValueBubble style={{ left: `${left}px` }}>
           {row.data.value}
         </RowInputValueBubble>
@@ -212,24 +224,22 @@ const CheckboxRow = ({
 }: {
   row: TDebugPanelRowSerializedData;
   events: TEventQueue;
-}) => {
-  return (
-    <RowInputContainer style={{ marginLeft: 'auto' }}>
-      <RowInput
-        checked={row.data.value}
-        type="checkbox"
-        onChange={() => {
-          const event: TDebugActionEvent = {
-            type: TEventTypesDebug.Action,
-            subType: row.uuid,
-            data: !row.data.value,
-          };
-          events.broadcast(event);
-        }}
-      />
-    </RowInputContainer>
-  );
-};
+}) => (
+  <RowInputContainer style={{ marginLeft: 'auto' }}>
+    <RowInput
+      checked={Boolean(row.data.value)}
+      type="checkbox"
+      onChange={() => {
+        const event: TDebugActionEvent<boolean> = {
+          type: TEventTypesDebug.Action,
+          subType: row.uuid,
+          data: !row.data.value,
+        };
+        events.broadcast(event);
+      }}
+    />
+  </RowInputContainer>
+);
 
 const SelectRow = ({
   row,
@@ -241,16 +251,16 @@ const SelectRow = ({
   <div style={{ marginLeft: 'auto' }}>
     <RowSelect
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-        const event: TDebugActionEvent = {
+        const event: TDebugActionEvent<string> = {
           type: TEventTypesDebug.Action,
           subType: row.uuid,
           data: e.target.value,
         };
         events.broadcast(event);
       }}
-      value={row.data.value}
+      value={String(row.data.value)}
     >
-      {row.data.options.map((option: any) => (
+      {row.data.options?.map((option: DebugSelectOption) => (
         <RowOption value={option.value} key={option.value}>
           {option.label}
         </RowOption>
@@ -268,9 +278,9 @@ const ColorPickerRow = ({
 }) => (
   <div style={{ marginLeft: 'auto' }}>
     <DebugPanelColorPickerRow
-      color={row.data.value}
+      color={row.data.value as vec3}
       onChange={(color) => {
-        const event: TDebugActionEvent = {
+        const event: TDebugActionEvent<vec3> = {
           type: TEventTypesDebug.Action,
           subType: row.uuid,
           data: color,

@@ -1,5 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import type { TEngine } from '../engine/engine';
+import type { TDebugInputProps } from './debug-panel-input';
+import type { TDebugSelectOption } from './debug-panel-select';
+import type { vec3 } from 'gl-matrix';
 
 export interface IDebugPanelRow {
   uuid: string;
@@ -16,7 +19,13 @@ export interface TDebugPanelRowSerializedData {
   uuid: string;
   label: string;
   type: string;
-  data: any;
+  data: {
+    value?: string | boolean | vec3;
+    buttons?: Array<{ label: string; uuid: string }>;
+    inputType?: string;
+    inputProps?: TDebugInputProps;
+    options?: TDebugSelectOption[];
+  };
   children?: TDebugPanelRowSerializedData[];
   hasChildren?: boolean;
 }

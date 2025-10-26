@@ -15,7 +15,7 @@ export class TDebugPanelSelect
   extends TDebugPanelRow
   implements IDebugPanelRow
 {
-  public type = 'select';
+  public readonly type = 'select';
   public value: string;
 
   constructor(
@@ -31,10 +31,10 @@ export class TDebugPanelSelect
 
     this.onChange = this.onChange.bind(this);
 
-    this.events.addListener<TDebugActionEvent>(
+    this.events.addListener<TDebugActionEvent<string>>(
       TEventTypesDebug.Action,
       this.uuid,
-      (e: TDebugActionEvent) => {
+      (e: TDebugActionEvent<string>) => {
         this.onChange(e.data);
       },
     );
