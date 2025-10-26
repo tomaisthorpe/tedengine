@@ -103,7 +103,7 @@ export class TRenderableMesh implements IAsset {
     program: TProgram,
     palette: TPalette,
   ) {
-    this.vao = gl.createVertexArray()!;
+    this.vao = gl.createVertexArray();
     gl.bindVertexArray(this.vao!);
 
     const buffers: { [key: string]: TAttributeBuffer } = {
@@ -144,7 +144,7 @@ export class TRenderableMesh implements IAsset {
     }
 
     // Create a texture.
-    const texture = gl.createTexture()!;
+    const texture = gl.createTexture();
     this.texture = texture;
 
     // use texture unit 0
@@ -203,7 +203,7 @@ export class TRenderableMesh implements IAsset {
    * Creates the buffers and transfers the data
    */
   private createBuffers(gl: WebGL2RenderingContext): void {
-    this.positionBuffer = gl.createBuffer()!;
+    this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
     gl.bufferData(
       gl.ARRAY_BUFFER,
@@ -211,7 +211,7 @@ export class TRenderableMesh implements IAsset {
       gl.STATIC_DRAW,
     );
 
-    this.normalBuffer = gl.createBuffer()!;
+    this.normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
     gl.bufferData(
       gl.ARRAY_BUFFER,
@@ -219,7 +219,7 @@ export class TRenderableMesh implements IAsset {
       gl.STATIC_DRAW,
     );
 
-    this.indexBuffer = gl.createBuffer()!;
+    this.indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
@@ -227,7 +227,7 @@ export class TRenderableMesh implements IAsset {
       gl.STATIC_DRAW,
     );
 
-    this.colorBuffer = gl.createBuffer()!;
+    this.colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
     gl.bufferData(
       gl.ARRAY_BUFFER,

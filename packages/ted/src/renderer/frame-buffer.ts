@@ -12,7 +12,7 @@ export class TFrameBuffer {
     private gl: WebGL2RenderingContext,
     private options: TFrameBufferOptions,
   ) {
-    this.depthTexture = gl.createTexture()!;
+    this.depthTexture = gl.createTexture();
 
     gl.bindTexture(gl.TEXTURE_2D, this.depthTexture);
     gl.texImage2D(
@@ -31,7 +31,7 @@ export class TFrameBuffer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    this.texture = gl.createTexture()!;
+    this.texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.texImage2D(
       gl.TEXTURE_2D,
@@ -49,7 +49,7 @@ export class TFrameBuffer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    this.frameBuffer = gl.createFramebuffer()!;
+    this.frameBuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
 
     // Attach both color and depth textures

@@ -102,7 +102,7 @@ export class TRenderer {
 
     const blockSize = probeProgram.getBlockSize();
 
-    this.globalUniformBuffer = gl.createBuffer()!;
+    this.globalUniformBuffer = gl.createBuffer();
     gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer);
 
     // Allocate memory, dynamic used as will change often
@@ -111,7 +111,7 @@ export class TRenderer {
 
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, this.globalUniformBuffer);
 
-    this.lightingUniformBuffer = gl.createBuffer()!;
+    this.lightingUniformBuffer = gl.createBuffer();
     gl.bindBuffer(gl.UNIFORM_BUFFER, this.lightingUniformBuffer);
     gl.bufferData(gl.UNIFORM_BUFFER, blockSize, gl.DYNAMIC_DRAW);
     gl.bindBuffer(gl.UNIFORM_BUFFER, null);

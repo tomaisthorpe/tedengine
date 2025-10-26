@@ -127,7 +127,7 @@ export class TRenderableTexturedMesh implements IAsset {
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
-    this.vao = gl.createVertexArray()!;
+    this.vao = gl.createVertexArray();
     gl.bindVertexArray(this.vao);
 
     const buffers: { [key: string]: TAttributeBuffer } = {
@@ -176,7 +176,7 @@ export class TRenderableTexturedMesh implements IAsset {
   }
 
   private createBuffers(gl: WebGL2RenderingContext): void {
-    this.positionBuffer = gl.createBuffer()!;
+    this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
     gl.bufferData(
       gl.ARRAY_BUFFER,
@@ -184,7 +184,7 @@ export class TRenderableTexturedMesh implements IAsset {
       gl.STATIC_DRAW,
     );
 
-    this.normalBuffer = gl.createBuffer()!;
+    this.normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
     gl.bufferData(
       gl.ARRAY_BUFFER,
@@ -192,7 +192,7 @@ export class TRenderableTexturedMesh implements IAsset {
       gl.STATIC_DRAW,
     );
 
-    this.indexBuffer = gl.createBuffer()!;
+    this.indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
@@ -200,11 +200,11 @@ export class TRenderableTexturedMesh implements IAsset {
       gl.STATIC_DRAW,
     );
 
-    this.uvBuffer = gl.createBuffer()!;
+    this.uvBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.uvs), gl.STATIC_DRAW);
 
-    this.instanceUVBuffer = gl.createBuffer()!;
+    this.instanceUVBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.uvs), gl.STATIC_DRAW);
   }

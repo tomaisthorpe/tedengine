@@ -38,7 +38,7 @@ export class TRenderableTexture {
     image: ImageBitmap,
     options?: TTextureOptions,
   ) {
-    this.texture = gl.createTexture()!;
+    this.texture = gl.createTexture();
 
     if (options?.filter !== undefined) {
       this.filter = options.filter;
