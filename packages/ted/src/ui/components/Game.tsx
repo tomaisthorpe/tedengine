@@ -66,10 +66,14 @@ const TGame = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
+    if (!container.current || !fullscreenContainer.current) {
+      return;
+    }
+
     const fred = new TFred(
       game,
-      container.current!,
-      fullscreenContainer.current!,
+      container.current,
+      fullscreenContainer.current,
       setEngineData,
       setGameData,
       setErrorMessage,

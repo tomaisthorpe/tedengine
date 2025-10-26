@@ -150,7 +150,10 @@ export class TInputManager {
     }
 
     for (const [action, mappings] of this.actionMappings.entries()) {
-      const actionState = this.getActionState(action)!;
+      const actionState = this.getActionState(action);
+      if (!actionState) {
+        continue;
+      }
 
       const wasPressed = actionState.isDown;
       actionState.previousValue = actionState.value;

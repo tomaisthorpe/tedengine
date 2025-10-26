@@ -43,11 +43,15 @@ export class TRenderableTexturedMesh implements IAsset {
     instanceUVScales?: vec2,
     colorFilter: vec4 = vec4.fromValues(1, 1, 1, 1),
   ) {
+    if (!texturedProgram.program) {
+      throw new Error('Textured program must be compiled before rendering');
+    }
+
     if (this.positionBuffer === undefined) {
       this.createBuffers(gl);
 
       // Create the VAO for the vertex and color buffers
-      this.createVAO(gl, texturedProgram.program!);
+      this.createVAO(gl, texturedProgram.program);
     }
 
     if (
@@ -60,12 +64,13 @@ export class TRenderableTexturedMesh implements IAsset {
       !texturedProgram.uniforms.uMMatrix ||
       !texturedProgram.uniforms.uEnableInstanceUVs ||
       !texturedProgram.uniforms.uInstanceUVScale ||
-      !texturedProgram.uniforms.uColorFilter
+      !texturedProgram.uniforms.uColorFilter ||
+      !texture.texture
     ) {
       return;
     }
 
-    gl.bindTexture(gl.TEXTURE_2D, texture.texture!);
+    gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 
     gl.bindVertexArray(this.vao);
 

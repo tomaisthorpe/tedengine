@@ -18,18 +18,22 @@ export class TPhysicsDebug {
     vertices: Float32Array,
     colors: Float32Array,
   ) {
-    if (this.positionBuffer === undefined) {
-      this.createBuffers(gl);
-      this.createVAO(gl, program.program!);
+    if (!program.program) {
+      return;
     }
 
-    if (!this.vao || !program.program) {
+    if (this.positionBuffer === undefined) {
+      this.createBuffers(gl);
+      this.createVAO(gl, program.program);
+    }
+
+    if (!this.vao || !this.positionBuffer || !this.colorBuffer) {
       return;
     }
 
     gl.bindVertexArray(this.vao);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer!);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
 
     if (this.positionBufferSize < vertices.length) {
       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);

@@ -82,12 +82,16 @@ export function registerRendererJobs(jobManager: TJobManager) {
         shaderLocation,
       );
 
-      if (!ctx.renderer.hasProgram(program.uuid!)) {
+      if (!program.uuid) {
+        throw new Error('Program UUID not set after loading');
+      }
+
+      if (!ctx.renderer.hasProgram(program.uuid)) {
         program.compile(ctx.renderer.context());
         ctx.renderer.registerProgram(program);
       }
 
-      return program.uuid!;
+      return program.uuid;
     },
   );
 

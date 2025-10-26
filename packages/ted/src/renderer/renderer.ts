@@ -117,14 +117,18 @@ export class TRenderer {
     gl.bindBuffer(gl.UNIFORM_BUFFER, null);
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 1, this.lightingUniformBuffer);
 
+    if (!probeProgram.program) {
+      throw new Error('Probe program must be loaded before renderer initialization');
+    }
+
     // Get location of the uniforms
-    const globalOffsets = probeProgram.program!.getUniformBlockOffsets(
+    const globalOffsets = probeProgram.program.getUniformBlockOffsets(
       gl,
       'Global',
       ['uVPMatrix'],
     );
 
-    const lightingOffsets = probeProgram.program!.getUniformBlockOffsets(
+    const lightingOffsets = probeProgram.program.getUniformBlockOffsets(
       gl,
       'Lighting',
       ['uAmbientLight', 'uDirectionalLightDir', 'uDirectionalLight'],
@@ -147,9 +151,13 @@ export class TRenderer {
   }
 
   public context(): WebGL2RenderingContext {
-    return this.canvas.getContext('webgl2', {
+    const context = this.canvas.getContext('webgl2', {
       alpha: false,
-    })!;
+    });
+    if (!context) {
+      throw new Error('Failed to get WebGL2 context');
+    }
+    return context;
   }
 
   private renderShadowMap(

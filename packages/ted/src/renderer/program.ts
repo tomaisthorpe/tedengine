@@ -27,17 +27,20 @@ const compileShader = (
   shaderSource: string,
   shaderType: number,
 ): WebGLShader => {
-  // @todo add error handling here
   const shader = gl.createShader(shaderType);
-  gl.shaderSource(shader!, shaderSource);
-  gl.compileShader(shader!);
-
-  const success = gl.getShaderParameter(shader!, gl.COMPILE_STATUS);
-  if (success !== true) {
-    throw new Error(`Could not compile shader ${gl.getShaderInfoLog(shader!)}`);
+  if (!shader) {
+    throw new Error('Could not create shader');
   }
 
-  return shader!;
+  gl.shaderSource(shader, shaderSource);
+  gl.compileShader(shader);
+
+  const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  if (success !== true) {
+    throw new Error(`Could not compile shader ${gl.getShaderInfoLog(shader)}`);
+  }
+
+  return shader;
 };
 
 const createProgram = (
@@ -45,20 +48,22 @@ const createProgram = (
   vertexShader: WebGLShader,
   fragmentShader: WebGLShader,
 ) => {
-  // @todo add error handling here
   const program = gl.createProgram();
-
-  gl.attachShader(program!, vertexShader);
-  gl.attachShader(program!, fragmentShader);
-
-  gl.linkProgram(program!);
-
-  const success = gl.getProgramParameter(program!, gl.LINK_STATUS);
-  if (success !== true) {
-    throw new Error(`Could not link program ${gl.getProgramInfoLog(program!)}`);
+  if (!program) {
+    throw new Error('Could not create program');
   }
 
-  return program!;
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+
+  gl.linkProgram(program);
+
+  const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+  if (success !== true) {
+    throw new Error(`Could not link program ${gl.getProgramInfoLog(program)}`);
+  }
+
+  return program;
 };
 
 export class TProgram implements IAsset {
@@ -98,14 +103,18 @@ export class TProgram implements IAsset {
    * Compile the current program given a GLContext
    */
   public compile(gl: WebGL2RenderingContext) {
+    if (!this.vertexShaderSource || !this.fragmentShaderSource) {
+      throw new Error('Shader sources must be loaded before compiling');
+    }
+
     const vertexShader = compileShader(
       gl,
-      this.vertexShaderSource!,
+      this.vertexShaderSource,
       gl.VERTEX_SHADER,
     );
     const fragmentShader = compileShader(
       gl,
-      this.fragmentShaderSource!,
+      this.fragmentShaderSource,
       gl.FRAGMENT_SHADER,
     );
 

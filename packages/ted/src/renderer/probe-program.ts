@@ -75,14 +75,18 @@ export class TProbeProgram {
   }
 
   public getBlockSize() {
+    if (!this.program?.program) {
+      throw new Error('Program must be loaded before getting block size');
+    }
+
     const gl = this.renderer.context();
     const blockIndex = gl.getUniformBlockIndex(
-      this.program!.program!,
+      this.program.program,
       'Global',
     );
 
     const blockSize = gl.getActiveUniformBlockParameter(
-      this.program!.program!,
+      this.program.program,
       blockIndex,
       gl.UNIFORM_BLOCK_DATA_SIZE,
     );

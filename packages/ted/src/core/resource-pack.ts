@@ -33,47 +33,50 @@ export class TResourcePack {
     ...configs: TResourcePackConfig[]
   ) {
     // Merge all configs into one
+    // Start with all arrays initialized to avoid optional property issues
+    const initialConfig: Required<TResourcePackConfig> = {
+      meshes: [],
+      texturedMeshes: [],
+      materials: [],
+      images: [],
+      textures: [],
+      sounds: [],
+      tilemaps: [],
+    };
+
     this.resources = configs.reduce(
-      (reducedConfig, config) => {
+      (reducedConfig: Required<TResourcePackConfig>, config) => {
         if (config.meshes) {
-          reducedConfig.meshes!.push(...config.meshes);
+          reducedConfig.meshes.push(...config.meshes);
         }
 
         if (config.texturedMeshes) {
-          reducedConfig.texturedMeshes!.push(...config.texturedMeshes);
+          reducedConfig.texturedMeshes.push(...config.texturedMeshes);
         }
 
         if (config.materials) {
-          reducedConfig.materials!.push(...config.materials);
+          reducedConfig.materials.push(...config.materials);
         }
 
         if (config.images) {
-          reducedConfig.images!.push(...config.images);
+          reducedConfig.images.push(...config.images);
         }
 
         if (config.textures) {
-          reducedConfig.textures!.push(...config.textures);
+          reducedConfig.textures.push(...config.textures);
         }
 
         if (config.sounds) {
-          reducedConfig.sounds!.push(...config.sounds);
+          reducedConfig.sounds.push(...config.sounds);
         }
 
         if (config.tilemaps) {
-          reducedConfig.tilemaps!.push(...config.tilemaps);
+          reducedConfig.tilemaps.push(...config.tilemaps);
         }
 
         return reducedConfig;
       },
-      {
-        meshes: [],
-        texturedMeshes: [],
-        materials: [],
-        images: [],
-        textures: [],
-        sounds: [],
-        tilemaps: [],
-      },
+      initialConfig,
     );
   }
 

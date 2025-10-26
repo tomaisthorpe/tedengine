@@ -47,11 +47,15 @@ export class TRenderableMesh implements IAsset {
     palette: TPalette,
     m: mat4,
   ) {
+    if (!colorProgram.program) {
+      throw new Error('Color program must be compiled before rendering');
+    }
+
     if (this.positionBuffer === undefined) {
       this.createBuffers(gl);
 
       // Create the VAO for the vertex and color buffers
-      this.createVAO(gl, colorProgram.program!, palette);
+      this.createVAO(gl, colorProgram.program, palette);
     }
 
     // Check if palette has changed and update texture if needed
@@ -104,7 +108,10 @@ export class TRenderableMesh implements IAsset {
     palette: TPalette,
   ) {
     this.vao = gl.createVertexArray();
-    gl.bindVertexArray(this.vao!);
+    if (!this.vao) {
+      throw new Error('Failed to create vertex array');
+    }
+    gl.bindVertexArray(this.vao);
 
     const buffers: { [key: string]: TAttributeBuffer } = {
       aVertexPosition: {

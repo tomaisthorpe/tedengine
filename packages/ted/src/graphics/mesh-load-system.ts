@@ -58,8 +58,10 @@ export class TMeshLoadSystem extends TSystem {
         world.addComponent(entity, new TMeshReadyComponent());
       } else if (data.source === 'path') {
         const m = await engine.resources.get<TMesh>(data.path);
-        mesh.uuid = m!.uuid;
-        world.addComponent(entity, new TMeshReadyComponent());
+        if (m) {
+          mesh.uuid = m.uuid;
+          world.addComponent(entity, new TMeshReadyComponent());
+        }
       }
     }
   }
@@ -104,8 +106,10 @@ export class TTexturedMeshLoadSystem extends TSystem {
         world.addComponent(entity, new TTexturedMeshReadyComponent());
       } else if (data.source === 'path') {
         const m = await engine.resources.get<TTexturedMesh>(data.path);
-        mesh.uuid = m!.uuid;
-        world.addComponent(entity, new TTexturedMeshReadyComponent());
+        if (m) {
+          mesh.uuid = m.uuid;
+          world.addComponent(entity, new TTexturedMeshReadyComponent());
+        }
       }
     }
   }

@@ -90,13 +90,22 @@ export class TMeshRenderSystem extends TSystem {
         continue;
       }
 
+      if (!mesh.uuid) {
+        continue;
+      }
+
+      const serializedMaterial = material.material.serialize();
+      if (!serializedMaterial) {
+        continue;
+      }
+
       const matrix = transform.transform.getMatrix();
 
       this.renderTasks.push({
         type: TRenderTask.MeshInstance,
-        uuid: mesh.uuid!,
+        uuid: mesh.uuid,
         transform: matrix,
-        material: material.material.serialize()!,
+        material: serializedMaterial,
       });
     }
 
@@ -115,16 +124,20 @@ export class TMeshRenderSystem extends TSystem {
         continue;
       }
 
+      if (!mesh.uuid || !texture.texture.uuid) {
+        continue;
+      }
+
       const matrix = transform.transform.getMatrix();
 
       this.renderTasks.push({
         type: TRenderTask.MeshInstance,
-        uuid: mesh.uuid!,
+        uuid: mesh.uuid,
         transform: matrix,
         material: {
           type: 'textured',
           options: {
-            texture: texture.texture.uuid!,
+            texture: texture.texture.uuid,
             colorFilter: texture.colorFilter,
             instanceUVScales: texture.instanceUVScales,
           },
@@ -143,13 +156,13 @@ export class TMeshRenderSystem extends TSystem {
       const transform = components.get(TTransformComponent);
       const texture = components.get(TTextureComponent);
 
-      if (!sprite || !texture) {
+      if (!sprite || !texture || !texture.texture.uuid) {
         continue;
       }
 
       // @todo fix the any
       const materialOptions: any = {
-        texture: texture.texture.uuid!,
+        texture: texture.texture.uuid,
         colorFilter: sprite.colorFilter,
         instanceUVScales: sprite.instanceUVScales,
       };
@@ -166,12 +179,16 @@ export class TMeshRenderSystem extends TSystem {
         console.log('has sprite instances');
         const spriteInstances = components.get(TSpriteInstancesComponent);
 
+        if (!sprite.uuid) {
+          continue;
+        }
+
         const instances = spriteInstances.instances.map((instance) => ({
           transform: transform.transform.add(instance.transform).getMatrix(),
           material: {
             type: 'textured',
             options: {
-              texture: texture.texture.uuid!,
+              texture: texture.texture.uuid,
               colorFilter: instance.colorFilter,
             },
           } as TSerializedTexturedMaterial,
@@ -179,7 +196,7 @@ export class TMeshRenderSystem extends TSystem {
 
         this.renderTasks.push({
           type: TRenderTask.SpriteInstances,
-          uuid: sprite.uuid!,
+          uuid: sprite.uuid,
           instances: instances,
           material: {
             type: 'textured',
@@ -190,9 +207,13 @@ export class TMeshRenderSystem extends TSystem {
         continue;
       }
 
+      if (!sprite.uuid) {
+        continue;
+      }
+
       this.renderTasks.push({
         type: TRenderTask.SpriteInstance,
-        uuid: sprite.uuid!,
+        uuid: sprite.uuid,
         transform: transform.transform.getMatrix(),
         material: {
           type: 'textured',
