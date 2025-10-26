@@ -48,9 +48,12 @@ export class TJobManager {
   private relays: { [key: string]: TJobRelay } = {};
   private canProcess: { [key: string]: boolean } = {};
 
-  private jobs: { [key: string]: TJobFunc<any, any, any> } = {};
+  // Job functions stored with unknown types as each job has its own specific signature
+  // Type safety is enforced at registration and retrieval time
+  private jobs: Record<string, (ctx: unknown, args: unknown) => Promise<unknown>> = {};
 
-  private relayedJobs: { [key: string]: (_: any) => void } = {};
+  // Resolve functions for jobs awaiting relay results
+  private relayedJobs: { [key: string]: (result: unknown) => void } = {};
 
   public additionalContext!:
     | TJobContext
@@ -73,7 +76,8 @@ export class TJobManager {
     config: TJobConfig<TContext, TJobArgs, TJobResult>,
     func: TJobFunc<TContextTypeMap[TContext], TJobArgs, TJobResult>,
   ) {
-    this.jobs[config.name] = func;
+    // Store with unknown signature - type safety is maintained at call sites
+    this.jobs[config.name] = func as (ctx: unknown, args: unknown) => Promise<unknown>;
   }
 
   /**

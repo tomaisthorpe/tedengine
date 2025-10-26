@@ -11,8 +11,12 @@ export abstract class TComponent {
 
 /**
  * Type for component class constructors
+ * Uses any[] for constructor parameters because each component type has its own unique
+ * constructor signature. Type safety is maintained at usage sites when instantiating
+ * specific component types. This is similar to type erasure for heterogeneous collections.
  */
 export type TComponentConstructor<T extends TComponent = TComponent> = new (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) => T;
 
