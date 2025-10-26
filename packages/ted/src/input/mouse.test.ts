@@ -22,7 +22,7 @@ describe('TMouse', () => {
   });
 
   // @todo add remove event listeners
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   new TMouse(eventQueue, canvas);
 
   test('mousemove event should be broadcasted', () => {

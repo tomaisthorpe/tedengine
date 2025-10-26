@@ -36,7 +36,7 @@ export interface TRapierObject {
 }
 
 export class TRapier3DWorld implements TPhysicsWorld {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+   
   // TODO fix this
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private RAPIER!: typeof import('@dimforge/rapier3d-compat');
