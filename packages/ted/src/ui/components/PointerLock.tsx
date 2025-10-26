@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEventQueue, useFred } from '../hooks';
 import { TEventTypesInput } from '../../input/events';
 import styled from 'styled-components';
@@ -31,7 +31,7 @@ export function PointerLock() {
     fred?.canvas?.requestPointerLock();
   };
 
-  const pointerLockChange = () => {
+  const pointerLockChange = useCallback(() => {
     if (document.pointerLockElement) {
       setAcquired(true);
       events?.broadcast({ type: TEventTypesInput.PointerLockAcquired });
@@ -39,7 +39,7 @@ export function PointerLock() {
       setAcquired(false);
       events?.broadcast({ type: TEventTypesInput.PointerLockReleased });
     }
-  };
+  }, [events]);
 
   useEffect(() => {
     if (!events) return;
@@ -52,7 +52,7 @@ export function PointerLock() {
     return () => {
       document.removeEventListener('pointerlockchange', pointerLockChange);
     };
-  }, [events]);
+  }, [events, pointerLockChange]);
 
   if (desired && !acquired) {
     return <FocusBox onClick={() => onFocus()}>Click to focus</FocusBox>;
