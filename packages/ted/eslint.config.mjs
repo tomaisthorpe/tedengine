@@ -31,7 +31,13 @@ export default [
     rules: {},
   },
   {
-    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.test.js', '**/*.test.jsx'],
+    files: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.test.js',
+      '**/*.test.jsx',
+      '**/test/*.ts',
+    ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
