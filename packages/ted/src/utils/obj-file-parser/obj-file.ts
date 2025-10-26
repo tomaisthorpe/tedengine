@@ -4,11 +4,28 @@
  * Ported to TypeScript
  */
 
+interface OBJModel {
+  name: string;
+  vertices: Array<{ x: number; y: number; z: number }>;
+  textureCoords: Array<{ u: number; v: number; w: number }>;
+  vertexNormals: Array<{ x: number; y: number; z: number }>;
+  faces: Array<{
+    material: string;
+    group: string;
+    smoothingGroup: number;
+    vertices: Array<{
+      vertexIndex: number;
+      textureCoordsIndex: number;
+      vertexNormalIndex: number;
+    }>;
+  }>;
+}
+
 export class OBJFile {
   private defaultModelName: string;
   private result: {
-    models: any[];
-    materialLibraries: any[];
+    models: OBJModel[];
+    materialLibraries: string[];
   } = {
     models: [],
     materialLibraries: [],
@@ -97,8 +114,8 @@ export class OBJFile {
         vertexNormals: [],
         faces: [],
       });
-      this.currentGroup = '';
-      this.smoothingGroup = 0;
+      // Don't reset currentGroup/smoothingGroup here as they may have been
+      // set by g/s statements before any geometry was defined
     }
 
     return this.result.models[this.result.models.length - 1];
@@ -120,7 +137,7 @@ export class OBJFile {
 
   _parseGroup(lineItems: string[]) {
     if (lineItems.length !== 2) {
-      throw 'Group statements must have exactly 1 argument (eg. g group_1)';
+      throw new Error('Group statements must have exactly 1 argument (eg. g group_1)');
     }
 
     this.currentGroup = lineItems[1];
@@ -153,18 +170,22 @@ export class OBJFile {
   _parsePolygon(lineItems: string[]) {
     const totalVertices = lineItems.length - 1;
     if (totalVertices < 3) {
-      throw `Face statement has less than 3 vertices`;
+      throw new Error(`Face statement has less than 3 vertices`);
     }
 
     const face: {
       material: string;
       group: string;
       smoothingGroup: number;
-      vertices: object[];
+      vertices: Array<{
+        vertexIndex: number;
+        textureCoordsIndex: number;
+        vertexNormalIndex: number;
+      }>;
     } = {
-      material: this.currentMaterial!,
-      group: this.currentGroup!,
-      smoothingGroup: this.smoothingGroup!,
+      material: this.currentMaterial || '',
+      group: this.currentGroup || '',
+      smoothingGroup: this.smoothingGroup || 0,
       vertices: [],
     };
 
@@ -173,7 +194,7 @@ export class OBJFile {
       const vertexValues = vertexString.split('/');
 
       if (vertexValues.length < 1 || vertexValues.length > 3) {
-        throw `Two many values (separated by /) for a single vertex`;
+        throw new Error(`Too many values (separated by /) for a single vertex`);
       }
 
       let vertexIndex = 0;
@@ -188,7 +209,7 @@ export class OBJFile {
       }
 
       if (vertexIndex === 0) {
-        throw 'Faces uses invalid vertex index of 0';
+        throw new Error('Face uses invalid vertex index of 0');
       }
 
       // Negative vertex indices refer to the nth last defined vertex
@@ -220,7 +241,7 @@ export class OBJFile {
 
   _parseSmoothShadingStatement(lineItems: string[]) {
     if (lineItems.length !== 2) {
-      throw 'Smoothing group statements must have exactly 1 argument (eg. s <number|off>)';
+      throw new Error('Smoothing group statements must have exactly 1 argument (eg. s <number|off>)');
     }
 
     const groupNumber =

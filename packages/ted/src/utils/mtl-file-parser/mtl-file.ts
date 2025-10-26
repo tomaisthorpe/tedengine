@@ -230,7 +230,7 @@ export class MTLFile {
   // newmtl material_name
   _parseNewMTL(lineItems: string[]) {
     if (lineItems.length < 2) {
-      throw 'newmtl statement must specify a name for the maerial (eg, newmtl brickwall)';
+      throw new Error('newmtl statement must specify a name for the material (eg, newmtl brickwall)');
     }
     this._createMaterial(lineItems[1]);
   }
@@ -429,10 +429,10 @@ export class MTLFile {
     console.debug(`MTL file statement not implemented: ${message}`);
   }
 
-  _fileError(message: string) {
+  _fileError(message: string): never {
     const material = `Material: ${this._getCurrentMaterial().name}`;
     const line = `Line: ${this.lineNumber}`;
     const errorMessage = `MTL file format error (${line}  ${material}): ${message}`;
-    throw errorMessage;
+    throw new Error(errorMessage);
   }
 }
