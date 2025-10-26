@@ -163,8 +163,10 @@ const InputRow = ({
       return;
     }
 
-    const input = inputRef.current! as HTMLInputElement;
-    const width = input.clientWidth - 18;
+    const input = inputRef.current;
+    if (!input) return;
+
+    const width = (input as HTMLElement).clientWidth - 18;
 
     const min = parseFloat(row.data.inputProps.min);
     const max = parseFloat(row.data.inputProps.max);
