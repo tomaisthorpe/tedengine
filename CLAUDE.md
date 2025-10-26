@@ -472,16 +472,16 @@ Fred processes in parallel:
 ### Common Commands
 ```bash
 # Build engine library
-nx build ted
+npx nx build ted
 
 # Run documentation site locally
-nx serve docs
+npx nx serve docs
 
 # Run tests
-nx test ted
+npx nx test ted
 
 # Lint
-nx lint ted
+npx nx lint ted
 ```
 
 ## Message Passing Architecture
