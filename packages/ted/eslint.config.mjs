@@ -30,4 +30,10 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.test.js', '**/*.test.jsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ];
