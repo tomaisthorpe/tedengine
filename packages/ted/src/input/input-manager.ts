@@ -222,7 +222,11 @@ export class TInputManager {
       });
     }
 
-    const state = this.rawInputStates.get(key)!;
+    const state = this.rawInputStates.get(key);
+    if (!state) {
+      return;
+    }
+
     if (isPressed && !state.isDown) {
       state.justPressed = true;
       state.isDown = true;

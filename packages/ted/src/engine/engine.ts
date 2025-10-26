@@ -67,7 +67,10 @@ export class TEngine {
   public inputManager: TInputManager;
 
   private engineSystems: TEngineSystem[] = [];
+  // Each system type has its own constructor signature - using any[] for constructor params
+  // is necessary for storing heterogeneous system constructors in a single map
   private engineSystemsMap: Map<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     new (...args: any[]) => TEngineSystem,
     TEngineSystem
   > = new Map();
@@ -105,10 +108,17 @@ export class TEngine {
       this.fredPort,
     );
 
-    // @todo what if game state is not set?
     this.jobs.setRelay(
       [TJobContextTypes.GameState, TJobContextTypes.Physics],
-      () => this.gameState.current()!.jobs,
+      () => {
+        const currentState = this.gameState.current();
+        if (!currentState) {
+          throw new Error(
+            'Cannot relay job - no active game state. Jobs requiring GameState or Physics context must be executed when a game state is active.',
+          );
+        }
+        return currentState.jobs;
+      },
     );
 
     this.resources = new TResourceManager(
@@ -321,6 +331,7 @@ export class TEngine {
   public addEngineSystem(system: TEngineSystem) {
     this.engineSystems.push(system);
     this.engineSystemsMap.set(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       system.constructor as new (...args: any[]) => TEngineSystem,
       system,
     );
@@ -336,6 +347,7 @@ export class TEngine {
   public removeEngineSystem(system: TEngineSystem) {
     this.engineSystems = this.engineSystems.filter((s) => s !== system);
     this.engineSystemsMap.delete(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       system.constructor as new (...args: any[]) => TEngineSystem,
     );
   }
@@ -347,6 +359,7 @@ export class TEngine {
    * @returns The system, or undefined if it is not found.
    */
   public getEngineSystem<T extends TEngineSystem>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     systemClass: new (...args: any[]) => TEngineSystem,
   ): T | undefined {
     return this.engineSystemsMap.get(systemClass) as T | undefined;
