@@ -18,7 +18,10 @@ export interface IChildEventQueue {
  */
 export class TEventQueue {
   private queue: TEvent[] = [];
-  private listeners: { [key: string]: Array<(event: TEvent) => void> } = {};
+  private listeners: Record<
+    string,
+    Array<(event: TEvent) => void> | undefined
+  > = {};
 
   /**
    * @param relayTo workers to rely all events to
@@ -71,9 +74,13 @@ export class TEventQueue {
     subTypeOrFunc: string | ((event: T) => void),
     func?: (event: T) => void,
   ): void {
-    let callback = func;
+    let callback: ((event: T) => void) | undefined = func;
     if (!func) {
       callback = subTypeOrFunc as (event: T) => void;
+    }
+
+    if (!callback) {
+      throw new Error('No callback function provided to addListener');
     }
 
     let typeString = type;
@@ -81,11 +88,9 @@ export class TEventQueue {
       typeString = `${type}-${subTypeOrFunc as string}`;
     }
 
-    if (this.listeners[typeString] === undefined) {
-      this.listeners[typeString] = [callback as (event: TEvent) => void];
-    } else {
-      this.listeners[typeString].push(callback as (event: TEvent) => void);
-    }
+    const listeners = this.listeners[typeString] ?? [];
+    listeners.push(callback as (event: TEvent) => void);
+    this.listeners[typeString] = listeners;
   }
 
   /**
@@ -108,9 +113,13 @@ export class TEventQueue {
     subTypeOrFunc: string | ((event: T) => void),
     func?: (event: T) => void,
   ): void {
-    let callback = func;
+    let callback: ((event: T) => void) | undefined = func;
     if (!func) {
       callback = subTypeOrFunc as (event: T) => void;
+    }
+
+    if (!callback) {
+      throw new Error('No callback function provided to removeListener');
     }
 
     let typeString = type;
@@ -119,11 +128,10 @@ export class TEventQueue {
     }
 
     // Check there's a listener with this type
-    if (this.listeners[typeString] !== undefined) {
+    const listeners = this.listeners[typeString];
+    if (listeners !== undefined) {
       // Remove any functions that are equal to the given one
-      this.listeners[typeString] = this.listeners[typeString].filter(
-        (f) => f !== callback,
-      );
+      this.listeners[typeString] = listeners.filter((f) => f !== callback);
     }
   }
 
@@ -131,8 +139,9 @@ export class TEventQueue {
     // Loop the queue
     for (const event of this.queue) {
       // Check if there are listeners for this event
-      if (this.listeners[event.type] !== undefined) {
-        for (const listener of this.listeners[event.type]) {
+      const typeListeners = this.listeners[event.type];
+      if (typeListeners !== undefined) {
+        for (const listener of typeListeners) {
           // Call the listener
           listener(event);
         }
@@ -140,10 +149,10 @@ export class TEventQueue {
 
       // If event has subtype check if there are listeners
       if (event.subType) {
-        if (this.listeners[`${event.type}-${event.subType}`] !== undefined) {
-          for (const listener of this.listeners[
-            `${event.type}-${event.subType}`
-          ]) {
+        const subTypeListeners =
+          this.listeners[`${event.type}-${event.subType}`];
+        if (subTypeListeners !== undefined) {
+          for (const listener of subTypeListeners) {
             // Call the listener
             listener(event);
           }

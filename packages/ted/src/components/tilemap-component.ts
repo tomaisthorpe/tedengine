@@ -42,18 +42,12 @@ export class TTilemapComponent extends TComponent {
   }
 
   private getTileset(tileset: TTilesetConfig): TTileset {
-    const image = tileset.image as TImage;
-
-    if (!image) {
-      throw new Error(`Tileset image not found: ${tileset.image}`);
-    }
-
     // Get the tileset from the tilemap defs
     const tilesetDef = this.tilemap.tilesetDefs[tileset.id];
 
     return {
       id: tileset.id,
-      image,
+      image: tileset.image,
       tileSize: tilesetDef.tileSize,
     };
   }
