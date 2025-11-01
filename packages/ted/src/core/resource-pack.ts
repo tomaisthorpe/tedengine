@@ -102,7 +102,7 @@ export class TResourcePack {
     for (const resourceType in resourceTypes) {
       for (const resource of this.resources[
         resourceType as keyof TResourcePackConfig
-      ] || []) {
+      ] ?? []) {
         if (typeof resource === 'string') {
           promises.push(
             this.engine.resources.load(resourceTypes[resourceType], resource),

@@ -270,7 +270,7 @@ export class TWorld {
     this.queuedNewBodies.push(sc);
 
     this.collisionClassLookup[entity.toString()] =
-      body.collider.collisionClass || this.config.defaultCollisionClass;
+      body.collider.collisionClass ?? this.config.defaultCollisionClass;
   }
 
   public removeRigidBody(entity: TEntity) {
@@ -361,7 +361,7 @@ export class TWorld {
   }
 
   public getLighting(): TSerializedLighting {
-    return this.config.lighting || {};
+    return this.config.lighting ?? {};
   }
 
   public getRenderTasks(): TSerializedRenderTask[] {
@@ -371,8 +371,8 @@ export class TWorld {
       tasks.push({
         type: TRenderTask.PhysicsDebug,
         uuid: 'physics-debug',
-        vertices: this.lastPhysicsDebug?.vertices,
-        colors: this.lastPhysicsDebug?.colors,
+        vertices: this.lastPhysicsDebug.vertices,
+        colors: this.lastPhysicsDebug.colors,
       });
     }
 

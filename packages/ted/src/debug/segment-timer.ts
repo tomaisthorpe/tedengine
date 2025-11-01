@@ -259,7 +259,7 @@ export class TSegmentTimer {
     durationFunction: () => number,
     parentSegment?: TSegment | null,
   ): TCustomSegment {
-    const segment = this.getOrCreateSegment(name, parentSegment || null);
+    const segment = this.getOrCreateSegment(name, parentSegment ?? null);
     segment.customDurationFunction = durationFunction;
     segment.isCustomDuration = true;
     segment.lastStartTime = performance.now();
@@ -282,7 +282,7 @@ export class TSegmentTimer {
     name: string,
     parentContext: TSegmentTimingContext | null,
   ): TSegmentTimingContext {
-    const parentSegment = parentContext?.getSegment() || null;
+    const parentSegment = parentContext?.getSegment() ?? null;
     const segment = this.getOrCreateSegment(name, parentSegment);
     return new TSegmentTimingContext(this, segment, parentContext);
   }
