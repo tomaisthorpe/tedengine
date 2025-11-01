@@ -12,8 +12,8 @@ export interface TGameStateType {
 }
 
 export class TGameStateManager {
-  private stateFactories: { [key: string]: TGameStateType } = {};
-  private states: { [key: string]: TGameState } = {};
+  private stateFactories: Record<string, TGameStateType | undefined> = {};
+  private states: Record<string, TGameState | undefined> = {};
   private stack: TGameState[] = [];
   private loading = false;
 
@@ -48,8 +48,13 @@ export class TGameStateManager {
       await this.createState(name);
     }
 
-    // Push this state onto the steack
-    this.stack.push(this.states[name]);
+    const state = this.states[name];
+    if (!state) {
+      throw new Error(`Failed to create game state '${name}'`);
+    }
+
+    // Push this state onto the stack
+    this.stack.push(state);
 
     await this.current()?.enter(this.engine, ...args);
 
@@ -58,7 +63,7 @@ export class TGameStateManager {
 
   /**
    * Triggers [[`TGameState.onLeave`]] on current state, removes from it from the stack.
-   * Makes the state below the current state and then calls [[`TGameState.onResume``]]
+   * Makes the state below the current state and then calls [[`TGameState.onResume`]]
    *
    * It does not trigger [[`TGameState.onEnter`]].
    *
@@ -101,12 +106,17 @@ export class TGameStateManager {
       await this.createState(name);
     }
 
+    const state = this.states[name];
+    if (!state) {
+      throw new Error(`Failed to create game state '${name}'`);
+    }
+
     // Pop the last element is there is a state on the stack
     if (this.stack.length > 0) {
       this.stack.pop();
     }
 
-    this.stack.push(this.states[name]);
+    this.stack.push(state);
 
     await this.current()?.enter(this.engine, ...args);
 
@@ -130,7 +140,7 @@ export class TGameStateManager {
   }
 
   public getLighting(): TSerializedLighting {
-    return this.current()?.getLighting() || {};
+    return this.current()?.getLighting() ?? {};
   }
 
   public getActiveCamera(): TCameraSystem | undefined {
@@ -149,7 +159,12 @@ export class TGameStateManager {
   }
 
   private async createState(name: string) {
-    const state = new this.stateFactories[name](this.engine);
+    const factory = this.stateFactories[name];
+    if (!factory) {
+      throw new Error(`Game state factory '${name}' not found`);
+    }
+
+    const state = new factory(this.engine);
     await state.create(this.engine);
 
     this.states[name] = state;
