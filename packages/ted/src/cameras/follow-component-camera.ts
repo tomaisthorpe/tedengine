@@ -15,7 +15,7 @@ export class TFollowComponentCameraSystem extends TSystem {
   private activeCameraQuery: TEntityQuery;
   private targetQuery: TEntityQuery;
 
-  constructor(private world: TWorld) {
+  constructor(world: TWorld) {
     super();
 
     this.activeCameraQuery = world.createQuery([
@@ -29,11 +29,7 @@ export class TFollowComponentCameraSystem extends TSystem {
     ]);
   }
 
-  public async update(
-    engine: TEngine,
-    world: TWorld,
-    delta: number,
-  ): Promise<void> {
+  public async update(_: TEngine, world: TWorld): Promise<void> {
     const entities = this.activeCameraQuery.execute();
 
     for (const entity of entities) {
@@ -47,7 +43,7 @@ export class TFollowComponentCameraSystem extends TSystem {
       // Follow the first target
       const target = targets[0];
 
-      if (!camera || target === undefined || !transform) {
+      if (!camera || !transform) {
         continue;
       }
 

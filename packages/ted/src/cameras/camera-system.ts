@@ -42,7 +42,7 @@ export class TCameraSystem extends TSystem {
     this.query = world.createQuery([TCameraComponent, TActiveCameraComponent]);
   }
 
-  public async update(engine: TEngine, world: TWorld): Promise<void> {
+  public async update(_: TEngine, world: TWorld): Promise<void> {
     const entities = this.query.execute();
 
     if (entities.length === 0) {
@@ -69,7 +69,7 @@ export class TCameraSystem extends TSystem {
   }
 
   public getView(): TCameraView {
-    const camera = this.activeCamera || this.defaultCamera;
+    const camera = this.getActiveCamera();
 
     return {
       projectionType: camera.component.cameraConfig.type,
@@ -82,20 +82,20 @@ export class TCameraSystem extends TSystem {
   }
 
   public getProjectionMatrix(width: number, height: number): mat4 {
-    const camera = this.activeCamera || this.defaultCamera;
+    const camera = this.getActiveCamera();
 
     if (camera.component.cameraConfig.type === TProjectionType.Perspective) {
       const projection = mat4.create();
       mat4.perspective(
         projection,
-        ((camera.component.cameraConfig.fov || 45) * Math.PI) / 180,
+        ((camera.component.cameraConfig.fov ?? 45) * Math.PI) / 180,
         width / height,
-        camera.component.cameraConfig.zNear || 0.1,
-        camera.component.cameraConfig.zFar || 100,
+        camera.component.cameraConfig.zNear ?? 0.1,
+        camera.component.cameraConfig.zFar ?? 100,
       );
 
       const cameraSpace =
-        mat4.invert(mat4.create(), camera.transform.getMatrix()) ||
+        mat4.invert(mat4.create(), camera.transform.getMatrix()) ??
         mat4.identity(mat4.create());
 
       return mat4.multiply(mat4.create(), projection, cameraSpace);
@@ -108,12 +108,12 @@ export class TCameraSystem extends TSystem {
       width / 2,
       -height / 2,
       height / 2,
-      camera.component.cameraConfig.zNear || 0.1,
-      camera.component.cameraConfig.zFar || 100,
+      camera.component.cameraConfig.zNear ?? 0.1,
+      camera.component.cameraConfig.zFar ?? 100,
     );
 
     const cameraSpace =
-      mat4.invert(mat4.create(), camera.transform.getMatrix()) ||
+      mat4.invert(mat4.create(), camera.transform.getMatrix()) ??
       mat4.identity(mat4.create());
 
     return mat4.multiply(mat4.create(), projection, cameraSpace);
@@ -129,8 +129,8 @@ export class TCameraSystem extends TSystem {
     this.world.addComponent(entity, new TActiveCameraComponent());
   }
 
-  public getActiveCamera(): TCamera | undefined {
-    return this.activeCamera || this.defaultCamera;
+  public getActiveCamera(): TCamera {
+    return this.activeCamera ?? this.defaultCamera;
   }
 
   public clipToWorldSpace(location: vec2): vec3 {
@@ -145,7 +145,7 @@ export class TCameraSystem extends TSystem {
 
 export function clipToWorldSpace(projectionMatrix: mat4, location: vec2): vec3 {
   const invertProj =
-    mat4.invert(mat4.create(), projectionMatrix) ||
+    mat4.invert(mat4.create(), projectionMatrix) ??
     mat4.identity(mat4.create());
 
   const worldspace = vec3.transformMat4(
