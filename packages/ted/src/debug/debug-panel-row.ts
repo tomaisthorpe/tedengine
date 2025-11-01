@@ -15,10 +15,18 @@ export interface IDebugPanelRow {
   remove: () => void;
 }
 
+export type TDebugPanelRowType =
+  | 'value'
+  | 'buttons'
+  | 'input'
+  | 'checkbox'
+  | 'select'
+  | 'colorPicker';
+
 export interface TDebugPanelRowSerializedData {
   uuid: string;
   label: string;
-  type: string;
+  type: TDebugPanelRowType;
   data: {
     value?: string | boolean | vec3;
     buttons?: Array<{ label: string; uuid: string }>;

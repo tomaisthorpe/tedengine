@@ -41,7 +41,7 @@ export class OBJFile {
   ) {
     this._reset();
 
-    this.defaultModelName = defaultModelName || 'untitled';
+    this.defaultModelName = defaultModelName ?? 'untitled';
   }
 
   _reset() {
@@ -137,7 +137,9 @@ export class OBJFile {
 
   _parseGroup(lineItems: string[]) {
     if (lineItems.length !== 2) {
-      throw new Error('Group statements must have exactly 1 argument (eg. g group_1)');
+      throw new Error(
+        'Group statements must have exactly 1 argument (eg. g group_1)',
+      );
     }
 
     this.currentGroup = lineItems[1];
@@ -183,9 +185,9 @@ export class OBJFile {
         vertexNormalIndex: number;
       }>;
     } = {
-      material: this.currentMaterial || '',
-      group: this.currentGroup || '',
-      smoothingGroup: this.smoothingGroup || 0,
+      material: this.currentMaterial ?? '',
+      group: this.currentGroup ?? '',
+      smoothingGroup: this.smoothingGroup ?? 0,
       vertices: [],
     };
 
@@ -241,7 +243,9 @@ export class OBJFile {
 
   _parseSmoothShadingStatement(lineItems: string[]) {
     if (lineItems.length !== 2) {
-      throw new Error('Smoothing group statements must have exactly 1 argument (eg. s <number|off>)');
+      throw new Error(
+        'Smoothing group statements must have exactly 1 argument (eg. s <number|off>)',
+      );
     }
 
     const groupNumber =

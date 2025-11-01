@@ -22,10 +22,10 @@ export class OBJParser {
       colors: number[];
       index: number;
       indices: number[];
-      indicesLookup: { [key: string]: number };
+      indicesLookup: { [key: string]: number | undefined };
       normals: number[];
       vertices: number[];
-      palette: { [key: string]: number };
+      palette: { [key: string]: number | undefined };
       uvs: number[];
     } = {
       palette: {},
@@ -48,8 +48,9 @@ export class OBJParser {
 
       for (const face of model.faces) {
         let color = paletteCount;
-        if (unpacked.palette[face.material] !== undefined) {
-          color = unpacked.palette[face.material];
+        const existingColor = unpacked.palette[face.material];
+        if (existingColor !== undefined) {
+          color = existingColor;
         } else {
           unpacked.palette[face.material] = color;
           paletteCount++;
@@ -65,27 +66,26 @@ export class OBJParser {
         for (const vertex of face.vertices) {
           const hash = `${vertex.vertexIndex}-${vertex.vertexNormalIndex}-${color}`;
 
-          if (hash in unpacked.indicesLookup) {
-            unpacked.indices.push(unpacked.indicesLookup[hash]);
+          const existingIndex = unpacked.indicesLookup[hash];
+          if (existingIndex !== undefined) {
+            unpacked.indices.push(existingIndex);
           } else {
             // Get vertex and normal
             const vert = vertices[vertex.vertexIndex - 1];
             const normal = normals[vertex.vertexNormalIndex - 1];
             const uv = uvs[vertex.textureCoordsIndex - 1];
 
-            unpacked.vertices.push(vert.x as number);
-            unpacked.vertices.push(vert.y as number);
-            unpacked.vertices.push(vert.z as number);
-            unpacked.normals.push(normal.x as number);
-            unpacked.normals.push(normal.y as number);
-            unpacked.normals.push(normal.z as number);
+            unpacked.vertices.push(vert.x);
+            unpacked.vertices.push(vert.y);
+            unpacked.vertices.push(vert.z);
+            unpacked.normals.push(normal.x);
+            unpacked.normals.push(normal.y);
+            unpacked.normals.push(normal.z);
             unpacked.indices.push(unpacked.index);
             unpacked.colors.push(color);
 
-            if (uv) {
-              unpacked.uvs.push(uv.u as number);
-              unpacked.uvs.push(uv.v as number);
-            }
+            unpacked.uvs.push(uv.u);
+            unpacked.uvs.push(uv.v);
 
             unpacked.indicesLookup[hash] = unpacked.index;
             unpacked.index += 1;

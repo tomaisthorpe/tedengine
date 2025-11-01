@@ -180,8 +180,8 @@ const InputRow = ({
 
     const width = input.clientWidth - 18;
 
-    const min = parseFloat(String(row.data.inputProps?.min || '0'));
-    const max = parseFloat(String(row.data.inputProps?.max || '100'));
+    const min = parseFloat(String(row.data.inputProps?.min ?? '0'));
+    const max = parseFloat(String(row.data.inputProps?.max ?? '100'));
     const val = parseFloat(String(row.data.value));
     const per = (val - min) / (max - min);
 
@@ -291,22 +291,20 @@ const ColorPickerRow = ({
   </div>
 );
 
-const typeToComponent: {
-  [key: string]: ({
-    row,
-    events,
-  }: {
-    row: TDebugPanelRowSerializedData;
-    events: TEventQueue;
-  }) => JSX.Element;
-} = {
+const typeToComponent = {
   value: ValueRow,
   buttons: ButtonsRow,
   input: InputRow,
   checkbox: CheckboxRow,
   select: SelectRow,
   colorPicker: ColorPickerRow,
-};
+} as const satisfies Record<
+  string,
+  React.ComponentType<{
+    row: TDebugPanelRowSerializedData;
+    events: TEventQueue;
+  }>
+>;
 
 const ExpandArrow = styled.span<{ isExpanded: boolean }>`
   cursor: pointer;
@@ -347,10 +345,6 @@ export function DebugPanelRow({ row, events }: Props) {
   });
 
   const RowComponent = typeToComponent[row.type];
-
-  if (!RowComponent) {
-    return null;
-  }
 
   const handleToggle = () => {
     if (hasChildren) {

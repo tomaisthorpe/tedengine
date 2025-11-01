@@ -53,8 +53,8 @@ const TGame = ({
   aspectRatio?: string;
   config?: TFredConfig;
 }) => {
-  const container = useRef(null);
-  const fullscreenContainer = useRef(null);
+  const container = useRef<HTMLDivElement>(null);
+  const fullscreenContainer = useRef<HTMLDivElement>(null);
   const [fred, setFred] = useState<TFred | undefined>(undefined);
   const [engineData, setEngineData] = useState<TEngineContextData>({
     loading: false,
@@ -103,7 +103,7 @@ const TGame = ({
     };
   }, []);
 
-  const events = fred && fred.events ? fred.events : undefined;
+  const events = fred?.events;
 
   let containerWidth = '100%';
   let containerHeight = aspectRatio === 'auto' ? '100%' : 'auto';
@@ -140,7 +140,7 @@ const TGame = ({
                   }}
                   ref={container}
                 >
-                  {fred && fred.events && (
+                  {fred && (
                     <>
                       <DebugPanel events={fred.events} />
                       {children}
