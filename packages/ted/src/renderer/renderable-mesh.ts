@@ -9,7 +9,7 @@ import type { TProgram } from './program';
 import type { TAttributeBuffer } from './program';
 
 export interface TPaletteIndex {
-  [key: string]: number;
+  [key: string]: number | undefined;
 }
 
 export class TRenderableMesh implements IAsset {
@@ -175,8 +175,9 @@ export class TRenderableMesh implements IAsset {
 
       for (const color of Object.keys(this.palette)) {
         const pcolor = palette[color];
-        if (pcolor) {
-          colors[this.palette[color]] = pcolor;
+        const paletteIndex = this.palette[color];
+        if (pcolor && paletteIndex !== undefined) {
+          colors[paletteIndex] = pcolor;
         }
       }
 
@@ -307,8 +308,9 @@ export class TRenderableMesh implements IAsset {
 
     for (const color of Object.keys(this.palette)) {
       const pcolor = palette[color];
-      if (pcolor) {
-        colors[this.palette[color]] = pcolor;
+      const paletteIndex = this.palette[color];
+      if (pcolor && paletteIndex !== undefined) {
+        colors[paletteIndex] = pcolor;
       }
     }
 
