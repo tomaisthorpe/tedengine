@@ -40,7 +40,7 @@ export class TPhysicsSystem extends TSystem {
   ): Promise<void> {
     const entities = this.query.execute();
 
-    const bodies: { [key: string]: TRigidBodyComponent } = {};
+    const bodies: Record<string, TRigidBodyComponent | undefined> = {};
 
     for (const entity of entities) {
       const rigidBody = world.getComponents(entity)?.get(TRigidBodyComponent);
@@ -124,7 +124,7 @@ export class TPhysicsSystem extends TSystem {
     }
 
     const collisionClass =
-      entityBCollider.collider.collisionClass ||
+      entityBCollider.collider.collisionClass ??
       world.config.defaultCollisionClass;
 
     this.events.broadcast({

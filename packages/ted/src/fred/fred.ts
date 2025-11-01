@@ -53,7 +53,7 @@ export class TFred {
   public events!: TEventQueue;
   private keyboard!: TKeyboard;
   private mouse!: TMouse;
-  private renderer!: TRenderer;
+  private renderer?: TRenderer;
   private resources!: TResourceManager;
   private jobs!: TJobManager;
   public audio: TAudio = new TAudio();
@@ -246,7 +246,7 @@ export class TFred {
     this.events.update();
 
     if (this.latestFrame) {
-      this.renderer.render(this.latestFrame);
+      this.renderer?.render(this.latestFrame);
 
       const statsMessages: TFredMessageStats = {
         type: TFredMessageTypes.STATS,
@@ -293,7 +293,7 @@ export class TFred {
       });
     }
 
-    this.renderer.onResize();
+    this.renderer?.onResize();
   }
 
   private onBlur() {

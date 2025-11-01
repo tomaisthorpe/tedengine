@@ -36,7 +36,6 @@ export interface TRapierObject {
 }
 
 export class TRapier3DWorld implements TPhysicsWorld {
-   
   // TODO fix this
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private RAPIER!: typeof import('@dimforge/rapier3d-compat');
@@ -45,13 +44,15 @@ export class TRapier3DWorld implements TPhysicsWorld {
   private world!: World;
   private eventQueue!: EventQueue;
   private defaultCollisionClass!: string;
-  private collisionClasses: {
-    [key: string]: {
-      groupNumber: number;
-      filter: number;
-      ignoredBy: number[];
-    };
-  } = {};
+  private collisionClasses: Record<
+    string,
+    | {
+        groupNumber: number;
+        filter: number;
+        ignoredBy: number[];
+      }
+    | undefined
+  > = {};
 
   private physicsMode: TPhysicsMode = '3d';
   private physicsScale = 1;
@@ -62,7 +63,7 @@ export class TRapier3DWorld implements TPhysicsWorld {
     this.RAPIER = await import('@dimforge/rapier3d-compat');
     await this.RAPIER.init();
 
-    this.physicsScale = config.physicsScale || 1;
+    this.physicsScale = config.physicsScale ?? 1;
 
     this.world = new this.RAPIER.World({
       x: config.gravity[0],
@@ -90,6 +91,8 @@ export class TRapier3DWorld implements TPhysicsWorld {
         for (const ig of cc.ignores) {
           // Find the group number
           const id = this.collisionClasses[ig];
+          if (!id) continue;
+
           id.ignoredBy.push(nextGroup);
           filter &= ~id.groupNumber;
         }
@@ -107,6 +110,8 @@ export class TRapier3DWorld implements TPhysicsWorld {
     // Apply ignoredBy to masks
     for (const name in this.collisionClasses) {
       const cc = this.collisionClasses[name];
+      if (!cc) continue;
+
       for (const ig of cc.ignoredBy) {
         cc.filter &= ~ig;
       }
@@ -215,25 +220,34 @@ export class TRapier3DWorld implements TPhysicsWorld {
     // let shape:
     let shape: ColliderDesc;
 
-    if (collider.type === TColliderType.BOX) {
-      const config = collider as TBoxColliderConfig;
-      shape = this.RAPIER.ColliderDesc.cuboid(
-        (config.width / 2) * this.physicsScale,
-        (config.height / 2) * this.physicsScale,
-        (config.depth / 2) * this.physicsScale,
-      );
-    } else if (collider.type === TColliderType.PLANE) {
-      const config = collider as TPlaneColliderConfig;
-      shape = this.RAPIER.ColliderDesc.cuboid(
-        (config.width / 2) * this.physicsScale,
-        0.000001,
-        (config.height / 2) * this.physicsScale,
-      );
-    } else if (collider.type === TColliderType.SPHERE) {
-      const config = collider as TSphereColliderConfig;
-      shape = this.RAPIER.ColliderDesc.ball(config.radius * this.physicsScale);
-    } else {
-      throw new Error('Unknown collider type');
+    switch (collider.type) {
+      case TColliderType.BOX: {
+        const config = collider as TBoxColliderConfig;
+        shape = this.RAPIER.ColliderDesc.cuboid(
+          (config.width / 2) * this.physicsScale,
+          (config.height / 2) * this.physicsScale,
+          (config.depth / 2) * this.physicsScale,
+        );
+        break;
+      }
+      case TColliderType.PLANE: {
+        const config = collider as TPlaneColliderConfig;
+        shape = this.RAPIER.ColliderDesc.cuboid(
+          (config.width / 2) * this.physicsScale,
+          0.000001,
+          (config.height / 2) * this.physicsScale,
+        );
+        break;
+      }
+      case TColliderType.SPHERE: {
+        const config = collider as TSphereColliderConfig;
+        shape = this.RAPIER.ColliderDesc.ball(
+          config.radius * this.physicsScale,
+        );
+        break;
+      }
+      default:
+        throw new Error('Unknown collider type');
     }
 
     shape.setActiveEvents(this.RAPIER.ActiveEvents.COLLISION_EVENTS);
@@ -473,7 +487,7 @@ export class TRapier3DWorld implements TPhysicsWorld {
     );
 
     const filterGroup = options?.collisionClasses
-      ? this.calculateQueryFilterGroup(options?.collisionClasses)
+      ? this.calculateQueryFilterGroup(options.collisionClasses)
       : undefined;
 
     const result: TPhysicsQueryLineResult[] = [];
@@ -529,7 +543,7 @@ export class TRapier3DWorld implements TPhysicsWorld {
     );
 
     const filterGroup = options?.collisionClasses
-      ? this.calculateQueryFilterGroup(options?.collisionClasses)
+      ? this.calculateQueryFilterGroup(options.collisionClasses)
       : undefined;
 
     const result: TPhysicsQueryAreaResult[] = [];
@@ -569,7 +583,7 @@ export class TRapier3DWorld implements TPhysicsWorld {
   private calculateQueryFilterGroup(collisionClasses: string[]): number {
     let group = 0;
     for (const cc of collisionClasses) {
-      group += this.collisionClasses[cc].groupNumber;
+      group += this.collisionClasses[cc]?.groupNumber ?? 0;
     }
 
     return (1 << 16) + group;

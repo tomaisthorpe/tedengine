@@ -66,17 +66,15 @@ export class TPhysicsDebug {
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
     const vao = gl.createVertexArray();
-    if (!vao) {
-      throw new Error('Failed to create vertex array object');
-    }
     this.vao = vao;
+
     gl.bindVertexArray(this.vao);
 
     if (!this.positionBuffer || !this.colorBuffer) {
       throw new Error('Buffers must be created before VAO');
     }
 
-    const buffers: { [key: string]: TAttributeBuffer } = {
+    const buffers: { [key: string]: TAttributeBuffer | undefined } = {
       aVertexPosition: {
         buffer: this.positionBuffer,
         size: 3,
@@ -112,9 +110,7 @@ export class TPhysicsDebug {
   private createBuffers(gl: WebGL2RenderingContext): void {
     const positionBuffer = gl.createBuffer();
     const colorBuffer = gl.createBuffer();
-    if (!positionBuffer || !colorBuffer) {
-      throw new Error('Failed to create WebGL buffers');
-    }
+
     this.positionBuffer = positionBuffer;
     this.colorBuffer = colorBuffer;
   }
