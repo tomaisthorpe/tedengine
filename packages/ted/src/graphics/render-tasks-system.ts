@@ -79,7 +79,7 @@ export class TMeshRenderSystem extends TSystem {
 
       const visibility = components.get(TVisibilityComponent);
 
-      if (visibility.state === TVisibilityState.Hidden) {
+      if (!visibility || visibility.state === TVisibilityState.Hidden) {
         continue;
       }
 
@@ -87,7 +87,7 @@ export class TMeshRenderSystem extends TSystem {
       const material = components.get(TMaterialComponent);
       const transform = components.get(TGlobalTransformComponent);
 
-      if (!transform || !transform.transform) {
+      if (!mesh || !material || !transform || !transform.transform) {
         continue;
       }
 
@@ -121,7 +121,7 @@ export class TMeshRenderSystem extends TSystem {
       const texture = components.get(TTextureComponent);
       const transform = components.get(TGlobalTransformComponent);
 
-      if (!transform || !transform.transform) {
+      if (!mesh || !texture || !transform || !transform.transform) {
         continue;
       }
 
@@ -157,7 +157,7 @@ export class TMeshRenderSystem extends TSystem {
       const transform = components.get(TTransformComponent);
       const texture = components.get(TTextureComponent);
 
-      if (!sprite || !texture || !texture.texture.uuid) {
+      if (!sprite || !transform || !texture || !texture.texture.uuid) {
         continue;
       }
 
@@ -170,7 +170,7 @@ export class TMeshRenderSystem extends TSystem {
       if (components.has(TAnimatedSpriteComponent)) {
         const animatedSprite = components.get(TAnimatedSpriteComponent);
 
-        if (animatedSprite.instanceUVs) {
+        if (animatedSprite?.instanceUVs) {
           materialOptions.instanceUVs = animatedSprite.instanceUVs;
         }
       }
@@ -179,7 +179,7 @@ export class TMeshRenderSystem extends TSystem {
         console.log('has sprite instances');
         const spriteInstances = components.get(TSpriteInstancesComponent);
 
-        if (!sprite.uuid) {
+        if (!spriteInstances || !sprite.uuid) {
           continue;
         }
 

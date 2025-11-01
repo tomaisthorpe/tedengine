@@ -51,11 +51,10 @@ export class TComponentContainer {
     );
   }
 
-  // @todo this can be undefined which the method should return
   public get<T extends TComponent>(
     componentClass: TComponentConstructor<T>,
-  ): T {
-    return this.components.get(componentClass) as T;
+  ): T | undefined {
+    return this.components.get(componentClass) as T | undefined;
   }
 
   public has(componentClass: TComponentConstructor): boolean {

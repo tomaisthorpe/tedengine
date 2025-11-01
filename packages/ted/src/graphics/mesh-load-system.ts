@@ -34,6 +34,8 @@ export class TMeshLoadSystem extends TSystem {
       }
       const mesh = components?.get(TMeshComponent);
 
+      if (!mesh) continue;
+
       // Mesh has already been loaded
       if (mesh.uuid) {
         world.addComponent(entity, new TMeshReadyComponent());
@@ -89,6 +91,8 @@ export class TTexturedMeshLoadSystem extends TSystem {
 
       const mesh = components?.get(TTexturedMeshComponent);
 
+      if (!mesh) continue;
+
       const { data } = mesh;
 
       if (data.source === 'inline') {
@@ -136,6 +140,8 @@ export class TSpriteLoadSystem extends TSystem {
       }
 
       const sprite = components?.get(TSpriteComponent);
+
+      if (!sprite) continue;
 
       const { geometry } = sprite;
 

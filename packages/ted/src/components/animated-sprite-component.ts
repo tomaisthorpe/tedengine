@@ -61,6 +61,8 @@ export class TAnimatedSpriteSystem extends TSystem {
 
       const animatedSprite = components.get(TAnimatedSpriteComponent);
 
+      if (!animatedSprite) continue;
+
       animatedSprite.timeSinceLastFrame += delta;
 
       if (!animatedSprite.instanceUVs) {

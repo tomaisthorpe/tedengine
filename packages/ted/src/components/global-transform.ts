@@ -40,7 +40,9 @@ export class TGlobalTransformSystem extends TSystem {
 
       if (components.has(TParentEntityComponent)) {
         const parent = components.get(TParentEntityComponent);
-        parentMap.set(entity, parent.entity);
+        if (parent) {
+          parentMap.set(entity, parent.entity);
+        }
       } else {
         rootEntities.add(entity);
       }
@@ -86,6 +88,8 @@ export class TGlobalTransformSystem extends TSystem {
     // If this entity has a parent, process the parent first
     if (components.has(TParentEntityComponent)) {
       const parent = components.get(TParentEntityComponent);
+
+      if (!parent) return;
 
       // If parent hasn't been processed yet, process it first
       if (!processed.has(parent.entity)) {
