@@ -12,35 +12,35 @@ export interface TGameStateWithOnUpdate extends TGameState {
 }
 
 const hasOnUpdate = (state: TGameState): state is TGameStateWithOnUpdate =>
-  (state as TGameStateWithOnUpdate).onUpdate !== undefined;
+  'onUpdate' in state && typeof state.onUpdate === 'function';
 
 export interface TGameStateWithOnCreate extends TGameState {
   onCreate(engine: TEngine): Promise<void>;
 }
 
 const hasOnCreate = (state: TGameState): state is TGameStateWithOnCreate =>
-  (state as TGameStateWithOnCreate).onCreate !== undefined;
+  'onCreate' in state && typeof state.onCreate === 'function';
 
 export interface TGameStateWithOnEnter extends TGameState {
   onEnter(engine: TEngine, ...args: unknown[]): Promise<void>;
 }
 
 const hasOnEnter = (state: TGameState): state is TGameStateWithOnEnter =>
-  (state as TGameStateWithOnEnter).onEnter !== undefined;
+  'onEnter' in state && typeof state.onEnter === 'function';
 
 export interface TGameStateWithOnResume extends TGameState {
   onResume(engine: TEngine, ...args: unknown[]): Promise<void>;
 }
 
 const hasOnResume = (state: TGameState): state is TGameStateWithOnResume =>
-  (state as TGameStateWithOnResume).onResume !== undefined;
+  'onResume' in state && typeof state.onResume === 'function';
 
 export interface TGameStateWithOnLeave extends TGameState {
   onLeave(engine: TEngine): Promise<void>;
 }
 
 const hasOnLeave = (state: TGameState): state is TGameStateWithOnLeave =>
-  (state as TGameStateWithOnLeave).onLeave !== undefined;
+  'onLeave' in state && typeof state.onLeave === 'function';
 
 export interface TGameStateWithBeforeWorldCreate extends TGameState {
   beforeWorldCreate(engine: TEngine): Promise<void>;
@@ -49,7 +49,7 @@ export interface TGameStateWithBeforeWorldCreate extends TGameState {
 const hasBeforeWorldCreate = (
   state: TGameState,
 ): state is TGameStateWithBeforeWorldCreate =>
-  (state as TGameStateWithBeforeWorldCreate).beforeWorldCreate !== undefined;
+  'beforeWorldCreate' in state && typeof state.beforeWorldCreate === 'function';
 
 export class TGameState {
   public created = false;
@@ -104,11 +104,11 @@ export class TGameState {
   }
 
   public getRenderTasks() {
-    return this.world?.getRenderTasks() || [];
+    return this.world?.getRenderTasks() ?? [];
   }
 
   public getLighting(): TSerializedLighting {
-    return this.world?.getLighting() || {};
+    return this.world?.getLighting() ?? {};
   }
 
   /**
