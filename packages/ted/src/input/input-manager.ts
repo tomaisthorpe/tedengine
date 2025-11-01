@@ -176,7 +176,7 @@ export class TInputManager {
         actionState.timePressed = 0;
       } else if (isActive) {
         actionState.timePressed += delta;
-      } else if (!isActive) {
+      } else {
         actionState.timePressed = 0;
       }
     }

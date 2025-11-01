@@ -50,7 +50,7 @@ export class TTopDownInputSystem extends TSystem {
         continue;
       }
 
-      const worldSpace = world.cameraSystem?.clipToWorldSpace(
+      const worldSpace = world.cameraSystem.clipToWorldSpace(
         mouseInputComponent.mouseLocation.clip,
       );
 

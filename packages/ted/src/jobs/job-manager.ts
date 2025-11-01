@@ -45,15 +45,19 @@ export interface TJobProcessor {
 }
 
 export class TJobManager {
-  private relays: { [key: string]: TJobRelay } = {};
+  private relays: Record<string, TJobRelay | undefined> = {};
   private canProcess: { [key: string]: boolean } = {};
 
   // Job functions stored with unknown types as each job has its own specific signature
   // Type safety is enforced at registration and retrieval time
-  private jobs: Record<string, (ctx: unknown, args: unknown) => Promise<unknown>> = {};
+  private jobs: Record<
+    string,
+    (ctx: unknown, args: unknown) => Promise<unknown>
+  > = {};
 
   // Resolve functions for jobs awaiting relay results
-  private relayedJobs: { [key: string]: (result: unknown) => void } = {};
+  private relayedJobs: Record<string, (result: unknown) => void | undefined> =
+    {};
 
   public additionalContext!:
     | TJobContext
@@ -77,7 +81,10 @@ export class TJobManager {
     func: TJobFunc<TContextTypeMap[TContext], TJobArgs, TJobResult>,
   ) {
     // Store with unknown signature - type safety is maintained at call sites
-    this.jobs[config.name] = func as (ctx: unknown, args: unknown) => Promise<unknown>;
+    this.jobs[config.name] = func as (
+      ctx: unknown,
+      args: unknown,
+    ) => Promise<unknown>;
   }
 
   /**
@@ -110,10 +117,7 @@ export class TJobManager {
           };
           this.relayedJobs[message.wrappedJob.uuid] = resolve;
 
-          portOrManager.postMessage(
-            message,
-            message.wrappedJob.transferList || [],
-          );
+          portOrManager.postMessage(message, message.wrappedJob.transferList);
         });
       };
 
@@ -126,7 +130,7 @@ export class TJobManager {
         args: unknown,
         transferList: Transferable[],
       ): Promise<unknown> => {
-        return portOrManager().do(job, args, transferList || []);
+        return portOrManager().do(job, args, transferList);
       };
 
       for (const context of contexts) {
@@ -155,14 +159,9 @@ export class TJobManager {
       }
 
       // If we can't process it, then check if we have a registered relay for it
-      if (this.relays[job.requiredContext]) {
-        resolve(
-          (await this.relays[job.requiredContext](
-            job,
-            args,
-            transferList,
-          )) as TJobResult,
-        );
+      const relay = this.relays[job.requiredContext];
+      if (relay) {
+        resolve((await relay(job, args, transferList)) as TJobResult);
 
         return;
       }
