@@ -13,7 +13,12 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist'],
+    ignores: [
+      '**/dist',
+      '**/*.config.*',
+      '**/vite.config.*',
+      '**/jest.config.*',
+    ],
   },
   {
     plugins: {
@@ -21,7 +26,18 @@ export default [
       '@typescript-eslint': typescriptEslintEslintPlugin,
     },
   },
-  { languageOptions: { parser: typescriptEslintParser } },
+  {
+    languageOptions: {
+      parser: typescriptEslintParser,
+      parserOptions: {
+        project: [
+          './packages/*/tsconfig.lib.json',
+          './packages/*/tsconfig.spec.json',
+        ],
+        tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
+      },
+    },
+  },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
@@ -38,6 +54,12 @@ export default [
           ],
         },
       ],
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/await-thenable': 'warn',
+      '@typescript-eslint/require-await': 'warn',
+      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
     },
   },
   ...compat
