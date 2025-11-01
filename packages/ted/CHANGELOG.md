@@ -1,5 +1,20 @@
 # @tedengine/ted
 
+## 0.17.0
+
+### Minor Changes
+
+- b80c5e6: Added more linter rules around promises
+- 72fb88d: Add config for clear color and loading screen
+- fcc58c2: Add default texture options to game config
+- a1caa3b: Add hierarchical segment timer
+- 506bb68: Add segment timers for each system
+- 60f0ddc: Update dependencies
+- c312fbf: Add child debug rows
+- c1d6597: Remember which debug sections/rows are expanded/collapsed
+- 635c92f: Fix all remaining linter issues
+- cd85cc6: Add `addSystems` method
+
 ## 0.16.1
 
 ### Patch Changes
