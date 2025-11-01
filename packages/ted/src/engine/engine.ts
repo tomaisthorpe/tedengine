@@ -147,7 +147,7 @@ export class TEngine {
     const { data } = ev;
     switch (data.type) {
       case TFredMessageTypes.READY:
-        this.load();
+        void this.load();
         break;
       case TMessageTypesCore.EVENT_RELAY:
         this.events.broadcast(data.event as TEvent, true);
@@ -155,7 +155,7 @@ export class TEngine {
       case TMessageTypesJobs.RELAY: {
         const relayMessage = data as TJobsMessageRelay;
 
-        this.jobs.doRelayedJob(relayMessage.wrappedJob, this.fredPort);
+        void this.jobs.doRelayedJob(relayMessage.wrappedJob, this.fredPort);
         break;
       }
       case TMessageTypesJobs.RELAY_RESULT: {
@@ -165,7 +165,7 @@ export class TEngine {
       }
       case TFredMessageTypes.SHUTDOWN:
         // Instruct current state to destroy, this includes the physics workers
-        this.gameState.current()?.destroy();
+        void this.gameState.current()?.destroy();
 
         // Stop this worker
         this.workerScope.close();
@@ -186,7 +186,9 @@ export class TEngine {
       this.gameState.register(name, state);
     }
 
-    this.start();
+    this.start().catch((error) =>
+      console.error('Failed to start engine: ', error),
+    );
   }
 
   private async start() {
@@ -210,7 +212,11 @@ export class TEngine {
     // Set this up to prevent issues on first frame, and to remove need for an if
     this.then = performance.now();
 
-    setInterval(this.update, 1000 / 60);
+    setInterval(() => {
+      this.update().catch((error) => {
+        console.error('Update loop error:', error);
+      });
+    }, 1000 / 60);
   }
 
   private async update() {

@@ -28,7 +28,11 @@ export function PointerLock() {
   const events = useEventQueue();
 
   const onFocus = () => {
-    fred?.canvas?.requestPointerLock();
+    fred?.canvas
+      ?.requestPointerLock()
+      .catch((error) =>
+        console.error('Failed to request pointer lock: ', error),
+      );
   };
 
   const pointerLockChange = useCallback(() => {

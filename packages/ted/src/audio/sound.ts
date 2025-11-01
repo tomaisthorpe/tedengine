@@ -31,7 +31,7 @@ export class TSound implements IJobAsset {
   public play() {
     if (!this.uuid || !this.jobs) return;
 
-    this.jobs.do(AudioJobPlaySound, {
+    void this.jobs.do(AudioJobPlaySound, {
       uuid: this.uuid,
       volume: this.volume,
       loop: this.loop,
@@ -42,7 +42,7 @@ export class TSound implements IJobAsset {
     if (!this.uuid || !this.jobs) return;
 
     this.volume = volume;
-    this.jobs.do(AudioJobSetVolume, {
+    void this.jobs.do(AudioJobSetVolume, {
       uuid: this.uuid,
       volume: this.volume,
     });

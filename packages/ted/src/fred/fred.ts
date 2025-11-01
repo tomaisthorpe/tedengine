@@ -89,7 +89,9 @@ export class TFred {
       case TMessageTypesEngine.BOOTSTRAP:
         this.enginePort = ev.ports[0];
         this.clearColor = data.clearColor;
-        this.bootstrap();
+        this.bootstrap().catch((error) =>
+          console.error('Failed to bootstrap: ', error),
+        );
         break;
       case TMessageTypesCore.EVENT_RELAY:
         this.events.broadcast(data.event as TEvent, true);
@@ -106,7 +108,7 @@ export class TFred {
       }
       case TMessageTypesJobs.RELAY: {
         const relayMessage = data as TJobsMessageRelay;
-        this.jobs.doRelayedJob(relayMessage.wrappedJob, this.enginePort);
+        void this.jobs.doRelayedJob(relayMessage.wrappedJob, this.enginePort);
         break;
       }
       case TMessageTypesJobs.RELAY_RESULT: {
@@ -225,12 +227,16 @@ export class TFred {
 
   public toggleFullscreen() {
     if (document.fullscreenElement) {
-      document.exitFullscreen();
+      void document.exitFullscreen();
 
       // Reset the container size to force a resize event
       this.onResize(0, 0);
     } else {
-      this.fullscreenContainer.requestFullscreen();
+      this.fullscreenContainer
+        .requestFullscreen()
+        .catch((error) =>
+          console.error('Failed to request fullscreen: ', error),
+        );
     }
   }
 

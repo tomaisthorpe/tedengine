@@ -140,34 +140,28 @@ export class TJobManager {
   }
 
   // @todo jobs don't currently ever reject
-  public do<TJobArgs, TJobResult>(
+  public async do<TJobArgs, TJobResult>(
     job: TJobConfig<TJobContextTypes, TJobArgs, TJobResult>,
     args: TJobArgs,
     transferList: Transferable[] = [],
   ): Promise<TJobResult> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      // Check if we can process this job
-      const func = this.jobs[job.name];
+    // Check if we can process this job
+    const func = this.jobs[job.name];
 
-      // First check if we can process the job.
-      if (this.canProcess[job.requiredContext]) {
-        // @todo can we make this more type safe?
-        const result = await func.call(this, this.additionalContext, args);
-        resolve(result as TJobResult);
-        return;
-      }
+    // First check if we can process the job.
+    if (this.canProcess[job.requiredContext]) {
+      // @todo can we make this more type safe?
+      const result = await func.call(this, this.additionalContext, args);
+      return result as TJobResult;
+    }
 
-      // If we can't process it, then check if we have a registered relay for it
-      const relay = this.relays[job.requiredContext];
-      if (relay) {
-        resolve((await relay(job, args, transferList)) as TJobResult);
+    // If we can't process it, then check if we have a registered relay for it
+    const relay = this.relays[job.requiredContext];
+    if (relay) {
+      return (await relay(job, args, transferList)) as TJobResult;
+    }
 
-        return;
-      }
-
-      reject(new Error(`Job ${job.name} cannot be processed`));
-    });
+    throw new Error(`Job ${job.name} cannot be processed`);
   }
 
   public async doRelayedJob(

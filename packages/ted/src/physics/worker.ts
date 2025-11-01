@@ -25,7 +25,7 @@ enginePort.onmessage = async (event: MessageEvent) => {
     case TMessageTypesJobs.RELAY: {
       const relayMessage = data as TJobsMessageRelay;
 
-      jobs.doRelayedJob(relayMessage.wrappedJob, enginePort);
+      void jobs.doRelayedJob(relayMessage.wrappedJob, enginePort);
       break;
     }
   }

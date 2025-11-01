@@ -290,7 +290,9 @@ export class TWorld {
 
         this.jobs.setRelay([TJobContextTypes.Physics], this.workerPort);
 
-        this.setupWorld();
+        this.setupWorld().catch((error) => {
+          console.error('Setup world failed: ', error);
+        });
         break;
       case TMessageTypesJobs.RELAY_RESULT: {
         const relayResultMessage = data as TJobsMessageRelayResult;
