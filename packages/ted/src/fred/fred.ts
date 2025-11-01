@@ -151,7 +151,7 @@ export class TFred {
     // Create the canvas
     this.container.classList.add('t-game-container');
     this.canvas = document.createElement('canvas');
-    this.canvas.style.imageRendering = this.config?.imageRendering || 'auto';
+    this.canvas.style.imageRendering = this.config?.imageRendering ?? 'auto';
     this.canvas.style.display = 'block';
 
     this.onResize(this.container.clientWidth, this.container.clientHeight);
@@ -293,9 +293,7 @@ export class TFred {
       });
     }
 
-    if (this.renderer) {
-      this.renderer.onResize();
-    }
+    this.renderer.onResize();
   }
 
   private onBlur() {
@@ -316,21 +314,19 @@ export class TFred {
    * Trigger cleanup across the whole engine
    */
   public destroy() {
-    // @todo should this be an event? might be nicer when there's more threds
-    if (this.enginePort) {
-      const message: TFredMessageShutdown = {
-        type: TFredMessageTypes.SHUTDOWN,
-      };
-      this.enginePort.postMessage(message);
-    }
+    // @todo should this be an event? might be nicer when there's more threads
+    const message: TFredMessageShutdown = {
+      type: TFredMessageTypes.SHUTDOWN,
+    };
+    this.enginePort.postMessage(message);
 
     window.removeEventListener('fullscreenchange', this.onChangeFullscreen);
     window.removeEventListener('blur', this.onBlur);
     window.removeEventListener('focus', this.onFocus);
 
     // @todo do full teardown on this thread
-    this.mouse?.destroy();
-    this.keyboard?.destroy();
+    this.mouse.destroy();
+    this.keyboard.destroy();
   }
 }
 

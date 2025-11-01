@@ -12,16 +12,15 @@ import type {
 } from '../jobs/jobs';
 import { RendererJobLoadTextureFromImageBitmap } from '../renderer/jobs';
 
-function hasResourceManager(
+const hasResourceManager = (
   additionalContext:
     | TJobContext
     | TRenderJobContext
     | TAudioJobContext
     | TPhysicsJobContext
     | TGameStateJobContext,
-): additionalContext is TJobContext | TRenderJobContext | TAudioJobContext {
-  return (additionalContext as TJobContext).resourceManager !== undefined;
-}
+): additionalContext is TJobContext | TRenderJobContext | TAudioJobContext =>
+  'resourceManager' in additionalContext;
 
 export class TTexture implements IJobAsset {
   public uuid?: string;

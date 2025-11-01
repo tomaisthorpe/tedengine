@@ -265,7 +265,7 @@ export class TEngine {
       lighting: this.gameState.getLighting(),
       renderTasks: this.gameState.getRenderTasks(),
       cameraView: camera.getView(),
-      projectionMatrix: camera?.getProjectionMatrix(
+      projectionMatrix: camera.getProjectionMatrix(
         this.renderingSize.width,
         this.renderingSize.height,
       ),

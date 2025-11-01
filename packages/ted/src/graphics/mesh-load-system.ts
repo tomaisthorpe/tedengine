@@ -29,10 +29,10 @@ export class TMeshLoadSystem extends TSystem {
     for (const entity of entities) {
       const components = world.getComponents(entity);
 
-      if (!components || components?.has(TMeshReadyComponent)) {
+      if (!components || components.has(TMeshReadyComponent)) {
         continue;
       }
-      const mesh = components?.get(TMeshComponent);
+      const mesh = components.get(TMeshComponent);
 
       if (!mesh) continue;
 
@@ -58,8 +58,8 @@ export class TMeshLoadSystem extends TSystem {
         mesh.uuid = m.uuid;
 
         world.addComponent(entity, new TMeshReadyComponent());
-      } else if (data.source === 'path') {
-        const m = await engine.resources.get<TMesh>(data.path);
+      } else {
+        const m = engine.resources.get<TMesh>(data.path);
         if (m) {
           mesh.uuid = m.uuid;
           world.addComponent(entity, new TMeshReadyComponent());
@@ -85,11 +85,11 @@ export class TTexturedMeshLoadSystem extends TSystem {
     for (const entity of entities) {
       const components = world.getComponents(entity);
 
-      if (!components || components?.has(TTexturedMeshReadyComponent)) {
+      if (!components || components.has(TTexturedMeshReadyComponent)) {
         continue;
       }
 
-      const mesh = components?.get(TTexturedMeshComponent);
+      const mesh = components.get(TTexturedMeshComponent);
 
       if (!mesh) continue;
 
@@ -108,8 +108,8 @@ export class TTexturedMeshLoadSystem extends TSystem {
         mesh.uuid = m.uuid;
 
         world.addComponent(entity, new TTexturedMeshReadyComponent());
-      } else if (data.source === 'path') {
-        const m = await engine.resources.get<TTexturedMesh>(data.path);
+      } else {
+        const m = engine.resources.get<TTexturedMesh>(data.path);
         if (m) {
           mesh.uuid = m.uuid;
           world.addComponent(entity, new TTexturedMeshReadyComponent());
@@ -135,11 +135,11 @@ export class TSpriteLoadSystem extends TSystem {
     for (const entity of entities) {
       const components = world.getComponents(entity);
 
-      if (!components || components?.has(TSpriteReadyComponent)) {
+      if (!components || components.has(TSpriteReadyComponent)) {
         continue;
       }
 
-      const sprite = components?.get(TSpriteComponent);
+      const sprite = components.get(TSpriteComponent);
 
       if (!sprite) continue;
 
