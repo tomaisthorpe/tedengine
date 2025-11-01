@@ -49,9 +49,6 @@ const createProgram = (
   fragmentShader: WebGLShader,
 ) => {
   const program = gl.createProgram();
-  if (!program) {
-    throw new Error('Could not create program');
-  }
 
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);

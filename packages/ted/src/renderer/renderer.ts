@@ -20,11 +20,14 @@ import { TProbeProgram } from './probe-program';
 import { TFrameBuffer } from './frame-buffer';
 
 export class TRenderer {
-  private registeredPrograms: { [key: string]: TProgram } = {};
-  private registeredMeshes: { [key: string]: TRenderableMesh } = {};
-  private registeredTexturedMeshes: { [key: string]: TRenderableTexturedMesh } =
-    {};
-  private registeredTextures: { [key: string]: TRenderableTexture } = {};
+  private registeredPrograms: { [key: string]: TProgram | undefined } = {};
+  private registeredMeshes: { [key: string]: TRenderableMesh | undefined } = {};
+  private registeredTexturedMeshes: {
+    [key: string]: TRenderableTexturedMesh | undefined;
+  } = {};
+  private registeredTextures: {
+    [key: string]: TRenderableTexture | undefined;
+  } = {};
   private colorProgram?: TColorProgram;
   private texturedProgram?: TTexturedProgram;
   private physicsDebugProgram?: TPhysicsDebugProgram;
@@ -118,7 +121,9 @@ export class TRenderer {
     gl.bindBufferBase(gl.UNIFORM_BUFFER, 1, this.lightingUniformBuffer);
 
     if (!probeProgram.program) {
-      throw new Error('Probe program must be loaded before renderer initialization');
+      throw new Error(
+        'Probe program must be loaded before renderer initialization',
+      );
     }
 
     // Get location of the uniforms
@@ -235,12 +240,14 @@ export class TRenderer {
         gl.useProgram(this.colorProgram.program.program);
 
         const mesh = this.registeredMeshes[task.uuid];
-        mesh.render(
-          gl,
-          this.colorProgram,
-          task.material.options['palette'] as TPalette,
-          task.transform,
-        );
+        if (mesh) {
+          mesh.render(
+            gl,
+            this.colorProgram,
+            task.material.options['palette'] as TPalette,
+            task.transform,
+          );
+        }
       }
     }
 
@@ -296,7 +303,7 @@ export class TRenderer {
     );
 
     const ambientLight = frameParams.lighting.ambientLight;
-    const ambientLightColor = ambientLight?.color || vec3.fromValues(1, 1, 1);
+    const ambientLightColor = ambientLight?.color ?? vec3.fromValues(1, 1, 1);
 
     if (!this.lightingUniformBuffer) {
       throw new Error('Lighting uniform buffer not initialized');
@@ -309,7 +316,7 @@ export class TRenderer {
         ambientLightColor[0],
         ambientLightColor[1],
         ambientLightColor[2],
-        ambientLight?.intensity !== undefined ? ambientLight.intensity : 1.0,
+        ambientLight?.intensity ?? 1.0,
       ]),
       0,
     );
@@ -329,7 +336,7 @@ export class TRenderer {
       );
 
       const directionalLightColor =
-        directionalLight.color || vec3.fromValues(1, 1, 1);
+        directionalLight.color ?? vec3.fromValues(1, 1, 1);
       gl.bufferSubData(
         gl.UNIFORM_BUFFER,
         this.lightingUniformBufferOffsets.directionalLight,
@@ -393,94 +400,106 @@ export class TRenderer {
         continue;
       }
 
-      if (task.material.type === 'color') {
-        gl.useProgram(this.colorProgram.program.program);
+      switch (task.material.type) {
+        case 'color': {
+          gl.useProgram(this.colorProgram.program.program);
 
-        if (depthProjectionMatrix && depthViewMatrix) {
-          const depthTexture = this.shadowMap?.depthTexture;
-          const textureUniformLocation =
-            this.colorProgram?.uniforms?.uDepthTexture;
-          if (textureUniformLocation && depthTexture) {
-            gl.uniform1i(textureUniformLocation, 1);
-            gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+          if (depthProjectionMatrix && depthViewMatrix) {
+            const depthTexture = this.shadowMap?.depthTexture;
+            const textureUniformLocation =
+              this.colorProgram.uniforms?.uDepthTexture;
+            if (textureUniformLocation && depthTexture) {
+              gl.uniform1i(textureUniformLocation, 1);
+              gl.activeTexture(gl.TEXTURE1);
+              gl.bindTexture(gl.TEXTURE_2D, depthTexture);
 
-            const depthMatrixUniformLocation =
-              this.colorProgram?.uniforms?.uDepthMatrix;
-            if (depthMatrixUniformLocation) {
-              let depthTextureMatrix = mat4.identity(mat4.create());
+              const depthMatrixUniformLocation =
+                this.colorProgram.uniforms?.uDepthMatrix;
+              if (depthMatrixUniformLocation) {
+                let depthTextureMatrix = mat4.identity(mat4.create());
 
-              depthTextureMatrix = mat4.multiply(
-                depthTextureMatrix,
-                depthTextureMatrix,
-                depthProjectionMatrix,
-              );
-              depthTextureMatrix = mat4.multiply(
-                depthTextureMatrix,
-                depthTextureMatrix,
-                depthViewMatrix,
-              );
+                depthTextureMatrix = mat4.multiply(
+                  depthTextureMatrix,
+                  depthTextureMatrix,
+                  depthProjectionMatrix,
+                );
+                depthTextureMatrix = mat4.multiply(
+                  depthTextureMatrix,
+                  depthTextureMatrix,
+                  depthViewMatrix,
+                );
 
-              gl.uniformMatrix4fv(
-                depthMatrixUniformLocation,
-                false,
-                depthTextureMatrix as Float32Array,
-              );
+                gl.uniformMatrix4fv(
+                  depthMatrixUniformLocation,
+                  false,
+                  depthTextureMatrix as Float32Array,
+                );
 
+                const shadowsEnabledUniformLocation =
+                  this.colorProgram.uniforms?.uShadowsEnabled;
+                if (shadowsEnabledUniformLocation) {
+                  gl.uniform1f(shadowsEnabledUniformLocation, 1);
+                }
+              }
+            } else {
               const shadowsEnabledUniformLocation =
-                this.colorProgram?.uniforms?.uShadowsEnabled;
+                this.colorProgram.uniforms?.uShadowsEnabled;
               if (shadowsEnabledUniformLocation) {
-                gl.uniform1f(shadowsEnabledUniformLocation, 1);
+                gl.uniform1f(shadowsEnabledUniformLocation, 0);
               }
             }
           } else {
             const shadowsEnabledUniformLocation =
-              this.colorProgram?.uniforms?.uShadowsEnabled;
+              this.colorProgram.uniforms?.uShadowsEnabled;
             if (shadowsEnabledUniformLocation) {
               gl.uniform1f(shadowsEnabledUniformLocation, 0);
             }
           }
-        } else {
-          const shadowsEnabledUniformLocation =
-            this.colorProgram?.uniforms?.uShadowsEnabled;
-          if (shadowsEnabledUniformLocation) {
-            gl.uniform1f(shadowsEnabledUniformLocation, 0);
+
+          const mesh = this.registeredMeshes[task.uuid];
+          if (!mesh) continue;
+
+          mesh.render(
+            gl,
+            this.colorProgram,
+            task.material.options['palette'] as TPalette,
+            task.transform,
+          );
+
+          gl.activeTexture(gl.TEXTURE1);
+          gl.bindTexture(gl.TEXTURE_2D, null);
+
+          // gl.bindTexture(gl.TEXTURE_2D, null);
+          break;
+        }
+        case 'textured': {
+          gl.useProgram(this.texturedProgram.program.program);
+
+          // Ensure textured draws sample from texture unit 0
+          const uTextureLoc = this.texturedProgram.uniforms?.uTexture;
+          if (uTextureLoc) {
+            gl.uniform1i(uTextureLoc, 0);
           }
+          gl.activeTexture(gl.TEXTURE0);
+
+          const mesh = this.registeredTexturedMeshes[task.uuid];
+          if (!mesh) continue;
+
+          const texture =
+            this.registeredTextures[task.material.options.texture];
+          if (!texture) continue;
+
+          mesh.render(
+            gl,
+            this.texturedProgram,
+            texture,
+            task.transform,
+            task.material.options.instanceUVs,
+            task.material.options.instanceUVScales,
+            task.material.options.colorFilter,
+          );
+          break;
         }
-
-        const mesh = this.registeredMeshes[task.uuid];
-        mesh.render(
-          gl,
-          this.colorProgram,
-          task.material.options['palette'] as TPalette,
-          task.transform,
-        );
-
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-
-        // gl.bindTexture(gl.TEXTURE_2D, null);
-      } else if (task.material.type === 'textured') {
-        gl.useProgram(this.texturedProgram.program.program);
-
-        // Ensure textured draws sample from texture unit 0
-        const uTextureLoc = this.texturedProgram?.uniforms?.uTexture;
-        if (uTextureLoc) {
-          gl.uniform1i(uTextureLoc, 0);
-        }
-        gl.activeTexture(gl.TEXTURE0);
-
-        const mesh = this.registeredTexturedMeshes[task.uuid];
-        const texture = this.registeredTextures[task.material.options.texture];
-        mesh.render(
-          gl,
-          this.texturedProgram,
-          texture,
-          task.transform,
-          task.material.options.instanceUVs,
-          task.material.options.instanceUVScales,
-          task.material.options.colorFilter,
-        );
       }
     }
     // @todo figure out how can this can done in 3d.
@@ -494,7 +513,7 @@ export class TRenderer {
 
     gl.useProgram(this.texturedProgram.program.program);
     // Ensure textured draws sample from texture unit 0
-    const uTextureLoc = this.texturedProgram?.uniforms?.uTexture;
+    const uTextureLoc = this.texturedProgram.uniforms?.uTexture;
     if (uTextureLoc) {
       gl.uniform1i(uTextureLoc, 0);
     }
@@ -502,7 +521,11 @@ export class TRenderer {
     for (const layer of layers) {
       for (const task of layer) {
         const mesh = this.registeredTexturedMeshes[task.uuid];
+        if (!mesh) continue;
+
         const texture = this.registeredTextures[task.material.options.texture];
+        if (!texture) continue;
+
         mesh.render(
           gl,
           this.texturedProgram,

@@ -132,17 +132,19 @@ export class TRenderableTexturedMesh implements IAsset {
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
-    if (!this.positionBuffer || !this.normalBuffer || !this.uvBuffer || !this.instanceUVBuffer) {
+    if (
+      !this.positionBuffer ||
+      !this.normalBuffer ||
+      !this.uvBuffer ||
+      !this.instanceUVBuffer
+    ) {
       throw new Error('Buffers must be created before VAO');
     }
 
     this.vao = gl.createVertexArray();
-    if (!this.vao) {
-      throw new Error('Failed to create vertex array');
-    }
     gl.bindVertexArray(this.vao);
 
-    const buffers: { [key: string]: TAttributeBuffer } = {
+    const buffers: { [key: string]: TAttributeBuffer | undefined } = {
       aVertexPosition: {
         buffer: this.positionBuffer,
         size: 3,

@@ -70,8 +70,8 @@ export class TRenderableMesh implements IAsset {
       !this.normalBuffer ||
       !this.texture ||
       !colorProgram.uniforms?.uPalette ||
-      !colorProgram.uniforms?.uPaletteSize ||
-      !colorProgram.uniforms?.uMMatrix
+      !colorProgram.uniforms.uPaletteSize ||
+      !colorProgram.uniforms.uMMatrix
     ) {
       return;
     }
@@ -112,12 +112,9 @@ export class TRenderableMesh implements IAsset {
     }
 
     this.vao = gl.createVertexArray();
-    if (!this.vao) {
-      throw new Error('Failed to create vertex array');
-    }
     gl.bindVertexArray(this.vao);
 
-    const buffers: { [key: string]: TAttributeBuffer } = {
+    const buffers: { [key: string]: TAttributeBuffer | undefined } = {
       aVertexPosition: {
         buffer: this.positionBuffer,
         size: 3,
@@ -177,7 +174,10 @@ export class TRenderableMesh implements IAsset {
       const colors = [];
 
       for (const color of Object.keys(this.palette)) {
-        colors[this.palette[color]] = palette[color];
+        const pcolor = palette[color];
+        if (pcolor) {
+          colors[this.palette[color]] = pcolor;
+        }
       }
 
       this.paletteSize = colors.length;
@@ -306,7 +306,10 @@ export class TRenderableMesh implements IAsset {
     const colors = [];
 
     for (const color of Object.keys(this.palette)) {
-      colors[this.palette[color]] = palette[color];
+      const pcolor = palette[color];
+      if (pcolor) {
+        colors[this.palette[color]] = pcolor;
+      }
     }
 
     this.paletteSize = colors.length;

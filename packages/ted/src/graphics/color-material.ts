@@ -5,7 +5,7 @@ import type { IMaterial } from './material';
 
 export type TColor = [number, number, number, number];
 export interface TPalette {
-  [key: string]: [number, number, number, number];
+  [key: string]: [number, number, number, number] | undefined;
 }
 
 export class TColorMaterial implements IAsset, IMaterial {
