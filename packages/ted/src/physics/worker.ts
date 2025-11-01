@@ -33,4 +33,4 @@ enginePort.onmessage = async (event: MessageEvent) => {
 
 // Everything is setup, let the game world know
 const initMessage: TPhysicsOutMessageInit = { type: TPhysicsMessageTypes.INIT };
-self.postMessage(initMessage, [channel.port2] as any);
+self.postMessage(initMessage, [channel.port2] as [Transferable]);

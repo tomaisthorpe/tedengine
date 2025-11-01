@@ -14,6 +14,7 @@ import type { TEngine } from '../engine/engine';
 import type {
   TSerializedRenderTask,
   TSerializedTexturedMaterial,
+  TTexturedMaterialOptions,
 } from '../renderer/frame-params';
 import { TRenderTask } from '../renderer/frame-params';
 import {
@@ -160,8 +161,7 @@ export class TMeshRenderSystem extends TSystem {
         continue;
       }
 
-      // @todo fix the any
-      const materialOptions: any = {
+      const materialOptions: TTexturedMaterialOptions = {
         texture: texture.texture.uuid,
         colorFilter: sprite.colorFilter,
         instanceUVScales: sprite.instanceUVScales,

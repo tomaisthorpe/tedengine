@@ -82,19 +82,23 @@ export type TSerializedMaterial =
   | TSerializedColorMaterial
   | TSerializedTexturedMaterial;
 
+export interface TColorMaterialOptions {
+  palette: TPalette;
+}
+
+export interface TTexturedMaterialOptions {
+  texture: string;
+  instanceUVs?: number[];
+  instanceUVScales?: vec2;
+  colorFilter?: vec4;
+}
+
 export interface TSerializedColorMaterial {
   type: 'color';
-  options: {
-    palette: TPalette;
-  };
+  options: TColorMaterialOptions;
 }
 
 export interface TSerializedTexturedMaterial {
   type: 'textured';
-  options: {
-    texture: string;
-    instanceUVs?: number[];
-    instanceUVScales?: vec2;
-    colorFilter?: vec4;
-  };
+  options: TTexturedMaterialOptions;
 }

@@ -48,7 +48,7 @@ export class TRenderableMesh implements IAsset {
     m: mat4,
   ) {
     if (!colorProgram.program) {
-      throw new Error('Color program must be compiled before rendering');
+      return; // Can't render without a compiled program
     }
 
     if (this.positionBuffer === undefined) {
@@ -107,6 +107,10 @@ export class TRenderableMesh implements IAsset {
     program: TProgram,
     palette: TPalette,
   ) {
+    if (!this.positionBuffer || !this.normalBuffer || !this.colorBuffer) {
+      throw new Error('Buffers must be created before VAO');
+    }
+
     this.vao = gl.createVertexArray();
     if (!this.vao) {
       throw new Error('Failed to create vertex array');
@@ -115,19 +119,19 @@ export class TRenderableMesh implements IAsset {
 
     const buffers: { [key: string]: TAttributeBuffer } = {
       aVertexPosition: {
-        buffer: this.positionBuffer!,
+        buffer: this.positionBuffer,
         size: 3,
         type: gl.FLOAT,
         normalized: false,
       },
       aVertexNormal: {
-        buffer: this.normalBuffer!,
+        buffer: this.normalBuffer,
         size: 3,
         type: gl.FLOAT,
         normalized: false,
       },
       aVertexColor: {
-        buffer: this.colorBuffer!,
+        buffer: this.colorBuffer,
         size: 1,
         type: gl.FLOAT,
         normalized: false,
@@ -244,7 +248,10 @@ export class TRenderableMesh implements IAsset {
   }
 
   private parseModel() {
-    const obj = OBJParser.parse(this.source!);
+    if (!this.source) {
+      throw new Error('Cannot parse model: source is not loaded');
+    }
+    const obj = OBJParser.parse(this.source);
 
     this.positions = obj.vertices;
     this.normals = obj.normals;

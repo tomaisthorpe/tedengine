@@ -44,7 +44,7 @@ export class TRenderableTexturedMesh implements IAsset {
     colorFilter: vec4 = vec4.fromValues(1, 1, 1, 1),
   ) {
     if (!texturedProgram.program) {
-      throw new Error('Textured program must be compiled before rendering');
+      return; // Can't render without a compiled program
     }
 
     if (this.positionBuffer === undefined) {
@@ -132,30 +132,37 @@ export class TRenderableTexturedMesh implements IAsset {
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
+    if (!this.positionBuffer || !this.normalBuffer || !this.uvBuffer || !this.instanceUVBuffer) {
+      throw new Error('Buffers must be created before VAO');
+    }
+
     this.vao = gl.createVertexArray();
+    if (!this.vao) {
+      throw new Error('Failed to create vertex array');
+    }
     gl.bindVertexArray(this.vao);
 
     const buffers: { [key: string]: TAttributeBuffer } = {
       aVertexPosition: {
-        buffer: this.positionBuffer!,
+        buffer: this.positionBuffer,
         size: 3,
         type: gl.FLOAT,
         normalized: false,
       },
       aVertexNormal: {
-        buffer: this.normalBuffer!,
+        buffer: this.normalBuffer,
         size: 3,
         type: gl.FLOAT,
         normalized: false,
       },
       aVertexUV: {
-        buffer: this.uvBuffer!,
+        buffer: this.uvBuffer,
         size: 2,
         type: gl.FLOAT,
         normalized: false,
       },
       aVertexInstanceUV: {
-        buffer: this.instanceUVBuffer!,
+        buffer: this.instanceUVBuffer,
         size: 2,
         type: gl.FLOAT,
         normalized: false,
@@ -215,7 +222,10 @@ export class TRenderableTexturedMesh implements IAsset {
   }
 
   private parseModel() {
-    const obj = OBJParser.parse(this.source!);
+    if (!this.source) {
+      throw new Error('Cannot parse model: source is not loaded');
+    }
+    const obj = OBJParser.parse(this.source);
 
     this.positions = obj.vertices;
     this.normals = obj.normals;

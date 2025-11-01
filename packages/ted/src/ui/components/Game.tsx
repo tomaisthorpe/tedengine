@@ -86,7 +86,8 @@ const TGame = ({
     return function cleanup() {
       fred.destroy();
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally only run on mount - game and config should not change
 
   useEffect(() => {
     const onFullscreenChange = () => {

@@ -42,7 +42,7 @@ export class TPhysicsDebug {
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices);
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer!);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
     if (this.colorBufferSize < colors.length) {
       gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
       this.colorBufferSize = colors.length;
@@ -52,28 +52,39 @@ export class TPhysicsDebug {
 
     // Base shader expects a model matrix
     // @todo: use a different base shader
-    gl.uniformMatrix4fv(
-      program.program.getUniformLocation('uMMatrix')!,
-      false,
-      mat4.identity(mat4.create()) as Float32Array,
-    );
+    const uMMatrixLocation = program.program.getUniformLocation('uMMatrix');
+    if (uMMatrixLocation !== null) {
+      gl.uniformMatrix4fv(
+        uMMatrixLocation,
+        false,
+        mat4.identity(mat4.create()) as Float32Array,
+      );
+    }
 
     gl.drawArrays(gl.LINES, 0, vertices.length / 3);
   }
 
   private createVAO(gl: WebGL2RenderingContext, program: TProgram) {
-    this.vao = gl.createVertexArray()!;
-    gl.bindVertexArray(this.vao!);
+    const vao = gl.createVertexArray();
+    if (!vao) {
+      throw new Error('Failed to create vertex array object');
+    }
+    this.vao = vao;
+    gl.bindVertexArray(this.vao);
+
+    if (!this.positionBuffer || !this.colorBuffer) {
+      throw new Error('Buffers must be created before VAO');
+    }
 
     const buffers: { [key: string]: TAttributeBuffer } = {
       aVertexPosition: {
-        buffer: this.positionBuffer!,
+        buffer: this.positionBuffer,
         size: 3,
         type: gl.FLOAT,
         normalized: false,
       },
       aVertexColor: {
-        buffer: this.colorBuffer!,
+        buffer: this.colorBuffer,
         size: 4,
         type: gl.FLOAT,
         normalized: false,
@@ -99,7 +110,12 @@ export class TPhysicsDebug {
   }
 
   private createBuffers(gl: WebGL2RenderingContext): void {
-    this.positionBuffer = gl.createBuffer()!;
-    this.colorBuffer = gl.createBuffer()!;
+    const positionBuffer = gl.createBuffer();
+    const colorBuffer = gl.createBuffer();
+    if (!positionBuffer || !colorBuffer) {
+      throw new Error('Failed to create WebGL buffers');
+    }
+    this.positionBuffer = positionBuffer;
+    this.colorBuffer = colorBuffer;
   }
 }

@@ -181,10 +181,14 @@ export class TRenderer {
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer!);
+    if (!this.globalUniformBuffer) {
+      throw new Error('Global uniform buffer not initialized');
+    }
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer);
 
     // shadow map uses a projection map that is based on directional light
-    const directionalLight = frameParams.lighting.directionalLight!;
+    // We already checked this exists in the guard above
+    const directionalLight = frameParams.lighting.directionalLight;
     const directionalLightDir = vec3.normalize(
       vec3.create(),
       directionalLight.direction,
@@ -219,17 +223,21 @@ export class TRenderer {
 
     gl.bindBuffer(gl.UNIFORM_BUFFER, null);
 
+    if (!this.colorProgram?.program?.program) {
+      throw new Error('Color program not initialized');
+    }
+
     for (const task of frameParams.renderTasks) {
       if (
         task.type === TRenderTask.MeshInstance &&
         task.material.type === 'color'
       ) {
-        gl.useProgram(this.colorProgram!.program!.program!);
+        gl.useProgram(this.colorProgram.program.program);
 
         const mesh = this.registeredMeshes[task.uuid];
         mesh.render(
           gl,
-          this.colorProgram!,
+          this.colorProgram,
           task.material.options['palette'] as TPalette,
           task.transform,
         );
@@ -238,8 +246,12 @@ export class TRenderer {
 
     this.shadowMap?.unbind();
 
+    if (!this.shadowMap) {
+      throw new Error('Shadow map not initialized');
+    }
+
     return {
-      depthTexture: this.shadowMap!.depthTexture,
+      depthTexture: this.shadowMap.depthTexture,
       depthProjectionMatrix: projectionMatrix,
       depthViewMatrix: viewMatrix,
     };
@@ -247,6 +259,17 @@ export class TRenderer {
 
   public render(frameParams: TFrameParams) {
     const gl = this.context();
+
+    // Ensure all programs are initialized
+    if (!this.colorProgram?.program?.program) {
+      throw new Error('Color program not initialized');
+    }
+    if (!this.texturedProgram?.program?.program) {
+      throw new Error('Textured program not initialized');
+    }
+    if (!this.physicsDebugProgram?.program?.program) {
+      throw new Error('Physics debug program not initialized');
+    }
 
     const { depthProjectionMatrix, depthViewMatrix } = this.renderShadowMap(
       gl,
@@ -259,7 +282,11 @@ export class TRenderer {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     this.projectionMatrix = frameParams.projectionMatrix;
-    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer!);
+
+    if (!this.globalUniformBuffer) {
+      throw new Error('Global uniform buffer not initialized');
+    }
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.globalUniformBuffer);
 
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
@@ -271,7 +298,10 @@ export class TRenderer {
     const ambientLight = frameParams.lighting.ambientLight;
     const ambientLightColor = ambientLight?.color || vec3.fromValues(1, 1, 1);
 
-    gl.bindBuffer(gl.UNIFORM_BUFFER, this.lightingUniformBuffer!);
+    if (!this.lightingUniformBuffer) {
+      throw new Error('Lighting uniform buffer not initialized');
+    }
+    gl.bindBuffer(gl.UNIFORM_BUFFER, this.lightingUniformBuffer);
     gl.bufferSubData(
       gl.UNIFORM_BUFFER,
       this.lightingUniformBufferOffsets.ambientLight,
@@ -351,11 +381,11 @@ export class TRenderer {
       }
 
       if (task.type === TRenderTask.PhysicsDebug) {
-        gl.useProgram(this.physicsDebugProgram!.program!.program!);
+        gl.useProgram(this.physicsDebugProgram.program.program);
 
         this.physicsDebug?.render(
           gl,
-          this.physicsDebugProgram!,
+          this.physicsDebugProgram,
           task.vertices,
           task.colors,
         );
@@ -364,7 +394,7 @@ export class TRenderer {
       }
 
       if (task.material.type === 'color') {
-        gl.useProgram(this.colorProgram!.program!.program!);
+        gl.useProgram(this.colorProgram.program.program);
 
         if (depthProjectionMatrix && depthViewMatrix) {
           const depthTexture = this.shadowMap?.depthTexture;
@@ -421,7 +451,7 @@ export class TRenderer {
         const mesh = this.registeredMeshes[task.uuid];
         mesh.render(
           gl,
-          this.colorProgram!,
+          this.colorProgram,
           task.material.options['palette'] as TPalette,
           task.transform,
         );
@@ -431,7 +461,7 @@ export class TRenderer {
 
         // gl.bindTexture(gl.TEXTURE_2D, null);
       } else if (task.material.type === 'textured') {
-        gl.useProgram(this.texturedProgram!.program!.program!);
+        gl.useProgram(this.texturedProgram.program.program);
 
         // Ensure textured draws sample from texture unit 0
         const uTextureLoc = this.texturedProgram?.uniforms?.uTexture;
@@ -444,7 +474,7 @@ export class TRenderer {
         const texture = this.registeredTextures[task.material.options.texture];
         mesh.render(
           gl,
-          this.texturedProgram!,
+          this.texturedProgram,
           texture,
           task.transform,
           task.material.options.instanceUVs,
@@ -462,7 +492,7 @@ export class TRenderer {
       layers[sprite.layer].push(sprite);
     }
 
-    gl.useProgram(this.texturedProgram!.program!.program!);
+    gl.useProgram(this.texturedProgram.program.program);
     // Ensure textured draws sample from texture unit 0
     const uTextureLoc = this.texturedProgram?.uniforms?.uTexture;
     if (uTextureLoc) {
@@ -475,7 +505,7 @@ export class TRenderer {
         const texture = this.registeredTextures[task.material.options.texture];
         mesh.render(
           gl,
-          this.texturedProgram!,
+          this.texturedProgram,
           texture,
           task.transform,
           task.material.options.instanceUVs,
@@ -504,7 +534,10 @@ export class TRenderer {
   }
 
   public registerProgram(program: TProgram) {
-    this.registeredPrograms[program.uuid!] = program;
+    if (!program.uuid) {
+      throw new Error('Cannot register program without uuid');
+    }
+    this.registeredPrograms[program.uuid] = program;
   }
 
   public hasMesh(uuid: string): boolean {
