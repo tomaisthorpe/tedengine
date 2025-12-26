@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.17.1
+
+### Patch Changes
+
+- 0bad68b: Fix crash due to debug panels being loaded before events available
+
 ## 0.17.0
 
 ### Minor Changes
