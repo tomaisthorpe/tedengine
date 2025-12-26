@@ -1,5 +1,11 @@
 # @tedengine/ted
 
+## 0.17.2
+
+### Patch Changes
+
+- c6f3c1f: Add useJobs hook for UI
+
 ## 0.17.1
 
 ### Patch Changes
