@@ -9,6 +9,7 @@ import {
 } from './context';
 import type { TEngineContextData, TGameContextData } from './context';
 import type { TFred } from '../fred/fred';
+import type { TJobManager } from '../jobs';
 
 export function useGameContext(): TGameContextData {
   return React.useContext(TGameContext);
@@ -24,6 +25,11 @@ export function useEventQueue(): TEventQueue | undefined {
 
 export function useFred(): TFred | undefined {
   return React.useContext(TFredContext).fred;
+}
+
+export function useJobs(): TJobManager | undefined {
+  const fred = useFred();
+  return fred ? fred.jobs : undefined;
 }
 
 export function useUIContext() {

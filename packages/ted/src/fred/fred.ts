@@ -55,7 +55,7 @@ export class TFred {
   private mouse!: TMouse;
   private renderer?: TRenderer;
   private resources!: TResourceManager;
-  private jobs!: TJobManager;
+  public jobs!: TJobManager;
   public audio: TAudio = new TAudio();
 
   // Holds the state of the latest frame.
