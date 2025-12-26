@@ -140,7 +140,7 @@ const TGame = ({
                   }}
                   ref={container}
                 >
-                  {fred && (
+                  {fred && fred.events && (
                     <>
                       <DebugPanel events={fred.events} />
                       {children}
