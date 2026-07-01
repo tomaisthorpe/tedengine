@@ -6,6 +6,8 @@ export * from './canvas';
 export * from './image';
 export * from './material';
 export * from './color-material';
+export * from './shader';
+export * from './shader-material';
 
 export * from './mesh';
 

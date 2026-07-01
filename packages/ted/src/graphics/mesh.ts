@@ -22,8 +22,9 @@ export class TMesh implements IJobAsset {
     positions: number[],
     normals: number[],
     indexes: number[],
-    colors: number[],
-    paletteIndex: TPaletteIndex,
+    colors: number[] = [],
+    paletteIndex: TPaletteIndex = {},
+    uvs: number[] = [],
   ): Promise<void> {
     const result = await engine.jobs.do(RendererJobLoadMesh, {
       positions,
@@ -31,6 +32,7 @@ export class TMesh implements IJobAsset {
       indexes,
       colors,
       paletteIndex,
+      uvs,
     });
 
     this.uuid = result;

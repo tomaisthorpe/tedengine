@@ -16,7 +16,6 @@ describe('TResourcePack', () => {
       engine,
       {
         meshes: ['mesh1'],
-        texturedMeshes: ['textured1'],
         materials: ['material1'],
         images: ['image1'],
         textures: ['texture1'],
@@ -25,7 +24,6 @@ describe('TResourcePack', () => {
       },
       {
         meshes: ['mesh2'],
-        texturedMeshes: ['textured2'],
         materials: ['material2'],
         images: ['image2'],
         textures: ['texture2'],
@@ -39,7 +37,6 @@ describe('TResourcePack', () => {
   test('should merge all configs into one', () => {
     expect(resourcePack.resources).toEqual({
       meshes: ['mesh1', 'mesh2', 'mesh3'],
-      texturedMeshes: ['textured1', 'textured2'],
       materials: ['material1', 'material2'],
       images: ['image1', 'image2'],
       textures: ['texture1', 'texture2'],
@@ -53,7 +50,7 @@ describe('TResourcePack', () => {
 
     await resourcePack.load();
 
-    expect(loadMock).toHaveBeenCalledTimes(15);
+    expect(loadMock).toHaveBeenCalledTimes(13);
     expect(loadMock).toHaveBeenCalledWith(TMesh, 'mesh1');
     expect(loadMock).toHaveBeenCalledWith(TMesh, 'mesh2');
     expect(loadMock).toHaveBeenCalledWith(TMesh, 'mesh3');

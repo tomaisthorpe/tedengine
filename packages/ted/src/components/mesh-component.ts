@@ -1,13 +1,14 @@
 import { TComponent } from '../core/component';
-import type { TColorMaterial } from '../graphics/color-material';
+import type { IMaterial } from '../graphics/material';
 import type { TPaletteIndex } from '../renderer/renderable-mesh';
 
 export interface TMeshGeometry {
   positions: number[];
   normals: number[];
   indexes: number[];
-  colors: number[];
-  paletteIndex: TPaletteIndex;
+  colors?: number[];
+  paletteIndex?: TPaletteIndex;
+  uvs?: number[];
 }
 
 export interface TInlineMeshData {
@@ -29,7 +30,7 @@ export class TMeshComponent extends TComponent {
 }
 
 export class TMaterialComponent extends TComponent {
-  constructor(public material: TColorMaterial) {
+  constructor(public material: IMaterial) {
     super();
   }
 }

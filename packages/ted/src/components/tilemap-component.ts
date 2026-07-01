@@ -7,7 +7,7 @@ import type { TEngine } from '../engine/engine';
 import { TCanvas } from '../graphics/canvas';
 import type { TImage } from '../graphics/image';
 import type { TTilemap } from '../graphics/tilemap';
-import { TTextureComponent } from './textured-mesh-component';
+import { TTextureComponent } from './texture-component';
 import { TSpriteComponent } from './sprite-component';
 
 export interface TTileset {

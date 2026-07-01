@@ -1,6 +1,6 @@
 import { vec2, vec3, vec4 } from 'gl-matrix';
 import { TTransform } from '../math/transform';
-import type { TTexturedMeshGeometry } from './textured-mesh-component';
+import type { TMeshGeometry } from './mesh-component';
 import { TComponent } from '../core/component';
 
 export enum TOriginPoint {
@@ -44,7 +44,7 @@ export class TSpriteComponent extends TComponent {
   public colorFilter?: vec4;
   public instanceUVScales?: vec2;
 
-  public geometry: TTexturedMeshGeometry;
+  public geometry: TMeshGeometry;
 
   public uuid?: string;
 
@@ -68,7 +68,7 @@ export class TSpriteComponent extends TComponent {
     this.geometry = this.generateGeometry();
   }
 
-  private generateGeometry(): TTexturedMeshGeometry {
+  private generateGeometry(): TMeshGeometry {
     const x = this.width / 2.0;
     const y = this.height / 2.0;
 

@@ -22,6 +22,25 @@ export interface TShaderAttributes {
   optional: TAttributeDefinition[];
 }
 
+export interface TUniformDefinition {
+  name: string;
+  required?: boolean;
+}
+
+export interface TUniformBlockDefinition {
+  name: string;
+  bindingPoint: number;
+  uniforms?: string[];
+}
+
+export interface TShaderProgramDescriptor {
+  vertexShader: string;
+  fragmentShader: string;
+  attributes?: Partial<TShaderAttributes>;
+  uniforms?: TUniformDefinition[];
+  uniformBlocks?: TUniformBlockDefinition[];
+}
+
 const compileShader = (
   gl: WebGL2RenderingContext,
   shaderSource: string,
@@ -82,6 +101,14 @@ export class TProgram implements IAsset {
     const program = new TProgram();
     program.vertexShaderSource = shader.vertexShader;
     program.fragmentShaderSource = shader.fragmentShader;
+    return program;
+  }
+
+  public static fromDescriptor(descriptor: TShaderProgramDescriptor) {
+    const program = new TProgram();
+    program.uuid = uuidv4();
+    program.vertexShaderSource = descriptor.vertexShader;
+    program.fragmentShaderSource = descriptor.fragmentShader;
     return program;
   }
 

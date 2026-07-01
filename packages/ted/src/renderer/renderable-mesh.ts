@@ -1,5 +1,6 @@
 // @todo this file is missing a lot of error handling
-import type { mat4 } from 'gl-matrix';
+import type { mat4, vec2 } from 'gl-matrix';
+import { vec4 } from 'gl-matrix';
 import { v4 as uuidv4 } from 'uuid';
 import type { IAsset } from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
@@ -7,6 +8,8 @@ import { OBJParser } from '../utils/obj-parser';
 import type { TColorProgram } from './color-program';
 import type { TProgram } from './program';
 import type { TAttributeBuffer } from './program';
+import type { TRenderableTexture } from './renderable-texture';
+import type { TTexturedProgram } from './textured-program';
 
 export interface TPaletteIndex {
   [key: string]: number | undefined;
@@ -19,6 +22,7 @@ export class TRenderableMesh implements IAsset {
   public normals: number[] = [];
   public indexes: number[] = [];
   public colors: number[] = [];
+  public uvs: number[] = [];
   public palette: TPaletteIndex = {};
 
   public loaded = false;
@@ -27,8 +31,11 @@ export class TRenderableMesh implements IAsset {
   private normalBuffer?: WebGLBuffer;
   private indexBuffer?: WebGLBuffer;
   private colorBuffer?: WebGLBuffer;
+  private uvBuffer?: WebGLBuffer;
+  private instanceUVBuffer?: WebGLBuffer;
 
-  private vao?: WebGLVertexArrayObject;
+  private colorVAO?: WebGLVertexArrayObject;
+  private texturedVAO?: WebGLVertexArrayObject;
 
   private source?: string;
   private texture?: WebGLTexture;
@@ -53,7 +60,9 @@ export class TRenderableMesh implements IAsset {
 
     if (this.positionBuffer === undefined) {
       this.createBuffers(gl);
+    }
 
+    if (this.colorVAO === undefined) {
       // Create the VAO for the vertex and color buffers
       this.createVAO(gl, colorProgram.program, palette);
     }
@@ -64,7 +73,7 @@ export class TRenderableMesh implements IAsset {
     }
 
     if (
-      !this.vao ||
+      !this.colorVAO ||
       !this.indexBuffer ||
       !this.colorBuffer ||
       !this.normalBuffer ||
@@ -76,7 +85,7 @@ export class TRenderableMesh implements IAsset {
       return;
     }
 
-    gl.bindVertexArray(this.vao);
+    gl.bindVertexArray(this.colorVAO);
 
     // gl.bindTexture(gl.TEXTURE, this.texture);
     // Bind the index buffer
@@ -102,6 +111,152 @@ export class TRenderableMesh implements IAsset {
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
 
+  public renderTextured(
+    gl: WebGL2RenderingContext,
+    texturedProgram: TTexturedProgram,
+    texture: TRenderableTexture,
+    m: mat4,
+    instanceUVs?: number[],
+    instanceUVScales?: vec2,
+    colorFilter: vec4 = vec4.fromValues(1, 1, 1, 1),
+  ) {
+    if (!texturedProgram.program) {
+      return;
+    }
+
+    if (this.positionBuffer === undefined) {
+      this.createBuffers(gl);
+    }
+
+    if (this.texturedVAO === undefined) {
+      this.createTexturedVAO(gl, texturedProgram.program);
+    }
+
+    if (
+      !this.texturedVAO ||
+      !this.indexBuffer ||
+      !this.uvBuffer ||
+      !this.instanceUVBuffer ||
+      !texturedProgram.uniforms ||
+      !texturedProgram.uniforms.uMMatrix ||
+      !texturedProgram.uniforms.uEnableInstanceUVs ||
+      !texturedProgram.uniforms.uInstanceUVScale ||
+      !texturedProgram.uniforms.uColorFilter ||
+      !texture.texture
+    ) {
+      return;
+    }
+
+    gl.bindTexture(gl.TEXTURE_2D, texture.texture);
+
+    gl.bindVertexArray(this.texturedVAO);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+    gl.uniformMatrix4fv(
+      texturedProgram.uniforms.uMMatrix,
+      false,
+      m as Float32Array,
+    );
+
+    gl.uniform4fv(
+      texturedProgram.uniforms.uColorFilter,
+      colorFilter as Float32Array,
+    );
+
+    gl.uniform1f(
+      texturedProgram.uniforms.uEnableInstanceUVs,
+      instanceUVs ? 1 : 0,
+    );
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array(instanceUVs ?? this.uvs),
+      gl.STATIC_DRAW,
+    );
+
+    gl.uniform2fv(
+      texturedProgram.uniforms.uInstanceUVScale,
+      new Float32Array(instanceUVScales ?? [1, 1]),
+    );
+
+    gl.drawElements(gl.TRIANGLES, this.indexes.length, gl.UNSIGNED_SHORT, 0);
+  }
+
+  public renderWithProgram(gl: WebGL2RenderingContext, program: TProgram): void {
+    if (!program.program) {
+      return;
+    }
+
+    if (this.positionBuffer === undefined) {
+      this.createBuffers(gl);
+    }
+
+    if (!this.positionBuffer || !this.indexBuffer || !this.normalBuffer) {
+      return;
+    }
+
+    const buffers: { [key: string]: TAttributeBuffer | undefined } = {
+      aVertexPosition: {
+        buffer: this.positionBuffer,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexNormal: {
+        buffer: this.normalBuffer,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexColor: this.colorBuffer
+        ? {
+            buffer: this.colorBuffer,
+            size: 1,
+            type: gl.FLOAT,
+            normalized: false,
+          }
+        : undefined,
+      aVertexUV: this.uvBuffer
+        ? {
+            buffer: this.uvBuffer,
+            size: 2,
+            type: gl.FLOAT,
+            normalized: false,
+          }
+        : undefined,
+      aVertexInstanceUV: this.instanceUVBuffer
+        ? {
+            buffer: this.instanceUVBuffer,
+            size: 2,
+            type: gl.FLOAT,
+            normalized: false,
+          }
+        : undefined,
+    };
+
+    for (const [name, location] of Object.entries(program.attribLocations)) {
+      const buffer = buffers[name];
+      if (location === -1 || !buffer) {
+        continue;
+      }
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+      gl.vertexAttribPointer(
+        location,
+        buffer.size,
+        buffer.type,
+        buffer.normalized,
+        0,
+        0,
+      );
+      gl.enableVertexAttribArray(location);
+    }
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.drawElements(gl.TRIANGLES, this.indexes.length, gl.UNSIGNED_SHORT, 0);
+  }
+
   private createVAO(
     gl: WebGL2RenderingContext,
     program: TProgram,
@@ -111,8 +266,8 @@ export class TRenderableMesh implements IAsset {
       throw new Error('Buffers must be created before VAO');
     }
 
-    this.vao = gl.createVertexArray();
-    gl.bindVertexArray(this.vao);
+    this.colorVAO = gl.createVertexArray();
+    gl.bindVertexArray(this.colorVAO);
 
     const buffers: { [key: string]: TAttributeBuffer | undefined } = {
       aVertexPosition: {
@@ -211,6 +366,62 @@ export class TRenderableMesh implements IAsset {
     this.cachedPalette = JSON.parse(JSON.stringify(palette));
   }
 
+  private createTexturedVAO(gl: WebGL2RenderingContext, program: TProgram) {
+    if (!this.positionBuffer || !this.uvBuffer || !this.instanceUVBuffer) {
+      throw new Error('Buffers must be created before VAO');
+    }
+
+    this.texturedVAO = gl.createVertexArray();
+    gl.bindVertexArray(this.texturedVAO);
+
+    const buffers: { [key: string]: TAttributeBuffer | undefined } = {
+      aVertexPosition: {
+        buffer: this.positionBuffer,
+        size: 3,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexNormal: this.normalBuffer
+        ? {
+            buffer: this.normalBuffer,
+            size: 3,
+            type: gl.FLOAT,
+            normalized: false,
+          }
+        : undefined,
+      aVertexUV: {
+        buffer: this.uvBuffer,
+        size: 2,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+      aVertexInstanceUV: {
+        buffer: this.instanceUVBuffer,
+        size: 2,
+        type: gl.FLOAT,
+        normalized: false,
+      },
+    };
+
+    for (const [name, location] of Object.entries(program.attribLocations)) {
+      const buffer = buffers[name];
+      if (location === -1 || !buffer) {
+        continue;
+      }
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+      gl.vertexAttribPointer(
+        location,
+        buffer.size,
+        buffer.type,
+        buffer.normalized,
+        0,
+        0,
+      );
+      gl.enableVertexAttribArray(location);
+    }
+  }
+
   /**
    * Creates the buffers and transfers the data
    */
@@ -246,6 +457,24 @@ export class TRenderableMesh implements IAsset {
       new Float32Array(this.colors),
       gl.STATIC_DRAW,
     );
+
+    if (this.uvs.length > 0) {
+      this.uvBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array(this.uvs),
+        gl.STATIC_DRAW,
+      );
+
+      this.instanceUVBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceUVBuffer);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array(this.uvs),
+        gl.STATIC_DRAW,
+      );
+    }
   }
 
   private parseModel() {
@@ -258,6 +487,7 @@ export class TRenderableMesh implements IAsset {
     this.normals = obj.normals;
     this.indexes = obj.indices;
     this.colors = obj.colors;
+    this.uvs = obj.uvs;
     this.palette = obj.palette;
 
     this.loaded = true;

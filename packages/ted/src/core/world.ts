@@ -41,7 +41,6 @@ import type { TSystem } from './system';
 import {
   TMeshLoadSystem,
   TSpriteLoadSystem,
-  TTexturedMeshLoadSystem,
 } from '../graphics/mesh-load-system';
 import { TMeshRenderSystem } from '../graphics/render-tasks-system';
 import { TAnimatedSpriteSystem } from '../components/animated-sprite-component';
@@ -226,7 +225,6 @@ export class TWorld {
     return new Promise<void>((resolve) => {
       // Add default systems
       this.addSystem(new TMeshLoadSystem(this));
-      this.addSystem(new TTexturedMeshLoadSystem(this));
       this.addSystem(new TSpriteLoadSystem(this));
       this.addSystem(new TAnimatedSpriteSystem(this));
       this.addSystem(new TPhysicsSystem(this, this.gameState.events));

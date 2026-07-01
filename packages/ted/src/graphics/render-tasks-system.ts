@@ -7,8 +7,7 @@ import {
   TSpriteComponent,
   TSpriteInstancesComponent,
 } from '../components/sprite-component';
-import { TTextureComponent } from '../components/textured-mesh-component';
-import { TTexturedMeshComponent } from '../components/textured-mesh-component';
+import { TTextureComponent } from '../components/texture-component';
 import type { TWorld } from '../core/world';
 import type { TEngine } from '../engine/engine';
 import type {
@@ -20,7 +19,6 @@ import { TRenderTask } from '../renderer/frame-params';
 import {
   TTransformComponent,
   TMeshReadyComponent,
-  TTexturedMeshReadyComponent,
   TSpriteReadyComponent,
   TVisibilityState,
   TVisibilityComponent,
@@ -34,7 +32,6 @@ export class TMeshRenderSystem extends TSystem {
   public readonly priority: number = TSystemPriority.PostUpdate;
 
   private meshQuery: TEntityQuery;
-  private texturedMeshQuery: TEntityQuery;
   private spriteQuery: TEntityQuery;
 
   public renderTasks: TSerializedRenderTask[] = [];
@@ -45,17 +42,8 @@ export class TMeshRenderSystem extends TSystem {
     this.meshQuery = world.createQuery([
       TGlobalTransformComponent,
       TMeshComponent,
-      TMaterialComponent,
       TVisibilityComponent,
       TMeshReadyComponent,
-    ]);
-
-    this.texturedMeshQuery = world.createQuery([
-      TGlobalTransformComponent,
-      TTexturedMeshComponent,
-      TTextureComponent,
-      TVisibilityComponent,
-      TTexturedMeshReadyComponent,
     ]);
 
     this.spriteQuery = world.createQuery([
@@ -85,9 +73,10 @@ export class TMeshRenderSystem extends TSystem {
 
       const mesh = components.get(TMeshComponent);
       const material = components.get(TMaterialComponent);
+      const texture = components.get(TTextureComponent);
       const transform = components.get(TGlobalTransformComponent);
 
-      if (!mesh || !material || !transform || !transform.transform) {
+      if (!mesh || !transform || !transform.transform) {
         continue;
       }
 
@@ -95,41 +84,22 @@ export class TMeshRenderSystem extends TSystem {
         continue;
       }
 
-      const serializedMaterial = material.material.serialize();
-      if (!serializedMaterial) {
-        continue;
-      }
-
       const matrix = transform.transform.getMatrix();
+      const serializedMaterial = material?.material.serialize();
 
-      this.renderTasks.push({
-        type: TRenderTask.MeshInstance,
-        uuid: mesh.uuid,
-        transform: matrix,
-        material: serializedMaterial,
-      });
-    }
-
-    const texturedEntities = this.texturedMeshQuery.execute();
-
-    for (const entity of texturedEntities) {
-      const components = world.getComponents(entity);
-
-      if (!components) continue;
-
-      const mesh = components.get(TTexturedMeshComponent);
-      const texture = components.get(TTextureComponent);
-      const transform = components.get(TGlobalTransformComponent);
-
-      if (!mesh || !texture || !transform || !transform.transform) {
+      if (serializedMaterial) {
+        this.renderTasks.push({
+          type: TRenderTask.MeshInstance,
+          uuid: mesh.uuid,
+          transform: matrix,
+          material: serializedMaterial,
+        });
         continue;
       }
 
-      if (!mesh.uuid || !texture.texture.uuid) {
+      if (!texture?.texture.uuid) {
         continue;
       }
-
-      const matrix = transform.transform.getMatrix();
 
       this.renderTasks.push({
         type: TRenderTask.MeshInstance,
@@ -176,7 +146,6 @@ export class TMeshRenderSystem extends TSystem {
       }
 
       if (components.has(TSpriteInstancesComponent)) {
-        console.log('has sprite instances');
         const spriteInstances = components.get(TSpriteInstancesComponent);
 
         if (!spriteInstances || !sprite.uuid) {

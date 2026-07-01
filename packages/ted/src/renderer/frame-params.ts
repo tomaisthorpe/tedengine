@@ -80,7 +80,17 @@ export interface TSerializedPhysicsDebug {
 
 export type TSerializedMaterial =
   | TSerializedColorMaterial
-  | TSerializedTexturedMaterial;
+  | TSerializedTexturedMaterial
+  | TSerializedShaderMaterial;
+
+export type TSerializedMaterialValue =
+  | number
+  | [number, number]
+  | [number, number, number]
+  | [number, number, number, number]
+  | {
+      texture: string;
+    };
 
 export interface TColorMaterialOptions {
   palette: TPalette;
@@ -101,4 +111,10 @@ export interface TSerializedColorMaterial {
 export interface TSerializedTexturedMaterial {
   type: 'textured';
   options: TTexturedMaterialOptions;
+}
+
+export interface TSerializedShaderMaterial {
+  type: 'shader';
+  shader: string;
+  parameters: Record<string, TSerializedMaterialValue>;
 }

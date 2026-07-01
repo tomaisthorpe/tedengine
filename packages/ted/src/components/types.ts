@@ -21,8 +21,6 @@ export class TTransformComponent extends TComponent {
 
 export class TMeshReadyComponent extends TComponent {}
 
-export class TTexturedMeshReadyComponent extends TComponent {}
-
 export class TSpriteReadyComponent extends TComponent {}
 
 export class TParentEntityComponent extends TComponent {

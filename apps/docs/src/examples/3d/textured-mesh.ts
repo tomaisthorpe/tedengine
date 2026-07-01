@@ -7,7 +7,7 @@ import type { TTexture } from '@tedengine/ted';
 import {
   TGameState,
   TResourcePack,
-  TTexturedMeshComponent,
+  TMeshComponent,
   TEngine,
   TTransformComponent,
   TTransform,
@@ -15,14 +15,13 @@ import {
   TVisibilityComponent,
   TParentEntityComponent,
   TTransformBundle,
-  TMaterialComponent,
 } from '@tedengine/ted';
 import { TRotatingComponent, TRotatingSystem } from '../shared/rotating';
 
 class TrainState extends TGameState {
   public async onCreate(engine: TEngine) {
     const rp = new TResourcePack(engine, {
-      texturedMeshes: [trainLocoMesh, trainPantoMesh, trainMiddleMesh],
+      meshes: [trainLocoMesh, trainPantoMesh, trainMiddleMesh],
       textures: [trainTexture],
     });
 
@@ -52,7 +51,7 @@ class TrainState extends TGameState {
         ),
       ),
       new TParentEntityComponent(train),
-      new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
+      new TMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);
@@ -68,7 +67,7 @@ class TrainState extends TGameState {
         ),
       ),
       new TParentEntityComponent(train),
-      new TTexturedMeshComponent({ source: 'path', path: trainPantoMesh }),
+      new TMeshComponent({ source: 'path', path: trainPantoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);
@@ -78,7 +77,7 @@ class TrainState extends TGameState {
         new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -0.255))),
       ),
       new TParentEntityComponent(panto),
-      new TTexturedMeshComponent({ source: 'path', path: trainMiddleMesh }),
+      new TMeshComponent({ source: 'path', path: trainMiddleMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);
@@ -93,7 +92,7 @@ class TrainState extends TGameState {
         ),
       ),
       new TParentEntityComponent(middle),
-      new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
+      new TMeshComponent({ source: 'path', path: trainLocoMesh }),
       new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
       new TVisibilityComponent(),
     ]);

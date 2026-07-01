@@ -4,12 +4,16 @@ import { TSpriteLayer } from '../components/sprite-component';
 import type { TResourceManager } from '../core/resource-manager';
 import type { TPalette } from '../graphics/color-material';
 import { TColorProgram } from './color-program';
-import type { TFrameParams, TSerializedSpriteInstance } from './frame-params';
+import type {
+  TFrameParams,
+  TSerializedMaterialValue,
+  TSerializedShaderMaterial,
+  TSerializedSpriteInstance,
+} from './frame-params';
 import { TRenderTask } from './frame-params';
 import type { TProgram } from './program';
 import type { TRenderableMesh } from './renderable-mesh';
 import type { TRenderableTexture } from './renderable-texture';
-import type { TRenderableTexturedMesh } from './renderable-textured-mesh';
 import { TTexturedProgram } from './textured-program';
 import type { TEventQueue } from '../core/event-queue';
 import type { TRenderingSizeChangedEvent } from './events';
@@ -22,9 +26,6 @@ import { TFrameBuffer } from './frame-buffer';
 export class TRenderer {
   private registeredPrograms: { [key: string]: TProgram | undefined } = {};
   private registeredMeshes: { [key: string]: TRenderableMesh | undefined } = {};
-  private registeredTexturedMeshes: {
-    [key: string]: TRenderableTexturedMesh | undefined;
-  } = {};
   private registeredTextures: {
     [key: string]: TRenderableTexture | undefined;
   } = {};
@@ -264,6 +265,85 @@ export class TRenderer {
     };
   }
 
+  private bindShaderMaterialParameter(
+    gl: WebGL2RenderingContext,
+    program: TProgram,
+    name: string,
+    value: TSerializedMaterialValue,
+    textureUnit: number,
+  ): number {
+    const location = program.getUniformLocation(name);
+    if (!location) {
+      return textureUnit;
+    }
+
+    if (typeof value === 'number') {
+      gl.uniform1f(location, value);
+      return textureUnit;
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length === 2) {
+        gl.uniform2fv(location, new Float32Array(value));
+      }
+      if (value.length === 3) {
+        gl.uniform3fv(location, new Float32Array(value));
+      }
+      if (value.length === 4) {
+        gl.uniform4fv(location, new Float32Array(value));
+      }
+      return textureUnit;
+    }
+
+    const texture = this.registeredTextures[value.texture];
+    if (!texture?.texture) {
+      return textureUnit;
+    }
+
+    gl.uniform1i(location, textureUnit);
+    gl.activeTexture(gl.TEXTURE0 + textureUnit);
+    gl.bindTexture(gl.TEXTURE_2D, texture.texture);
+
+    return textureUnit + 1;
+  }
+
+  private renderShaderMaterial(
+    gl: WebGL2RenderingContext,
+    meshUuid: string,
+    transform: mat4,
+    material: TSerializedShaderMaterial,
+  ): void {
+    const program = this.registeredPrograms[material.shader];
+    if (!program?.program) {
+      return;
+    }
+
+    gl.useProgram(program.program);
+
+    const modelMatrixLocation = program.getUniformLocation('uMMatrix');
+    if (modelMatrixLocation) {
+      gl.uniformMatrix4fv(
+        modelMatrixLocation,
+        false,
+        transform as Float32Array,
+      );
+    }
+
+    let textureUnit = 0;
+    for (const [name, value] of Object.entries(material.parameters)) {
+      textureUnit = this.bindShaderMaterialParameter(
+        gl,
+        program,
+        name,
+        value,
+        textureUnit,
+      );
+    }
+
+    const mesh = this.registeredMeshes[meshUuid];
+    mesh?.renderWithProgram(gl, program);
+  }
+
   public render(frameParams: TFrameParams) {
     const gl = this.context();
 
@@ -401,6 +481,15 @@ export class TRenderer {
       }
 
       switch (task.material.type) {
+        case 'shader': {
+          this.renderShaderMaterial(
+            gl,
+            task.uuid,
+            task.transform,
+            task.material,
+          );
+          break;
+        }
         case 'color': {
           gl.useProgram(this.colorProgram.program.program);
 
@@ -482,14 +571,14 @@ export class TRenderer {
           }
           gl.activeTexture(gl.TEXTURE0);
 
-          const mesh = this.registeredTexturedMeshes[task.uuid];
+          const mesh = this.registeredMeshes[task.uuid];
           if (!mesh) continue;
 
           const texture =
             this.registeredTextures[task.material.options.texture];
           if (!texture) continue;
 
-          mesh.render(
+          mesh.renderTextured(
             gl,
             this.texturedProgram,
             texture,
@@ -520,13 +609,13 @@ export class TRenderer {
     gl.activeTexture(gl.TEXTURE0);
     for (const layer of layers) {
       for (const task of layer) {
-        const mesh = this.registeredTexturedMeshes[task.uuid];
+        const mesh = this.registeredMeshes[task.uuid];
         if (!mesh) continue;
 
         const texture = this.registeredTextures[task.material.options.texture];
         if (!texture) continue;
 
-        mesh.render(
+        mesh.renderTextured(
           gl,
           this.texturedProgram,
           texture,
@@ -569,14 +658,6 @@ export class TRenderer {
 
   public registerMesh(mesh: TRenderableMesh) {
     this.registeredMeshes[mesh.uuid] = mesh;
-  }
-
-  public hasTexturedMesh(uuid: string): boolean {
-    return this.registeredTexturedMeshes[uuid] !== undefined;
-  }
-
-  public registerTexturedMesh(mesh: TRenderableTexturedMesh) {
-    this.registeredTexturedMeshes[mesh.uuid] = mesh;
   }
 
   public hasTexture(uuid: string): boolean {
