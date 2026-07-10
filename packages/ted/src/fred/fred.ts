@@ -64,9 +64,13 @@ export class TFred {
 
   private enginePort!: MessagePort;
   private clearColor?: { r: number; g: number; b: number; a: number };
+  private destroyed = false;
+  private resizeObserver?: ResizeObserver;
+  private animationFrame?: number;
+  private readonly engineMessageHandler = this.onEngineMessage.bind(this);
 
   constructor(
-    engineWorker: Worker,
+    private engineWorker: Worker,
     private container: HTMLElement,
     private fullscreenContainer: HTMLElement,
     private updateEngineContext: (ctx: TEngineContextData) => void,
@@ -76,12 +80,16 @@ export class TFred {
     private setRenderingSize: (size: { width: number; height: number }) => void,
     private config?: TFredConfig,
   ) {
-    engineWorker.onmessage = this.onEngineMessage.bind(this);
+    this.engineWorker.onmessage = this.engineMessageHandler;
 
     this.update = this.update.bind(this);
   }
 
   private onEngineMessage(ev: MessageEvent): void {
+    if (this.destroyed) {
+      return;
+    }
+
     // console.log('engine said: ', ev.data);
 
     const { data } = ev;
@@ -141,6 +149,10 @@ export class TFred {
    * - Setting up events, input, audio
    */
   private async bootstrap() {
+    if (this.destroyed) {
+      return;
+    }
+
     const browser = new TBrowser();
     if (!browser.supports('webgl2') || !browser.supports('offscreencanvas')) {
       // @todo show error message
@@ -197,6 +209,10 @@ export class TFred {
     );
     await this.renderer.load();
 
+    if (this.destroyed) {
+      return;
+    }
+
     this.keyboard = new TKeyboard(this.events);
     this.mouse = new TMouse(this.events, this.canvas);
 
@@ -248,6 +264,10 @@ export class TFred {
   }
 
   private update() {
+    if (this.destroyed) {
+      return;
+    }
+
     const start = performance.now();
     this.events.update();
 
@@ -263,16 +283,16 @@ export class TFred {
       this.enginePort.postMessage(statsMessages);
     }
 
-    window.requestAnimationFrame(this.update);
+    this.animationFrame = window.requestAnimationFrame(this.update);
   }
 
   private setupResizeObserver() {
-    const observer = new ResizeObserver((entries) => {
+    this.resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
       this.onResize(entry.contentRect.width, entry.contentRect.height);
     });
 
-    observer.observe(this.container);
+    this.resizeObserver.observe(this.container);
   }
 
   private onResize(containerWidth: number, containerHeight: number) {
@@ -320,19 +340,34 @@ export class TFred {
    * Trigger cleanup across the whole engine
    */
   public destroy() {
+    if (this.destroyed) {
+      return;
+    }
+    this.destroyed = true;
+
     // @todo should this be an event? might be nicer when there's more threads
     const message: TFredMessageShutdown = {
       type: TFredMessageTypes.SHUTDOWN,
     };
-    this.enginePort.postMessage(message);
+    this.enginePort?.postMessage(message);
+    if (this.engineWorker.onmessage === this.engineMessageHandler) {
+      this.engineWorker.onmessage = null;
+    }
+    this.enginePort?.close();
+
+    if (this.animationFrame !== undefined) {
+      window.cancelAnimationFrame(this.animationFrame);
+    }
+    this.resizeObserver?.disconnect();
 
     window.removeEventListener('fullscreenchange', this.onChangeFullscreen);
     window.removeEventListener('blur', this.onBlur);
     window.removeEventListener('focus', this.onFocus);
 
     // @todo do full teardown on this thread
-    this.mouse.destroy();
-    this.keyboard.destroy();
+    this.mouse?.destroy();
+    this.keyboard?.destroy();
+    this.canvas?.remove();
   }
 }
 
