@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import {
   TPlayerInputComponent,
   TPlayerInputSystem,
@@ -46,10 +47,10 @@ describe('TPlayerInputSystem', () => {
     eventQueue = new TEventQueue();
     inputManager = new TInputManager(eventQueue);
     mockWorld = {
-      createQuery: jest.fn().mockReturnValue({
-        execute: jest.fn().mockReturnValue([]),
+      createQuery: vi.fn().mockReturnValue({
+        execute: vi.fn().mockReturnValue([]),
       }),
-      getComponents: jest.fn(),
+      getComponents: vi.fn(),
     } as unknown as TWorld;
     mockEngine = {} as TEngine;
     system = new TPlayerInputSystem(mockWorld, inputManager);
@@ -59,10 +60,10 @@ describe('TPlayerInputSystem', () => {
     // Create a mock entity with player input component
     const component = new TPlayerInputComponent();
     const entity = 1;
-    (mockWorld.getComponents as jest.Mock).mockReturnValue(
+    (mockWorld.getComponents as Mock).mockReturnValue(
       new Map([[TPlayerInputComponent, component]]),
     );
-    (mockWorld.createQuery([]).execute as jest.Mock).mockReturnValue([entity]);
+    (mockWorld.createQuery([]).execute as Mock).mockReturnValue([entity]);
 
     setPlayerInputMapping(inputManager);
 
@@ -107,10 +108,10 @@ describe('TPlayerInputSystem', () => {
   it('should handle multiple keys for same action', async () => {
     const component = new TPlayerInputComponent();
     const entity = 1;
-    (mockWorld.getComponents as jest.Mock).mockReturnValue(
+    (mockWorld.getComponents as Mock).mockReturnValue(
       new Map([[TPlayerInputComponent, component]]),
     );
-    (mockWorld.createQuery([]).execute as jest.Mock).mockReturnValue([entity]);
+    (mockWorld.createQuery([]).execute as Mock).mockReturnValue([entity]);
 
     setPlayerInputMapping(inputManager);
 

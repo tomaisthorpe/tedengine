@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { TSound } from './sound';
 import {
   AudioJobLoadSoundFromUrl,
@@ -7,11 +8,11 @@ import {
 
 // Mock the job manager
 interface MockJobManager {
-  do: jest.Mock;
+  do: Mock;
 }
 
 const mockJobManager: MockJobManager = {
-  do: jest.fn(),
+  do: vi.fn(),
 };
 
 describe('TSound', () => {
@@ -21,7 +22,7 @@ describe('TSound', () => {
   beforeEach(() => {
     sound = new TSound();
     mockJobs = { ...mockJobManager };
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initial state', () => {
@@ -82,7 +83,7 @@ describe('TSound', () => {
     beforeEach(async () => {
       mockJobs.do.mockResolvedValue('test-uuid-123');
       await sound.loadWithJob(mockJobs as any, 'test-url');
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should play the sound with current volume and loop settings', () => {
@@ -132,7 +133,7 @@ describe('TSound', () => {
     beforeEach(async () => {
       mockJobs.do.mockResolvedValue('test-uuid-123');
       await sound.loadWithJob(mockJobs as any, 'test-url');
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should set volume and call job manager', () => {

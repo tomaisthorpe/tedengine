@@ -11,7 +11,7 @@ describe('TResourcePack', () => {
   let engine: any;
 
   beforeEach(() => {
-    engine = { resources: { load: jest.fn() } } as any;
+    engine = { resources: { load: vi.fn() } } as any;
     resourcePack = new TResourcePack(
       engine,
       {
@@ -49,7 +49,7 @@ describe('TResourcePack', () => {
   });
 
   test('should load all resources in the resource pack', async () => {
-    const loadMock = jest.spyOn(engine.resources, 'load');
+    const loadMock = vi.spyOn(engine.resources, 'load');
 
     await resourcePack.load();
 

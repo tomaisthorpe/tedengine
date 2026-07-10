@@ -8,19 +8,19 @@ import { TJobContextTypes } from '../jobs/context-types';
 
 // Mock TAudio
 const mockAudio = {
-  loadSound: jest.fn(),
-  play: jest.fn(),
-  setVolume: jest.fn(),
+  loadSound: vi.fn(),
+  play: vi.fn(),
+  setVolume: vi.fn(),
 };
 
 // Mock job manager
 const mockJobManager = {
-  registerJob: jest.fn(),
+  registerJob: vi.fn(),
 };
 
 describe('Audio Jobs', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('AudioJobLoadSoundFromUrl', () => {

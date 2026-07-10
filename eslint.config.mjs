@@ -17,7 +17,7 @@ export default [
       '**/dist',
       '**/*.config.*',
       '**/vite.config.*',
-      '**/jest.config.*',
+      '**/vitest.config.*',
     ],
   },
   {
@@ -65,13 +65,30 @@ export default [
     })),
   ...compat
     .config({
-      env: {
-        jest: true,
+      globals: {
+        afterAll: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        beforeEach: 'readonly',
+        describe: 'readonly',
+        expect: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        vi: 'readonly',
       },
     })
     .map((config) => ({
       ...config,
-      files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
+      files: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/*.test.js',
+        '**/*.test.jsx',
+        '**/*.spec.ts',
+        '**/*.spec.tsx',
+        '**/*.spec.js',
+        '**/*.spec.jsx',
+      ],
       rules: {
         ...config.rules,
       },

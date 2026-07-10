@@ -8,12 +8,12 @@ describe('TEventQueue', () => {
   beforeEach(() => {
     eventQueue = new TEventQueue();
     mockPort = {
-      postMessage: jest.fn(),
+      postMessage: vi.fn(),
     } as unknown as MessagePort;
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('should add event to the queue', () => {
@@ -57,7 +57,7 @@ describe('TEventQueue', () => {
     const event: TEvent = {
       type: 'test',
     };
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     eventQueue.addListener('test', listener);
     eventQueue.broadcast(event);
@@ -71,7 +71,7 @@ describe('TEventQueue', () => {
       type: 'test',
       subType: 'sub',
     };
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     eventQueue.addListener('test', 'sub', listener);
     eventQueue.broadcast(event);
@@ -84,7 +84,7 @@ describe('TEventQueue', () => {
     const event: TEvent = {
       type: 'test',
     };
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     eventQueue.addListener('test', listener);
     eventQueue.removeListener('test', listener);
@@ -98,7 +98,7 @@ describe('TEventQueue', () => {
       type: 'test',
       subType: 'sub',
     };
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     eventQueue.addListener('test', 'sub', listener);
     eventQueue.removeListener('test', 'sub', listener);
@@ -114,8 +114,8 @@ describe('TEventQueue', () => {
     const event2: TEvent = {
       type: 'test2',
     };
-    const listener1 = jest.fn();
-    const listener2 = jest.fn();
+    const listener1 = vi.fn();
+    const listener2 = vi.fn();
 
     eventQueue.addListener('test1', listener1);
     eventQueue.addListener('test2', listener2);

@@ -9,7 +9,7 @@ class TestComponentC extends TComponent {}
 describe('TEntityQuery', () => {
   it('should pass required components to world query', () => {
     const mockWorld = {
-      queryEntities: jest.fn().mockReturnValue([1, 2]),
+      queryEntities: vi.fn().mockReturnValue([1, 2]),
     };
 
     const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
@@ -20,7 +20,7 @@ describe('TEntityQuery', () => {
 
   it('should pass excluded components to world query', () => {
     const mockWorld = {
-      queryEntities: jest.fn().mockReturnValue([1]),
+      queryEntities: vi.fn().mockReturnValue([1]),
     };
 
     const query = new TEntityQuery(mockWorld as any, [TestComponentA]).excludes(
@@ -37,7 +37,7 @@ describe('TEntityQuery', () => {
   it('should return results from world query', () => {
     const expectedResults = [1, 2, 3];
     const mockWorld = {
-      queryEntities: jest.fn().mockReturnValue(expectedResults),
+      queryEntities: vi.fn().mockReturnValue(expectedResults),
     };
 
     const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
@@ -48,7 +48,7 @@ describe('TEntityQuery', () => {
 
   it('should chain exclude calls', () => {
     const mockWorld = {
-      queryEntities: jest.fn().mockReturnValue([]),
+      queryEntities: vi.fn().mockReturnValue([]),
     };
 
     const query = new TEntityQuery(mockWorld as any, [TestComponentA])
@@ -65,14 +65,14 @@ describe('TEntityQuery', () => {
   describe('subscriptions', () => {
     it('should notify subscribers of changes', () => {
       const mockWorld = {
-        queryEntities: jest
+        queryEntities: vi
           .fn()
           .mockReturnValueOnce([1, 2]) // First call
           .mockReturnValueOnce([1, 3]), // Second call
       };
 
       const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
-      const callback = jest.fn();
+      const callback = vi.fn();
       query.subscribe(callback);
 
       // First execute - added entities
@@ -92,14 +92,14 @@ describe('TEntityQuery', () => {
 
     it('should allow unsubscribing', () => {
       const mockWorld = {
-        queryEntities: jest
+        queryEntities: vi
           .fn()
           .mockReturnValueOnce([1])
           .mockReturnValueOnce([2]),
       };
 
       const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
-      const callback = jest.fn();
+      const callback = vi.fn();
       const unsubscribe = query.subscribe(callback);
 
       // First execute - added entities
@@ -121,15 +121,15 @@ describe('TEntityQuery', () => {
 
     it('should handle multiple subscribers', () => {
       const mockWorld = {
-        queryEntities: jest
+        queryEntities: vi
           .fn()
           .mockReturnValueOnce([1])
           .mockReturnValueOnce([2]),
       };
 
       const query = new TEntityQuery(mockWorld as any, [TestComponentA]);
-      const callback1 = jest.fn();
-      const callback2 = jest.fn();
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
 
       query.subscribe(callback1);
       query.subscribe(callback2);

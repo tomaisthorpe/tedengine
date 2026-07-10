@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { TUniformManager, TUniformBlockBinding } from './uniform-manager';
 
 describe('TUniformManager', () => {
@@ -8,12 +9,12 @@ describe('TUniformManager', () => {
   beforeEach(() => {
     // Mock WebGL context and program
     gl = {
-      getUniformLocation: jest.fn(),
-      getUniformBlockIndex: jest.fn(),
-      getActiveUniformBlockParameter: jest.fn(),
-      uniformBlockBinding: jest.fn(),
-      getUniformIndices: jest.fn(),
-      getActiveUniforms: jest.fn(),
+      getUniformLocation: vi.fn(),
+      getUniformBlockIndex: vi.fn(),
+      getActiveUniformBlockParameter: vi.fn(),
+      uniformBlockBinding: vi.fn(),
+      getUniformIndices: vi.fn(),
+      getActiveUniforms: vi.fn(),
       UNIFORM_BLOCK_DATA_SIZE: 'UNIFORM_BLOCK_DATA_SIZE',
       UNIFORM_OFFSET: 'UNIFORM_OFFSET',
       INVALID_INDEX: -1,
@@ -26,7 +27,7 @@ describe('TUniformManager', () => {
   describe('getUniformLocation', () => {
     it('should get and cache uniform location', () => {
       const mockLocation = {} as WebGLUniformLocation;
-      (gl.getUniformLocation as jest.Mock).mockReturnValue(mockLocation);
+      (gl.getUniformLocation as Mock).mockReturnValue(mockLocation);
 
       const location1 = uniformManager.getUniformLocation('uTest');
       const location2 = uniformManager.getUniformLocation('uTest');
@@ -38,7 +39,7 @@ describe('TUniformManager', () => {
     });
 
     it('should return null for non-existent uniform', () => {
-      (gl.getUniformLocation as jest.Mock).mockReturnValue(null);
+      (gl.getUniformLocation as Mock).mockReturnValue(null);
 
       const location = uniformManager.getUniformLocation('uNonExistent');
 
@@ -50,8 +51,8 @@ describe('TUniformManager', () => {
     it('should set up uniform block with binding point', () => {
       const blockIndex = 1;
       const blockSize = 256;
-      (gl.getUniformBlockIndex as jest.Mock).mockReturnValue(blockIndex);
-      (gl.getActiveUniformBlockParameter as jest.Mock).mockReturnValue(
+      (gl.getUniformBlockIndex as Mock).mockReturnValue(blockIndex);
+      (gl.getActiveUniformBlockParameter as Mock).mockReturnValue(
         blockSize,
       );
 
@@ -74,7 +75,7 @@ describe('TUniformManager', () => {
     });
 
     it('should throw error for invalid block', () => {
-      (gl.getUniformBlockIndex as jest.Mock).mockReturnValue(gl.INVALID_INDEX);
+      (gl.getUniformBlockIndex as Mock).mockReturnValue(gl.INVALID_INDEX);
 
       expect(() =>
         uniformManager.setupUniformBlock(
@@ -90,12 +91,12 @@ describe('TUniformManager', () => {
       const uniformIndices = [0, 1];
       const uniformOffsets = [0, 16];
 
-      (gl.getUniformBlockIndex as jest.Mock).mockReturnValue(blockIndex);
-      (gl.getActiveUniformBlockParameter as jest.Mock).mockReturnValue(
+      (gl.getUniformBlockIndex as Mock).mockReturnValue(blockIndex);
+      (gl.getActiveUniformBlockParameter as Mock).mockReturnValue(
         blockSize,
       );
-      (gl.getUniformIndices as jest.Mock).mockReturnValue(uniformIndices);
-      (gl.getActiveUniforms as jest.Mock).mockReturnValue(uniformOffsets);
+      (gl.getUniformIndices as Mock).mockReturnValue(uniformIndices);
+      (gl.getActiveUniforms as Mock).mockReturnValue(uniformOffsets);
 
       const blockInfo = uniformManager.setupUniformBlock(
         'Global',
@@ -114,8 +115,8 @@ describe('TUniformManager', () => {
     it('should get offsets for uniform block members', () => {
       const uniformIndices = [0, 1, 2];
       const uniformOffsets = [0, 16, 32];
-      (gl.getUniformIndices as jest.Mock).mockReturnValue(uniformIndices);
-      (gl.getActiveUniforms as jest.Mock).mockReturnValue(uniformOffsets);
+      (gl.getUniformIndices as Mock).mockReturnValue(uniformIndices);
+      (gl.getActiveUniforms as Mock).mockReturnValue(uniformOffsets);
 
       const offsets = uniformManager.getUniformBlockOffsets('Global', [
         'uVar1',
@@ -131,7 +132,7 @@ describe('TUniformManager', () => {
     });
 
     it('should throw error when unable to get uniform indices', () => {
-      (gl.getUniformIndices as jest.Mock).mockReturnValue(null);
+      (gl.getUniformIndices as Mock).mockReturnValue(null);
 
       expect(() =>
         uniformManager.getUniformBlockOffsets('Global', ['uVar1']),
@@ -139,8 +140,8 @@ describe('TUniformManager', () => {
     });
 
     it('should throw error when unable to get uniform offsets', () => {
-      (gl.getUniformIndices as jest.Mock).mockReturnValue([0]);
-      (gl.getActiveUniforms as jest.Mock).mockReturnValue(null);
+      (gl.getUniformIndices as Mock).mockReturnValue([0]);
+      (gl.getActiveUniforms as Mock).mockReturnValue(null);
 
       expect(() =>
         uniformManager.getUniformBlockOffsets('Global', ['uVar1']),
@@ -150,7 +151,7 @@ describe('TUniformManager', () => {
 
   describe('validateUniforms', () => {
     it('should validate required uniforms', () => {
-      (gl.getUniformLocation as jest.Mock).mockReturnValue({});
+      (gl.getUniformLocation as Mock).mockReturnValue({});
 
       expect(() =>
         uniformManager.validateUniforms(['uTest1', 'uTest2']),
@@ -158,7 +159,7 @@ describe('TUniformManager', () => {
     });
 
     it('should throw error for missing uniforms', () => {
-      (gl.getUniformLocation as jest.Mock).mockReturnValue(null);
+      (gl.getUniformLocation as Mock).mockReturnValue(null);
 
       expect(() =>
         uniformManager.validateUniforms(['uMissing1', 'uMissing2']),
@@ -166,7 +167,7 @@ describe('TUniformManager', () => {
     });
 
     it('should skip validation for block uniforms', () => {
-      (gl.getUniformLocation as jest.Mock).mockReturnValue(null);
+      (gl.getUniformLocation as Mock).mockReturnValue(null);
 
       expect(() =>
         uniformManager.validateUniforms(
@@ -180,9 +181,9 @@ describe('TUniformManager', () => {
   describe('clearCache', () => {
     it('should clear uniform location and block caches', () => {
       // Setup some cached values
-      (gl.getUniformLocation as jest.Mock).mockReturnValue({});
-      (gl.getUniformBlockIndex as jest.Mock).mockReturnValue(1);
-      (gl.getActiveUniformBlockParameter as jest.Mock).mockReturnValue(256);
+      (gl.getUniformLocation as Mock).mockReturnValue({});
+      (gl.getUniformBlockIndex as Mock).mockReturnValue(1);
+      (gl.getActiveUniformBlockParameter as Mock).mockReturnValue(256);
 
       uniformManager.getUniformLocation('uTest');
       uniformManager.setupUniformBlock('Global', TUniformBlockBinding.Global);

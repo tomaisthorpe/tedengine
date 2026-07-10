@@ -4,10 +4,10 @@ describe('TMouse', () => {
   const eventQueue = new TEventQueue();
   const canvas = document.createElement('canvas');
 
-  jest.spyOn(canvas, 'clientWidth', 'get').mockReturnValue(500);
-  jest.spyOn(canvas, 'clientHeight', 'get').mockReturnValue(500);
+  vi.spyOn(canvas, 'clientWidth', 'get').mockReturnValue(500);
+  vi.spyOn(canvas, 'clientHeight', 'get').mockReturnValue(500);
 
-  jest.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+  vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
     left: 100,
     top: 250,
     width: 500,
@@ -37,7 +37,7 @@ describe('TMouse', () => {
     // @ts-expect-error - above doesn't work
     event.movementY = 50;
 
-    const broadcastSpy = jest.spyOn(eventQueue, 'broadcast');
+    const broadcastSpy = vi.spyOn(eventQueue, 'broadcast');
 
     window.dispatchEvent(event);
 
@@ -60,7 +60,7 @@ describe('TMouse', () => {
       button: 0,
     });
 
-    const broadcastSpy = jest.spyOn(eventQueue, 'broadcast');
+    const broadcastSpy = vi.spyOn(eventQueue, 'broadcast');
 
     canvas.dispatchEvent(event);
 
@@ -80,7 +80,7 @@ describe('TMouse', () => {
       button: 2,
     });
 
-    const broadcastSpy = jest.spyOn(eventQueue, 'broadcast');
+    const broadcastSpy = vi.spyOn(eventQueue, 'broadcast');
 
     canvas.dispatchEvent(event);
 

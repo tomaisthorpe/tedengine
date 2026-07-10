@@ -13,8 +13,8 @@ describe('TJobManager.onRelayedResult', () => {
 
   test('resolves and removes a known relayed job', () => {
     const manager = new TJobManager([]);
-    const resolve = jest.fn();
-    const reject = jest.fn();
+    const resolve = vi.fn();
+    const reject = vi.fn();
     const relayedJobs = (
       manager as unknown as {
         relayedJobs: Record<
@@ -38,8 +38,8 @@ describe('TJobManager.onRelayedResult', () => {
 
   test('rejects and removes a failed relayed job', () => {
     const manager = new TJobManager([]);
-    const resolve = jest.fn();
-    const reject = jest.fn();
+    const resolve = vi.fn();
+    const reject = vi.fn();
     const relayedJobs = (
       manager as unknown as {
         relayedJobs: Record<
@@ -70,7 +70,7 @@ describe('TJobManager.doRelayedJob', () => {
     manager.registerJob(job, async () => {
       throw error;
     });
-    const port = { postMessage: jest.fn() };
+    const port = { postMessage: vi.fn() };
 
     await manager.doRelayedJob(
       { uuid: 'job-uuid', job, args: undefined, transferList: [] },

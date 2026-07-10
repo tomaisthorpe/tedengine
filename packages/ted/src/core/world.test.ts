@@ -219,9 +219,9 @@ describe('addSystem', () => {
     world.addSystem(system2);
     world.addSystem(system3);
 
-    const spy1 = jest.spyOn(system1, 'update');
-    const spy2 = jest.spyOn(system2, 'update');
-    const spy3 = jest.spyOn(system3, 'update');
+    const spy1 = vi.spyOn(system1, 'update');
+    const spy2 = vi.spyOn(system2, 'update');
+    const spy3 = vi.spyOn(system3, 'update');
 
     await world.update(mockEngine, 1);
 

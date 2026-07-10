@@ -155,7 +155,7 @@ describe('TGlobalTransformSystem', () => {
     world.addComponent(entityA, new TParentEntityComponent(entityB));
 
     // Mock console.warn to check for circular reference warning
-    const consoleSpy = jest.spyOn(console, 'warn');
+    const consoleSpy = vi.spyOn(console, 'warn');
 
     // Run the system
     await system.update(mockEngine, world);

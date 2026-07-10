@@ -12,13 +12,13 @@ describe('TResourceManager', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('isResourceLoaded should return true if resource is loaded', () => {
     const key = 'testKey';
     const asset: IAsset = {
-      load: jest.fn(),
+      load: vi.fn(),
     };
 
     resourceManager['resources'].set(key, asset);
@@ -39,7 +39,7 @@ describe('TResourceManager', () => {
   test('get should return the loaded resource if it exists', () => {
     const key = 'testKey';
     const asset: IAsset = {
-      load: jest.fn(),
+      load: vi.fn(),
     };
 
     resourceManager['resources'].set(key, asset);

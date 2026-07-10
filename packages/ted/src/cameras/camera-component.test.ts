@@ -3,7 +3,7 @@ import type { TPerspectiveCameraConfig } from './camera-component';
 import { TProjectionType } from '../graphics';
 
 describe('TCameraComponent', () => {
-  describe('should create a component with the provided config', () => {
+  it('should create a component with the provided config', () => {
     const config: TPerspectiveCameraConfig = {
       type: TProjectionType.Perspective,
       fov: 60,

@@ -1,22 +1,25 @@
+import type { Mock } from 'vitest';
 import { TAudio } from './audio';
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock Howl
 const createMockHowl = () => ({
-  mute: jest.fn(),
-  volume: jest.fn(),
-  loop: jest.fn(),
-  play: jest.fn(),
+  mute: vi.fn(),
+  volume: vi.fn(),
+  loop: vi.fn(),
+  play: vi.fn(),
 });
 
-jest.mock('howler', () => ({
-  Howl: jest.fn().mockImplementation(() => createMockHowl()),
+vi.mock('howler', () => ({
+  Howl: vi.fn().mockImplementation(function () {
+    return createMockHowl();
+  }),
 }));
 
 // Mock uuid
-jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'test-uuid-123'),
+vi.mock('uuid', () => ({
+  v4: vi.fn(() => 'test-uuid-123'),
 }));
 
 describe('TAudio', () => {
@@ -24,7 +27,7 @@ describe('TAudio', () => {
 
   beforeEach(() => {
     audio = new TAudio();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('muted property', () => {
@@ -39,7 +42,7 @@ describe('TAudio', () => {
       audio.muted = true;
 
       expect(audio.muted).toBe(true);
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
       expect(mockInstance.mute).toHaveBeenCalledWith(true);
     });
 
@@ -50,7 +53,7 @@ describe('TAudio', () => {
       audio.muted = false;
 
       expect(audio.muted).toBe(false);
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
       expect(mockInstance.mute).toHaveBeenCalledWith(false);
     });
   });
@@ -65,7 +68,7 @@ describe('TAudio', () => {
     });
 
     it('should generate unique UUIDs for different sounds', async () => {
-      (uuidv4 as jest.Mock)
+      (uuidv4 as Mock)
         .mockReturnValueOnce('uuid-1')
         .mockReturnValueOnce('uuid-2');
 
@@ -89,7 +92,7 @@ describe('TAudio', () => {
 
       audio.play(uuid, volume, loop);
 
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
       expect(mockInstance.volume).toHaveBeenCalledWith(volume);
       expect(mockInstance.loop).toHaveBeenCalledWith(loop);
       expect(mockInstance.play).toHaveBeenCalled();
@@ -101,7 +104,7 @@ describe('TAudio', () => {
 
       audio.play(uuid, volume);
 
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
       expect(mockInstance.volume).toHaveBeenCalledWith(volume);
       expect(mockInstance.loop).toHaveBeenCalledWith(false);
       expect(mockInstance.play).toHaveBeenCalled();
@@ -109,7 +112,7 @@ describe('TAudio', () => {
 
     it('should handle different volume levels', () => {
       const uuid = 'test-uuid-123';
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
 
       audio.play(uuid, 0.0);
       expect(mockInstance.volume).toHaveBeenCalledWith(0.0);
@@ -133,7 +136,7 @@ describe('TAudio', () => {
 
       audio.setVolume(uuid, volume);
 
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
       expect(mockInstance.volume).toHaveBeenCalledWith(volume);
     });
 
@@ -147,7 +150,7 @@ describe('TAudio', () => {
       // Set volume
       audio.setVolume(uuid, volume);
 
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
       expect(mockInstance.volume).toHaveBeenCalledWith(volume);
       expect(mockInstance.mute).toHaveBeenCalledWith(true);
     });
@@ -160,7 +163,7 @@ describe('TAudio', () => {
       audio.muted = false;
 
       // Clear mocks to only track the setVolume call
-      (Howl as jest.Mock).mockClear();
+      (Howl as Mock).mockClear();
 
       // Set volume
       audio.setVolume(uuid, volume);
@@ -172,7 +175,7 @@ describe('TAudio', () => {
 
     it('should handle edge case volume values', () => {
       const uuid = 'test-uuid-123';
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
 
       audio.setVolume(uuid, 0);
       expect(mockInstance.volume).toHaveBeenCalledWith(0);
@@ -187,15 +190,15 @@ describe('TAudio', () => {
 
   describe('integration tests', () => {
     it('should handle multiple sounds independently', async () => {
-      (uuidv4 as jest.Mock)
+      (uuidv4 as Mock)
         .mockReturnValueOnce('uuid-1')
         .mockReturnValueOnce('uuid-2');
 
       const uuid1 = await audio.loadSound('url1');
       const uuid2 = await audio.loadSound('url2');
 
-      const mockInstance1 = (Howl as jest.Mock).mock.results[0].value;
-      const mockInstance2 = (Howl as jest.Mock).mock.results[1].value;
+      const mockInstance1 = (Howl as Mock).mock.results[0].value;
+      const mockInstance2 = (Howl as Mock).mock.results[1].value;
 
       // Play first sound
       audio.play(uuid1, 0.3, true);
@@ -218,7 +221,7 @@ describe('TAudio', () => {
       // Set muted
       audio.muted = true;
 
-      const mockInstance = (Howl as jest.Mock).mock.results[0].value;
+      const mockInstance = (Howl as Mock).mock.results[0].value;
 
       // Play sound
       audio.play(uuid, 0.5);

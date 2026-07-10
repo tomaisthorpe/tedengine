@@ -1,14 +1,15 @@
+import type { Mock } from 'vitest';
 import type { IChildEventQueue, TEvent } from './event-queue';
 import { TProxyEventQueue } from './proxy-event-queue';
 
 describe('TProxyEventQueue', () => {
-  let broadcast: jest.Mock<IChildEventQueue['broadcast']>;
-  let eventQueueFunc: jest.Mock<() => IChildEventQueue | undefined>;
+  let broadcast: Mock<IChildEventQueue['broadcast']>;
+  let eventQueueFunc: Mock<() => IChildEventQueue | undefined>;
   let proxyEventQueue: TProxyEventQueue;
 
   beforeEach(() => {
-    broadcast = jest.fn();
-    eventQueueFunc = jest.fn(() => ({ broadcast })) as any;
+    broadcast = vi.fn();
+    eventQueueFunc = vi.fn(() => ({ broadcast })) as any;
     proxyEventQueue = new TProxyEventQueue(eventQueueFunc as any);
   });
 
