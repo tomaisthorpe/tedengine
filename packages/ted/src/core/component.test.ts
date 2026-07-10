@@ -61,7 +61,7 @@ describe('TComponentContainer', () => {
 
     expect(container.get(TestComponentC)).toBe(componentC);
     expect(container.get(TestComponentA)).toBeDefined();
-    expect(container.get(TestComponentA).value).toBe(5);
+    expect(container.get(TestComponentA)!.value).toBe(5);
   });
 
   it('should override previously required components with manually added components', () => {
@@ -74,20 +74,20 @@ describe('TComponentContainer', () => {
 
     expect(container.get(TestComponentC)).toBe(componentC);
     expect(container.get(TestComponentA)).toBeDefined();
-    expect(container.get(TestComponentA).value).toBe(5);
+    expect(container.get(TestComponentA)!.value).toBe(5);
 
     const componentA2 = new TestComponentA(100);
     container.add(componentA2);
 
     expect(container.get(TestComponentA)).toBe(componentA2);
-    expect(container.get(TestComponentA).value).toBe(100);
+    expect(container.get(TestComponentA)!.value).toBe(100);
   });
 
   it('should get components by their constructor', () => {
     container.add(componentA);
     const retrieved = container.get(TestComponentA);
     expect(retrieved).toBe(componentA);
-    expect(retrieved.value).toBe(42);
+    expect(retrieved!.value).toBe(42);
   });
 
   it('should check if a component exists', () => {

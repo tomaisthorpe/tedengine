@@ -62,7 +62,7 @@ describe('TPlayerInputSystem', () => {
     (mockWorld.getComponents as jest.Mock).mockReturnValue(
       new Map([[TPlayerInputComponent, component]]),
     );
-    (mockWorld.createQuery().execute as jest.Mock).mockReturnValue([entity]);
+    (mockWorld.createQuery([]).execute as jest.Mock).mockReturnValue([entity]);
 
     setPlayerInputMapping(inputManager);
 
@@ -110,7 +110,7 @@ describe('TPlayerInputSystem', () => {
     (mockWorld.getComponents as jest.Mock).mockReturnValue(
       new Map([[TPlayerInputComponent, component]]),
     );
-    (mockWorld.createQuery().execute as jest.Mock).mockReturnValue([entity]);
+    (mockWorld.createQuery([]).execute as jest.Mock).mockReturnValue([entity]);
 
     setPlayerInputMapping(inputManager);
 

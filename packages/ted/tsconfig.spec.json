@@ -2,8 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
-    "types": ["jest", "node", "dom"]
+    "module": "esnext",
+    "types": ["jest", "node", "jest-extended", "@testing-library/jest-dom"]
   },
   "include": [
     "jest.config.ts",
