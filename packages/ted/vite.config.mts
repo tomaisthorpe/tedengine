@@ -9,14 +9,14 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const workspaceRoot = path.resolve(__dirname, '../..');
-
 export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/ted',
   plugins: [
     dts({
       entryRoot: 'src',
+      include: ['src'],
+      exclude: ['src/test/**'],
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
     react(),
@@ -40,7 +40,8 @@ export default defineConfig({
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     assetsDir: 'workers',
-    outDir: path.join(workspaceRoot, 'dist/packages/ted'),
+    outDir: path.join(__dirname, 'dist'),
+    emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: { transformMixedEsModules: true },
     lib: {

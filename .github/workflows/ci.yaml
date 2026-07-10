@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docs-artifacts
-          path: dist/apps/docs
+          path: apps/docs/build
   pages:
     if: github.ref == 'refs/heads/main'
     environment:
@@ -81,12 +81,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: docs-artifacts
-          path: dist/apps/docs
+          path: apps/docs/build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload dist repository
-          path: './dist/apps/docs'
+          path: './apps/docs/build'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

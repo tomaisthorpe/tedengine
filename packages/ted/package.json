@@ -7,12 +7,20 @@
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage"
   },
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   }
 }

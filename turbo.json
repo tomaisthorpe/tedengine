@@ -6,11 +6,11 @@
     },
     "@tedengine/ted#build": {
       "dependsOn": ["^build"],
-      "outputs": ["$TURBO_ROOT$/dist/packages/ted/**"]
+      "outputs": ["dist/**"]
     },
     "@tedengine/docs#build": {
       "dependsOn": ["^build"],
-      "outputs": ["$TURBO_ROOT$/dist/apps/docs/**"]
+      "outputs": ["build/**"]
     },
     "dev": {
       "cache": false,

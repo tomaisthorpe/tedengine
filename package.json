@@ -8,9 +8,12 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "changeset": "changeset",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "release": "turbo run build lint test && changeset publish",
+    "test": "turbo run test",
+    "version-packages": "changeset version"
   },
   "private": true,
   "packageManager": "npm@11.11.0",
