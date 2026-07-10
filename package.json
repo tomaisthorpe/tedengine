@@ -17,6 +17,10 @@
   },
   "private": true,
   "packageManager": "npm@11.11.0",
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11"
+  },
   "dependencies": {
     "@changesets/cli": "^2.29.7",
     "@dimforge/rapier3d-compat": "^0.19.3",
