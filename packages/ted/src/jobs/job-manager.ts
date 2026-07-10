@@ -25,10 +25,17 @@ export interface TWrappedJob<TJobArgs = unknown> {
   transferList: Transferable[];
 }
 
-export interface TWrappedJobResult {
+export interface TWrappedJobSuccess {
   uuid: string;
   result: unknown;
 }
+
+export interface TWrappedJobFailure {
+  uuid: string;
+  error: unknown;
+}
+
+export type TWrappedJobResult = TWrappedJobSuccess | TWrappedJobFailure;
 
 export type TJobRelay<TJobArgs = unknown> = (
   job: TJobConfig<TJobContextTypes, TJobArgs, unknown>,
@@ -55,10 +62,14 @@ export class TJobManager {
     (ctx: unknown, args: unknown) => Promise<unknown>
   > = {};
 
-  // Resolve functions for jobs awaiting relay results
+  // Promise callbacks for jobs awaiting relay results
   private relayedJobs: Record<
     string,
-    ((result: unknown) => void) | undefined
+    | {
+        resolve: (result: unknown) => void;
+        reject: (error: unknown) => void;
+      }
+    | undefined
   > = {};
 
   public additionalContext!:
@@ -107,7 +118,7 @@ export class TJobManager {
         args: unknown,
         transferList: Transferable[],
       ): Promise<unknown> => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           const message: TJobsMessageRelay = {
             type: TMessageTypesJobs.RELAY,
             wrappedJob: {
@@ -117,7 +128,7 @@ export class TJobManager {
               transferList,
             },
           };
-          this.relayedJobs[message.wrappedJob.uuid] = resolve;
+          this.relayedJobs[message.wrappedJob.uuid] = { resolve, reject };
 
           portOrManager.postMessage(message, message.wrappedJob.transferList);
         });
@@ -141,7 +152,6 @@ export class TJobManager {
     }
   }
 
-  // @todo jobs don't currently ever reject
   public async do<TJobArgs, TJobResult>(
     job: TJobConfig<TJobContextTypes, TJobArgs, TJobResult>,
     args: TJobArgs,
@@ -172,16 +182,17 @@ export class TJobManager {
       postMessage: (result: TJobsMessageRelayResult) => void;
     },
   ) {
-    const result = await this.do(
-      wrappedJob.job,
-      wrappedJob.args,
-      wrappedJob.transferList,
-    );
-
-    const wrappedResult: TWrappedJobResult = {
-      uuid: wrappedJob.uuid,
-      result,
-    };
+    let wrappedResult: TWrappedJobResult;
+    try {
+      const result = await this.do(
+        wrappedJob.job,
+        wrappedJob.args,
+        wrappedJob.transferList,
+      );
+      wrappedResult = { uuid: wrappedJob.uuid, result };
+    } catch (error) {
+      wrappedResult = { uuid: wrappedJob.uuid, error };
+    }
 
     const message: TJobsMessageRelayResult = {
       type: TMessageTypesJobs.RELAY_RESULT,
@@ -192,10 +203,15 @@ export class TJobManager {
   }
 
   public onRelayedResult(wrappedResult: TWrappedJobResult) {
-    const resolve = this.relayedJobs[wrappedResult.uuid];
-    if (!resolve) return;
+    const callbacks = this.relayedJobs[wrappedResult.uuid];
+    if (!callbacks) return;
 
-    resolve(wrappedResult.result);
     delete this.relayedJobs[wrappedResult.uuid];
+
+    if ('error' in wrappedResult) {
+      callbacks.reject(wrappedResult.error);
+    } else {
+      callbacks.resolve(wrappedResult.result);
+    }
   }
 }
