@@ -11,6 +11,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   root: __dirname,
+  // Keep emitted worker URLs relative to the package entry point. An absolute
+  // base makes consumers look for the worker in their own public directory.
+  base: './',
   cacheDir: '../../node_modules/.vite/ted',
   plugins: [
     dts({
