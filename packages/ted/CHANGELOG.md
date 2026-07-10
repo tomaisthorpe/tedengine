@@ -1,5 +1,23 @@
 # @tedengine/ted
 
+## 0.19.0
+
+### Minor Changes
+
+- 4818df5: Move dependencies to correct workspaces
+- 46af824: Update to node 24
+- c4ac852: Update to Typescript 6
+
+### Patch Changes
+
+- ec4f870: Reject job promises when relayed jobs fail.
+- 5808380: Make game cleanup safe when React unmounts before worker bootstrap completes.
+- 2e3e23c: Update rapier to 0.19.3
+- 02237d5: Ignore relayed job results whose UUID is no longer awaiting a response.
+- dd2a05d: Update to Vite 8.
+- d7d73ae: Remove unused packages
+- 4429435: Emit worker URLs relative to the package entry point so consuming Vite builds can resolve the published worker files.
+
 ## 0.18.0
 
 ### Minor Changes
