@@ -1,7 +1,7 @@
 # ted
 
-This library was generated with [Nx](https://nx.dev).
+The engine is built with Vite and managed as part of the repository's npm workspace.
 
 ## Running unit tests
 
-Run `nx test ted` to execute the unit tests via [Vitest](https://vitest.dev/).
+Run `npm test --workspace=@tedengine/ted` to execute the Jest unit tests.

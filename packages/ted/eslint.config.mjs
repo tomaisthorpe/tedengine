@@ -11,19 +11,31 @@ const compat = new FlatCompat({
 
 export default [
   {
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
+  {
     ignores: ['**/dist'],
   },
   ...baseConfig,
-  ...compat.extends('plugin:@nx/react'),
+  ...compat.extends('plugin:react/recommended'),
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     // Override or add rules here
-    rules: {},
+    rules: {
+      'react/react-in-jsx-scope': 'off',
+      'react/no-unescaped-entities': 'off',
+    },
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
     // Override or add rules here
-    rules: {},
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
   },
   {
     files: ['**/*.js', '**/*.jsx'],

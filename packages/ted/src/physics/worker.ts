@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 import { TJobContextTypes } from '../jobs/context-types';
 import { TJobManager } from '../jobs/job-manager';
 import type { TJobsMessageRelay } from '../jobs/messages';

@@ -15,7 +15,6 @@ test('renders GameControls component with scaling', () => {
       <GameControls
         fred={
           {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             toggleFullscreen: () => {},
           } as any
         }

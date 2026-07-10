@@ -1,0 +1,11 @@
+{
+  "name": "@tedengine/docs",
+  "private": true,
+  "scripts": {
+    "build": "docusaurus build --out-dir ../../dist/apps/docs",
+    "dev": "docusaurus start"
+  },
+  "dependencies": {
+    "@tedengine/ted": "*"
+  }
+}

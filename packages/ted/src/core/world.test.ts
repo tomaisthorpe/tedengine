@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { TWorld } from './world';
 import { TComponent } from './component';
 import { TSystem } from './system';

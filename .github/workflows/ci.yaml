@@ -22,7 +22,7 @@ jobs:
           cache: 'npm'
       - run: npm ci
 
-      - run: npx nx run-many -t lint
+      - run: npm run lint
   test:
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +34,7 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - run: npx nx test ted --coverage
+      - run: npm run test:coverage --workspace=@tedengine/ted
       - name: Upload results to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5
         with:
@@ -56,10 +56,9 @@ jobs:
           cache: 'npm'
       - run: npm ci
 
-      - run: npx nx build ted
+      - run: npm run build
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: npx nx build docs
       - name: Archive docs artifacts
         uses: actions/upload-artifact@v4
         with:

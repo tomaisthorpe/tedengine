@@ -2,11 +2,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
-import { joinPathFragments } from '@nx/devkit';
 import { codecovVitePlugin } from '@codecov/vite-plugin';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -18,10 +17,10 @@ export default defineConfig({
   plugins: [
     dts({
       entryRoot: 'src',
-      tsconfigPath: joinPathFragments(__dirname, 'tsconfig.lib.json'),
+      tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
     react(),
-    nxViteTsPaths(),
+    tsconfigPaths(),
     codecovVitePlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
       bundleName: '@tedengine/ted',
@@ -34,14 +33,14 @@ export default defineConfig({
   // Uncomment this if you are using workers.
   worker: {
     format: 'es',
-    plugins: () => [nxViteTsPaths()],
+    plugins: () => [tsconfigPaths()],
   },
 
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     assetsDir: 'workers',
-    outDir: joinPathFragments(workspaceRoot, 'dist/packages/ted'),
+    outDir: path.join(workspaceRoot, 'dist/packages/ted'),
     reportCompressedSize: true,
     commonjsOptions: { transformMixedEsModules: true },
     lib: {

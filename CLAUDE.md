@@ -463,7 +463,7 @@ Fred processes in parallel:
 
 ## Monorepo Structure
 
-- **NX-based monorepo** (v22.0.1)
+- **Turborepo with npm workspaces**
 - **Vite** for building (ES + CJS output)
 - **Packages:**
   - `packages/ted` - Engine library
@@ -472,16 +472,16 @@ Fred processes in parallel:
 ### Common Commands
 ```bash
 # Build engine library
-npx nx build ted
+npm run build --workspace=@tedengine/ted
 
 # Run documentation site locally
-npx nx serve docs
+npm run dev --workspace=@tedengine/docs
 
 # Run tests
-npx nx test ted
+npm test
 
 # Lint
-npx nx lint ted
+npm run lint
 ```
 
 ## Message Passing Architecture

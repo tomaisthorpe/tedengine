@@ -44,13 +44,13 @@ Check out the [documentation](https://ted.tomaisthorpe.com) for guides and examp
 
 ```bash
 # Build the engine library
-nx build ted
+npm run build --workspace=@tedengine/ted
 
 # Run the documentation site locally
-nx serve docs
+npm run dev --workspace=@tedengine/docs
 
 # Run tests
-nx test ted
+npm test
 ```
 
 ## Example Projects
