@@ -56,8 +56,10 @@ export class TJobManager {
   > = {};
 
   // Resolve functions for jobs awaiting relay results
-  private relayedJobs: Record<string, (result: unknown) => void | undefined> =
-    {};
+  private relayedJobs: Record<
+    string,
+    ((result: unknown) => void) | undefined
+  > = {};
 
   public additionalContext!:
     | TJobContext
@@ -190,7 +192,10 @@ export class TJobManager {
   }
 
   public onRelayedResult(wrappedResult: TWrappedJobResult) {
-    this.relayedJobs[wrappedResult.uuid](wrappedResult.result);
+    const resolve = this.relayedJobs[wrappedResult.uuid];
+    if (!resolve) return;
+
+    resolve(wrappedResult.result);
     delete this.relayedJobs[wrappedResult.uuid];
   }
 }
