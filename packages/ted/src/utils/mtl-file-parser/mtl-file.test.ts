@@ -216,7 +216,9 @@ map_Ka ambient2.png
       const mtl = `newmtl`;
       const parser = new MTLFile(mtl);
 
-      expect(() => parser.parse()).toThrow('newmtl statement must specify a name for the material');
+      expect(() => parser.parse()).toThrow(
+        'newmtl statement must specify a name for the material',
+      );
     });
 
     it('should throw error when illum has no value', () => {
@@ -226,7 +228,9 @@ illum
 `;
       const parser = new MTLFile(mtl);
 
-      expect(() => parser.parse()).toThrow('to few arguments, expected: illum <number>');
+      expect(() => parser.parse()).toThrow(
+        'to few arguments, expected: illum <number>',
+      );
     });
 
     it('should throw error when d has no value', () => {
@@ -236,7 +240,9 @@ d
 `;
       const parser = new MTLFile(mtl);
 
-      expect(() => parser.parse()).toThrow('to few arguments, expected: d <factor>');
+      expect(() => parser.parse()).toThrow(
+        'to few arguments, expected: d <factor>',
+      );
     });
 
     it('should throw error when Tr has no value', () => {
@@ -246,7 +252,9 @@ Tr
 `;
       const parser = new MTLFile(mtl);
 
-      expect(() => parser.parse()).toThrow('to few arguments, expected: Tr <factor>');
+      expect(() => parser.parse()).toThrow(
+        'to few arguments, expected: Tr <factor>',
+      );
     });
 
     it('should throw error when map_Kd has no filename', () => {
@@ -256,7 +264,9 @@ map_Kd
 `;
       const parser = new MTLFile(mtl);
 
-      expect(() => parser.parse()).toThrow('to few arguments, expected: map_Kd <textureImageFile>');
+      expect(() => parser.parse()).toThrow(
+        'to few arguments, expected: map_Kd <textureImageFile>',
+      );
     });
   });
 

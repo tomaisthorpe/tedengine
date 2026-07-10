@@ -4,7 +4,6 @@ import { TUIContext } from '../context';
 
 test('renders FullscreenToggle component', () => {
   const { container } = render(
-     
     <TUIContext.Provider
       value={{
         scaling: 1,

@@ -25,8 +25,16 @@ vt 1.0 0.0 0.5
       const result = parser.parse();
 
       expect(result.models[0].textureCoords).toHaveLength(2);
-      expect(result.models[0].textureCoords[0]).toEqual({ u: 0.5, v: 0.5, w: 0.0 });
-      expect(result.models[0].textureCoords[1]).toEqual({ u: 1.0, v: 0.0, w: 0.5 });
+      expect(result.models[0].textureCoords[0]).toEqual({
+        u: 0.5,
+        v: 0.5,
+        w: 0.0,
+      });
+      expect(result.models[0].textureCoords[1]).toEqual({
+        u: 1.0,
+        v: 0.0,
+        w: 0.5,
+      });
     });
 
     it('should parse vertex normals', () => {
@@ -38,8 +46,16 @@ vn 1.0 0.0 0.0
       const result = parser.parse();
 
       expect(result.models[0].vertexNormals).toHaveLength(2);
-      expect(result.models[0].vertexNormals[0]).toEqual({ x: 0.0, y: 1.0, z: 0.0 });
-      expect(result.models[0].vertexNormals[1]).toEqual({ x: 1.0, y: 0.0, z: 0.0 });
+      expect(result.models[0].vertexNormals[0]).toEqual({
+        x: 0.0,
+        y: 1.0,
+        z: 0.0,
+      });
+      expect(result.models[0].vertexNormals[1]).toEqual({
+        x: 1.0,
+        y: 0.0,
+        z: 0.0,
+      });
     });
 
     it('should parse simple faces with vertex indices only', () => {
@@ -334,7 +350,9 @@ f 1 2
 `;
       const parser = new OBJFile(obj);
 
-      expect(() => parser.parse()).toThrow('Face statement has less than 3 vertices');
+      expect(() => parser.parse()).toThrow(
+        'Face statement has less than 3 vertices',
+      );
     });
 
     it('should throw error for invalid vertex index 0', () => {
@@ -346,7 +364,9 @@ f 0 1 2
 `;
       const parser = new OBJFile(obj);
 
-      expect(() => parser.parse()).toThrow('Face uses invalid vertex index of 0');
+      expect(() => parser.parse()).toThrow(
+        'Face uses invalid vertex index of 0',
+      );
     });
 
     it('should throw error for group with wrong number of arguments', () => {
@@ -355,7 +375,9 @@ g group1 group2
 `;
       const parser = new OBJFile(obj);
 
-      expect(() => parser.parse()).toThrow('Group statements must have exactly 1 argument');
+      expect(() => parser.parse()).toThrow(
+        'Group statements must have exactly 1 argument',
+      );
     });
 
     it('should throw error for smoothing group with wrong number of arguments', () => {
@@ -364,7 +386,9 @@ s 1 2
 `;
       const parser = new OBJFile(obj);
 
-      expect(() => parser.parse()).toThrow('Smoothing group statements must have exactly 1 argument');
+      expect(() => parser.parse()).toThrow(
+        'Smoothing group statements must have exactly 1 argument',
+      );
     });
 
     it('should throw error for vertex with too many indices', () => {
@@ -376,7 +400,9 @@ f 1/1/1/1 2/2/2/2 3/3/3/3
 `;
       const parser = new OBJFile(obj);
 
-      expect(() => parser.parse()).toThrow('Too many values (separated by /) for a single vertex');
+      expect(() => parser.parse()).toThrow(
+        'Too many values (separated by /) for a single vertex',
+      );
     });
   });
 

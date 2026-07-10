@@ -18,9 +18,7 @@ export const Game = () => {
         imageRendering: 'pixelated',
       }}
       game={
-        new Worker(
-          new URL('@examples/2d/animated-sprite.ts', import.meta.url),
-        )
+        new Worker(new URL('@examples/2d/animated-sprite.ts', import.meta.url))
       }
     />
   );

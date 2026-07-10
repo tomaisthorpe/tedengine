@@ -80,10 +80,7 @@ export class TProbeProgram {
     }
 
     const gl = this.renderer.context();
-    const blockIndex = gl.getUniformBlockIndex(
-      this.program.program,
-      'Global',
-    );
+    const blockIndex = gl.getUniformBlockIndex(this.program.program, 'Global');
 
     const blockSize = gl.getActiveUniformBlockParameter(
       this.program.program,

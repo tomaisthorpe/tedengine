@@ -54,7 +54,9 @@ npm test
 ```
 
 ## Example Projects
+
 - [Ludum Dare 56](https://github.com/tomaisthorpe/ludumdare56)
 
 ## Contributing
+
 While the engine is primarily for personal use, suggestions and feedback are welcome via issues.

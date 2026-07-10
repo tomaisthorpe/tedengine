@@ -22,7 +22,7 @@ describe('TMouse', () => {
   });
 
   // @todo add remove event listeners
-   
+
   new TMouse(eventQueue, canvas);
 
   test('mousemove event should be broadcasted', () => {

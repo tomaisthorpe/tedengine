@@ -230,7 +230,9 @@ export class MTLFile {
   // newmtl material_name
   _parseNewMTL(lineItems: string[]) {
     if (lineItems.length < 2) {
-      throw new Error('newmtl statement must specify a name for the material (eg, newmtl brickwall)');
+      throw new Error(
+        'newmtl statement must specify a name for the material (eg, newmtl brickwall)',
+      );
     }
     this._createMaterial(lineItems[1]);
   }

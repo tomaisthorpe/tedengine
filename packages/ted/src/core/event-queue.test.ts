@@ -26,7 +26,6 @@ describe('TEventQueue', () => {
     expect(eventQueue['queue']).toContain(event);
   });
 
-
   test('should relay event to message ports', () => {
     const event: TEvent = {
       type: 'test',

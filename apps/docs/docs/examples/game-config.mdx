@@ -23,7 +23,7 @@ export const Game = () => {
         loadingScreen: {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           textColor: 'red',
-        }
+        },
       }}
       game={new Worker(new URL('@examples/game-config.ts', import.meta.url))}
     />

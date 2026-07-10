@@ -23,9 +23,7 @@ export const Game = () => {
   return (
     <TGame
       aspectRatio="auto"
-      game={
-        new Worker(new URL('@examples/3d/lighting.ts', import.meta.url))
-      }
+      game={new Worker(new URL('@examples/3d/lighting.ts', import.meta.url))}
     />
   );
 };

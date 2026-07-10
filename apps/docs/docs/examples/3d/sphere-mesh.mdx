@@ -14,9 +14,7 @@ export const Game = () => {
   }
   return (
     <TGame
-      game={
-        new Worker(new URL('@examples/3d/sphere-mesh.ts', import.meta.url))
-      }
+      game={new Worker(new URL('@examples/3d/sphere-mesh.ts', import.meta.url))}
     />
   );
 };

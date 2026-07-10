@@ -12,7 +12,7 @@ export class TTransform {
   constructor(
     translation: vec3 | undefined = undefined,
     rotation: quat | undefined = undefined,
-    scale: vec3 | undefined = undefined
+    scale: vec3 | undefined = undefined,
   ) {
     if (translation === undefined) {
       this.translation = vec3.create();
@@ -43,7 +43,7 @@ export class TTransform {
       mat4.create(),
       this.rotation,
       this.translation,
-      this.scale
+      this.scale,
     );
     return mat;
   }
@@ -64,7 +64,7 @@ export class TTransform {
     const t = new TTransform(
       mat4.getTranslation(vec3.create(), matC),
       mat4.getRotation(quat.create(), matC),
-      vec3.multiply(vec3.create(), this.scale, b.scale)
+      vec3.multiply(vec3.create(), this.scale, b.scale),
     );
 
     return t;
@@ -106,7 +106,7 @@ export class TTransform {
     const mat = mat4.fromRotationTranslation(
       mat4.create(),
       this.rotation,
-      this.translation
+      this.translation,
     );
 
     return mat;

@@ -52,9 +52,7 @@ export default [
   },
   ...compat
     .config({
-      extends: [
-        'plugin:@typescript-eslint/recommended',
-      ],
+      extends: ['plugin:@typescript-eslint/recommended'],
     })
     .map((config) => ({
       ...config,

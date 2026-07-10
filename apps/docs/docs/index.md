@@ -7,5 +7,4 @@ sidebar_label: Home
 
 WebGL and TypeScript based game engine designed for rapid game jam development and WebGL learning purposes.
 
-
 There are examples on the menu. These serve as a reference on how to use some of the engines features.

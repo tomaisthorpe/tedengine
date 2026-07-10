@@ -25,6 +25,7 @@ The engine runs on **3 separate threads** communicating via MessageChannel:
    - Communicates physics state changes back to engine
 
 **Why this architecture?**
+
 - WebGL must run on main thread (can't use OffscreenCanvas everywhere yet)
 - Physics runs independently to avoid blocking game logic
 - Game logic separated from rendering for better performance
@@ -50,6 +51,7 @@ Understanding startup is critical:
 ```
 
 **Key files:**
+
 - Engine side: `packages/ted/src/engine/engine.ts` (constructor + triggerBootstrap)
 - Main thread: `packages/ted/src/ui/components/Game.tsx` (React wrapper)
 - Fred: `packages/ted/src/fred/fred.ts` (bootstrap method)
@@ -185,10 +187,13 @@ When exploring the codebase, start with these files:
 ## Entity Component System (ECS)
 
 ### Entities
+
 Simple numeric IDs (auto-incrementing integers)
 
 ### Components
+
 Data-only classes extending `TComponent`:
+
 ```typescript
 class HealthComponent extends TComponent {
   constructor(public hp: number = 100) {
@@ -198,6 +203,7 @@ class HealthComponent extends TComponent {
 ```
 
 **Built-in Components:**
+
 - `TTransformComponent` - Position, rotation, scale
 - `TGlobalTransformComponent` - World-space transform
 - `TVisibilityComponent` - Show/hide entities
@@ -210,17 +216,21 @@ class HealthComponent extends TComponent {
 - `TActiveCameraComponent` - Marks active camera
 
 ### Component Bundles
+
 Pre-configured component sets:
+
 ```typescript
 // Common bundle
-TTransformBundle = [TTransformComponent, TGlobalTransformComponent]
+TTransformBundle = [TTransformComponent, TGlobalTransformComponent];
 
 // Override defaults
-TTransformBundle.with(new TTransformComponent(customTransform))
+TTransformBundle.with(new TTransformComponent(customTransform));
 ```
 
 ### Systems
+
 Behavior that operates on entities:
+
 ```typescript
 class MySystem extends TSystem {
   private query: TEntityQuery;
@@ -241,6 +251,7 @@ class MySystem extends TSystem {
 ```
 
 **System Priorities:**
+
 - `First` - Runs before everything
 - `PreUpdate` - Before main update
 - `Update` - Main game logic (default)
@@ -248,7 +259,9 @@ class MySystem extends TSystem {
 - `Last` - Runs after everything
 
 ### Component Queries
+
 Efficient entity filtering:
+
 ```typescript
 const query = world.createQuery([
   TTransformComponent,
@@ -304,6 +317,7 @@ class MyGameState extends TGameState {
 ```
 
 **State Management:**
+
 ```typescript
 // Switch to different state (destroys current)
 engine.gameStateManager.switch('menu');
@@ -320,16 +334,18 @@ engine.gameStateManager.pop();
 The engine has bidirectional communication with React UI:
 
 ### Engine → React (Update UI)
+
 ```typescript
 // In game state or system
 this.engine.updateGameContext({
   health: 100,
   score: 50,
-  lives: 3
+  lives: 3,
 });
 ```
 
 ### React → Engine (Handle UI Events)
+
 ```typescript
 const GameUI = () => {
   const gameContext = useGameContext();
@@ -347,6 +363,7 @@ const GameUI = () => {
 ```
 
 ### Engine Listens for React Events
+
 ```typescript
 // In game state
 this.events.addListener('PAUSE_GAME', () => {
@@ -355,6 +372,7 @@ this.events.addListener('PAUSE_GAME', () => {
 ```
 
 ### Available React Hooks
+
 - `useGameContext()` - Access custom game data
 - `useEventQueue()` - Broadcast events to engine
 - `useFred()` - Access audio/canvas
@@ -374,13 +392,7 @@ class MyGame extends TGameState {
 
   public onReady(engine: TEngine) {
     // Create a simple entity
-    const entity = this.world.createEntity([
-      TTransformBundle.with(
-        new TTransformComponent(
-          new TTransform([0, 0, 0], [0, 0, 0], [1, 1, 1])
-        )
-      ),
-    ]);
+    const entity = this.world.createEntity([TTransformBundle.with(new TTransformComponent(new TTransform([0, 0, 0], [0, 0, 0], [1, 1, 1])))]);
   }
 }
 
@@ -408,6 +420,7 @@ function App() {
 ## Game Loop (60 FPS)
 
 Each frame (every ~16.67ms):
+
 ```
 1. Process event queues
 2. Update input manager
@@ -422,6 +435,7 @@ Each frame (every ~16.67ms):
 ```
 
 Fred processes in parallel:
+
 ```
 1. Clear WebGL context
 2. Setup uniform buffers (lighting, matrices)
@@ -432,6 +446,7 @@ Fred processes in parallel:
 ## Common Gotchas
 
 1. **Examples run as Workers**
+
    ```typescript
    // Note the Worker URL import pattern
    <TGame game={new Worker(new URL('@examples/game.ts', import.meta.url))} />
@@ -470,6 +485,7 @@ Fred processes in parallel:
   - `apps/docs` - Docusaurus documentation
 
 ### Common Commands
+
 ```bash
 # Build engine library
 npm run build --workspace=@tedengine/ted
@@ -489,21 +505,25 @@ npm run lint
 The engine uses MessageChannel for thread communication:
 
 ### Engine → Fred
+
 ```typescript
 // packages/ted/src/engine/messages.ts
-TEngineMessageBootstrap   // Initialize Fred
-TEngineMessageFrameParams // Send render data
-TEngineMessageUpdateGameContext // Update React UI
+TEngineMessageBootstrap; // Initialize Fred
+TEngineMessageFrameParams; // Send render data
+TEngineMessageUpdateGameContext; // Update React UI
 ```
 
 ### Fred → Engine
+
 ```typescript
-TFredMessageReady         // Fred is ready
-TFredMessageEvent         // Forward events from React
+TFredMessageReady; // Fred is ready
+TFredMessageEvent; // Forward events from React
 ```
 
 ### Job System
+
 Cross-thread async tasks routed by context:
+
 - `TJobContextEngine` - Jobs handled by engine
 - `TJobContextRenderer` - Jobs handled by Fred
 - `TJobContextAudio` - Audio jobs (on Fred thread)
@@ -552,6 +572,7 @@ sound.setMute(true);
 ## Debug Panel
 
 Built-in debug panel with collapsible sections:
+
 ```typescript
 // In game state
 this.engine.debugPanel?.addRow({
