@@ -34,7 +34,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@codecov/vite-plugin": "^1.9.1",
+    "@codecov/vite-plugin": "^2.0.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@docusaurus/module-type-aliases": "^3.9.2",
@@ -55,8 +55,8 @@
     "@types/react-dom": "^18.3.7",
     "@types/react-is": "^18.3.1",
     "@types/styled-components": "^5.1.35",
-    "@vitejs/plugin-react": "^5.1.0",
-    "@vitest/ui": "^3.2.6",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/ui": "^4.1.10",
     "babel-jest": "30.2.0",
     "babel-plugin-styled-components": "^2.1.4",
     "babel-plugin-transform-import-meta": "^2.3.3",
@@ -79,15 +79,15 @@
     "turbo": "^2.10.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.29.0",
-    "vite": "7.3.6",
-    "vite-plugin-dts": "^4.5.4",
+    "vite": "8.1.4",
+    "vite-plugin-dts": "^5.0.3",
     "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^3.2.6"
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "@codecov/vite-plugin": {
-      "vite": "7.3.6"
+      "vite": "8.1.4"
     },
     "koa": "^3.1.2",
     "undici": "^6.23.0",

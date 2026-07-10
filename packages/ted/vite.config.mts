@@ -15,6 +15,12 @@ export default defineConfig({
   // base makes consumers look for the worker in their own public directory.
   base: './',
   cacheDir: '../../node_modules/.vite/ted',
+  resolve: {
+    alias: {
+      // Only the core audio APIs are used.
+      howler: 'howler/dist/howler.core.min.js',
+    },
+  },
   plugins: [
     dts({
       entryRoot: 'src',
