@@ -11,6 +11,7 @@
     "changeset": "changeset",
     "dev": "turbo run dev",
     "format": "prettier --write .",
+    "format-check": "prettier --check .",
     "lint": "turbo run lint",
     "release": "turbo run build lint test && changeset publish",
     "test": "turbo run test",
