@@ -1,0 +1,58 @@
+# Custom effect
+
+Custom effects are fragment shaders applied to the completed scene. This example inverts the scene colours and uses `uAmount` to control the blend.
+
+```glsl
+#version 300 es
+precision mediump float;
+
+in vec2 vUV;
+uniform sampler2D uSource;
+uniform float uAmount;
+out vec4 outputColor;
+
+void main() {
+  vec4 source = texture(uSource, vUV);
+  vec3 inverted = vec3(1.0) - source.rgb;
+  outputColor = vec4(mix(source.rgb, inverted, uAmount), source.a);
+}
+```
+
+```ts
+const invert = await TPostProcessingEffect.fromSource(
+  this.jobs,
+  invertFragmentShader,
+);
+
+invert.setUniform('uAmount', 1);
+this.postProcessing.add(invert);
+```
+
+TED supplies these values to every custom effect:
+
+| Name | Type | Value |
+| --- | --- | --- |
+| `uSource` | `sampler2D` | The output of the scene or previous effect |
+| `uResolution` | `vec2` | Output width and height in pixels |
+| `uTime` | `float` | Time in seconds |
+| `vUV` | `vec2` | Interpolated texture coordinates from 0 to 1 |
+
+Use `setUniform()` for custom values. Effects can be adjusted or enabled and disabled at runtime, and shader files can be loaded with `TPostProcessingEffect.fromUrl()`.
+
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useIsBrowser();
+  if (!onBrowser) return null;
+
+  return (
+    <TGame
+      game={new Worker(
+        new URL('@examples/post-processing/custom-effect.ts', import.meta.url),
+      )}
+    />
+  );
+};
+
+<Game />
