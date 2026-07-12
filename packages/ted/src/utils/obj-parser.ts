@@ -64,7 +64,7 @@ export class OBJParser {
         }
 
         for (const vertex of face.vertices) {
-          const hash = `${vertex.vertexIndex}-${vertex.vertexNormalIndex}-${color}`;
+          const hash = `${vertex.vertexIndex}-${vertex.textureCoordsIndex}-${vertex.vertexNormalIndex}-${color}`;
 
           const existingIndex = unpacked.indicesLookup[hash];
           if (existingIndex !== undefined) {
@@ -73,7 +73,10 @@ export class OBJParser {
             // Get vertex and normal
             const vert = vertices[vertex.vertexIndex - 1];
             const normal = normals[vertex.vertexNormalIndex - 1];
-            const uv = uvs[vertex.textureCoordsIndex - 1];
+            const uv =
+              vertex.textureCoordsIndex === 0
+                ? undefined
+                : uvs[vertex.textureCoordsIndex - 1];
 
             unpacked.vertices.push(vert.x);
             unpacked.vertices.push(vert.y);
@@ -84,8 +87,8 @@ export class OBJParser {
             unpacked.indices.push(unpacked.index);
             unpacked.colors.push(color);
 
-            unpacked.uvs.push(uv.u);
-            unpacked.uvs.push(uv.v);
+            unpacked.uvs.push(uv?.u ?? 0);
+            unpacked.uvs.push(uv?.v ?? 0);
 
             unpacked.indicesLookup[hash] = unpacked.index;
             unpacked.index += 1;
