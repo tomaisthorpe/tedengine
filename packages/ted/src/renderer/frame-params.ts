@@ -11,6 +11,14 @@ export interface TFrameParams {
   renderTasks: TSerializedRenderTask[];
   cameraView: TCameraView;
   projectionMatrix: mat4;
+  postProcessing: TSerializedPostProcessingEffect[];
+}
+
+export type TPostProcessingUniformValue = number | number[];
+
+export interface TSerializedPostProcessingEffect {
+  uuid: string;
+  uniforms: Record<string, TPostProcessingUniformValue>;
 }
 
 export interface TSerializedShader {

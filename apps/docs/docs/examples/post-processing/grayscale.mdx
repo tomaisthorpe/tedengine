@@ -1,0 +1,34 @@
+# Grayscale
+
+Use the debug controls to change the grayscale intensity or disable the effect.
+
+```ts
+const grayscale = await TGrayscalePostProcessingEffect.create(this.jobs);
+
+this.postProcessing.add(grayscale);
+grayscale.intensity = 0.75;
+grayscale.enabled = false;
+
+this.postProcessing.remove(grayscale);
+await grayscale.destroy(this.jobs);
+```
+
+Custom effects can use the same stack by loading a fragment shader with `TPostProcessingEffect.fromSource()` or `TPostProcessingEffect.fromUrl()`. Custom shaders receive the scene through a `sampler2D` named `uSource` and should read the interpolated `vUV` coordinate.
+
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useIsBrowser();
+  if (!onBrowser) return null;
+
+  return (
+    <TGame
+      game={new Worker(
+        new URL('@examples/post-processing/grayscale.ts', import.meta.url),
+      )}
+    />
+  );
+};
+
+<Game />

@@ -16,12 +16,15 @@ export interface TShaderChunk {
   };
 }
 
-export interface TShader {
+export interface TShaderSource {
   vertexShader: string;
   fragmentShader: string;
 }
 
-export const generateShader = (b: TBaseShader, c: TShaderChunk[]): TShader => {
+export const generateShader = (
+  b: TBaseShader,
+  c: TShaderChunk[],
+): TShaderSource => {
   return {
     vertexShader: b.vertexShader(
       c.map((chunk) => chunk.vertex?.before).join('\n'),

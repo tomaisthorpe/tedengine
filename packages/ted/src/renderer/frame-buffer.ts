@@ -8,6 +8,10 @@ export class TFrameBuffer {
   private texture: WebGLTexture;
   public depthTexture: WebGLTexture;
 
+  public get colorTexture(): WebGLTexture {
+    return this.texture;
+  }
+
   constructor(
     private gl: WebGL2RenderingContext,
     private options: TFrameBufferOptions,
@@ -89,5 +93,11 @@ export class TFrameBuffer {
 
   public unbind() {
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+  }
+
+  public dispose() {
+    this.gl.deleteFramebuffer(this.frameBuffer);
+    this.gl.deleteTexture(this.texture);
+    this.gl.deleteTexture(this.depthTexture);
   }
 }

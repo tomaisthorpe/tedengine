@@ -6,6 +6,7 @@ import { TEventQueue } from './event-queue';
 import { TEventTypesCore } from './events';
 import { TWorld } from './world';
 import type { TSegmentTimingContext } from '../debug/segment-timer';
+import { TPostProcessingStack } from '../graphics/post-processing';
 
 export interface TGameStateWithOnUpdate extends TGameState {
   onUpdate(engine: TEngine, delta: number): Promise<void>;
@@ -61,6 +62,7 @@ export class TGameState {
   public events: TEventQueue = new TEventQueue();
 
   public jobs: TJobManager;
+  public postProcessing = new TPostProcessingStack();
 
   constructor(protected engine: TEngine) {
     this.jobs = new TJobManager([TJobContextTypes.GameState]);

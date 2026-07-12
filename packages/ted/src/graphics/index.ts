@@ -3,6 +3,7 @@ export * from './types';
 
 // Export individual graphics modules
 export * from './canvas';
+export * from './post-processing';
 export * from './image';
 export * from './material';
 export * from './color-material';

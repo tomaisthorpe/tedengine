@@ -6,3 +6,4 @@ export * from './frame-params';
 export * from './uniform-manager';
 export * from './frame-buffer';
 export { TFrameBuffer } from './frame-buffer';
+export * from './post-processing-program';

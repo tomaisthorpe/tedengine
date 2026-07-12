@@ -7,6 +7,7 @@ import { TRenderableMesh } from './renderable-mesh';
 import type { TTextureOptions } from './renderable-texture';
 import { TRenderableTexture } from './renderable-texture';
 import { TRenderableTexturedMesh } from './renderable-textured-mesh';
+import { TPostProcessingProgram } from './post-processing-program';
 
 export const RendererJobLoadProgram: TJobConfig<
   TJobContextTypes.Renderer,
@@ -14,6 +15,24 @@ export const RendererJobLoadProgram: TJobConfig<
   string
 > = {
   name: 'load_program',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export const RendererJobLoadPostProcessingProgram: TJobConfig<
+  TJobContextTypes.Renderer,
+  { fragmentShader: string },
+  string
+> = {
+  name: 'load_post_processing_program',
+  requiredContext: TJobContextTypes.Renderer,
+};
+
+export const RendererJobDisposePostProcessingProgram: TJobConfig<
+  TJobContextTypes.Renderer,
+  { uuid: string },
+  void
+> = {
+  name: 'dispose_post_processing_program',
   requiredContext: TJobContextTypes.Renderer,
 };
 
@@ -74,6 +93,21 @@ export const RendererJobLoadTextureFromImageBitmap: TJobConfig<
 };
 
 export function registerRendererJobs(jobManager: TJobManager) {
+  jobManager.registerJob(
+    RendererJobLoadPostProcessingProgram,
+    async (ctx: TRenderJobContext, { fragmentShader }) => {
+      const program = new TPostProcessingProgram(fragmentShader);
+      program.load(ctx.renderer.context());
+      return ctx.renderer.registerPostProcessingProgram(program);
+    },
+  );
+  jobManager.registerJob(
+    RendererJobDisposePostProcessingProgram,
+    async (ctx: TRenderJobContext, { uuid }) => {
+      ctx.renderer.disposePostProcessingProgram(uuid);
+    },
+  );
+
   jobManager.registerJob(
     RendererJobLoadProgram,
     async (ctx: TRenderJobContext, shaderLocation: string) => {

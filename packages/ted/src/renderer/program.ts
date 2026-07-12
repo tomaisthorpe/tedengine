@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { IAsset } from '../core/resource-manager';
-import type { TShader } from '../shaders/chunked-shader';
+import type { TShaderSource } from '../shaders/chunked-shader';
 import { TUniformManager } from './uniform-manager';
 
 export interface TAttributeBuffer {
@@ -78,7 +78,7 @@ export class TProgram implements IAsset {
   // Renderer will use uuid to check if it already has this program
   public uuid?: string;
 
-  public static from(shader: TShader) {
+  public static from(shader: TShaderSource) {
     const program = new TProgram();
     program.vertexShaderSource = shader.vertexShader;
     program.fragmentShaderSource = shader.fragmentShader;

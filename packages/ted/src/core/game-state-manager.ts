@@ -3,6 +3,7 @@ import type { TEngine } from '../engine/engine';
 import type {
   TSerializedLighting,
   TSerializedRenderTask,
+  TSerializedPostProcessingEffect,
 } from '../renderer/frame-params';
 import type { TGameState } from './game-state';
 import type { TSegmentTimingContext } from '../debug/segment-timer';
@@ -141,6 +142,10 @@ export class TGameStateManager {
 
   public getLighting(): TSerializedLighting {
     return this.current()?.getLighting() ?? {};
+  }
+
+  public getPostProcessing(): TSerializedPostProcessingEffect[] {
+    return this.current()?.postProcessing.serialise() ?? [];
   }
 
   public getActiveCamera(): TCameraSystem | undefined {

@@ -275,6 +275,7 @@ export class TEngine {
         this.renderingSize.width,
         this.renderingSize.height,
       ),
+      postProcessing: this.gameState.getPostProcessing(),
     };
 
     const message: TEngineMessageFrameReady = {

@@ -367,6 +367,7 @@ export class TFred {
     // @todo do full teardown on this thread
     this.mouse?.destroy();
     this.keyboard?.destroy();
+    this.renderer?.destroy();
     this.canvas?.remove();
   }
 }

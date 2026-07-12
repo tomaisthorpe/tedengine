@@ -18,6 +18,8 @@ import { TPhysicsDebugProgram } from './physics-debug-program';
 import { TPhysicsDebug } from './physics-debug';
 import { TProbeProgram } from './probe-program';
 import { TFrameBuffer } from './frame-buffer';
+import type { TPostProcessingProgram } from './post-processing-program';
+import { v4 as uuidv4 } from 'uuid';
 
 export class TRenderer {
   private registeredPrograms: { [key: string]: TProgram | undefined } = {};
@@ -35,6 +37,10 @@ export class TRenderer {
   private physicsDebug?: TPhysicsDebug;
 
   private shadowMap?: TFrameBuffer;
+  private sceneTarget?: TFrameBuffer;
+  private postProcessingTargets?: [TFrameBuffer, TFrameBuffer];
+  private postProcessingPrograms = new Map<string, TPostProcessingProgram>();
+  private postProcessingSize = { width: 0, height: 0 };
 
   // @todo remove, needed for input atm
   public projectionMatrix?: mat4;
@@ -282,6 +288,12 @@ export class TRenderer {
       gl,
       frameParams,
     );
+
+    const usePostProcessing = frameParams.postProcessing.length > 0;
+    if (usePostProcessing) {
+      this.ensurePostProcessingTargets(gl);
+      this.sceneTarget?.bind();
+    }
 
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
@@ -537,6 +549,61 @@ export class TRenderer {
         );
       }
     }
+
+    if (usePostProcessing) {
+      this.renderPostProcessing(gl, frameParams);
+    }
+  }
+
+  private ensurePostProcessingTargets(gl: WebGL2RenderingContext) {
+    if (
+      this.sceneTarget &&
+      this.postProcessingTargets &&
+      this.postProcessingSize.width === this.canvas.width &&
+      this.postProcessingSize.height === this.canvas.height
+    ) {
+      return;
+    }
+
+    this.sceneTarget?.dispose();
+    this.postProcessingTargets?.forEach((target) => target.dispose());
+    const options = { width: this.canvas.width, height: this.canvas.height };
+    this.sceneTarget = new TFrameBuffer(gl, options);
+    this.postProcessingTargets = [
+      new TFrameBuffer(gl, options),
+      new TFrameBuffer(gl, options),
+    ];
+    this.postProcessingSize = options;
+  }
+
+  private renderPostProcessing(gl: WebGL2RenderingContext, frameParams: TFrameParams) {
+    if (!this.sceneTarget || !this.postProcessingTargets) return;
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+    gl.disable(gl.BLEND);
+
+    let source = this.sceneTarget.colorTexture;
+    frameParams.postProcessing.forEach((effect, index) => {
+      const isLast = index === frameParams.postProcessing.length - 1;
+      const destination = isLast
+        ? undefined
+        : this.postProcessingTargets?.[index % 2];
+
+      if (destination) destination.bind();
+      else gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      const program = this.postProcessingPrograms.get(effect.uuid);
+      if (!program) throw new Error(`Post-processing program ${effect.uuid} not registered`);
+      program.render(gl, effect, source);
+      if (destination) source = destination.colorTexture;
+    });
+
+    gl.enable(gl.BLEND);
+    gl.enable(gl.CULL_FACE);
+    gl.enable(gl.DEPTH_TEST);
   }
 
   public onResize() {
@@ -585,5 +652,28 @@ export class TRenderer {
 
   public registerTexture(mesh: TRenderableTexture) {
     this.registeredTextures[mesh.uuid] = mesh;
+  }
+
+  public registerPostProcessingProgram(program: TPostProcessingProgram): string {
+    const uuid = uuidv4();
+    this.postProcessingPrograms.set(uuid, program);
+    return uuid;
+  }
+
+  public disposePostProcessingProgram(uuid: string) {
+    this.postProcessingPrograms.get(uuid)?.dispose(this.context());
+    this.postProcessingPrograms.delete(uuid);
+  }
+
+  public destroy() {
+    const gl = this.context();
+    this.sceneTarget?.dispose();
+    this.postProcessingTargets?.forEach((target) => target.dispose());
+    this.shadowMap?.dispose();
+    this.postProcessingPrograms.forEach((program) => program.dispose(gl));
+    this.postProcessingPrograms.clear();
+    this.colorProgram?.dispose();
+    this.texturedProgram?.dispose();
+    this.physicsDebugProgram?.dispose();
   }
 }
