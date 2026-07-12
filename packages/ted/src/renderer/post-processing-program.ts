@@ -38,6 +38,8 @@ export class TPostProcessingProgram {
     gl: WebGL2RenderingContext,
     effect: TSerializedPostProcessingEffect,
     source: WebGLTexture,
+    resolution: { width: number; height: number },
+    time: number,
   ) {
     if (!this.program.program) throw new Error('Post-processing program not loaded');
 
@@ -45,6 +47,12 @@ export class TPostProcessingProgram {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, source);
     gl.uniform1i(this.program.getUniformLocation('uSource'), 0);
+    gl.uniform2f(
+      this.program.getUniformLocation('uResolution'),
+      resolution.width,
+      resolution.height,
+    );
+    gl.uniform1f(this.program.getUniformLocation('uTime'), time);
 
     for (const [name, value] of Object.entries(effect.uniforms)) {
       const location = this.program.getUniformLocation(name);

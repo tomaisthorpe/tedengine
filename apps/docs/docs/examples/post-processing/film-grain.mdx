@@ -1,0 +1,38 @@
+# Film grain
+
+Film grain adds animated noise to the completed scene. Use the debug controls to adjust its amount, grain size, and animation speed, or disable it entirely.
+
+```ts
+const filmGrain = await TFilmGrainPostProcessingEffect.create(
+  this.jobs,
+  {
+    amount: 0.06,
+    grainSize: 1,
+    speed: 1,
+  },
+);
+
+this.postProcessing.add(filmGrain);
+
+filmGrain.amount = 0.1;
+filmGrain.grainSize = 2;
+filmGrain.speed = 0.5;
+```
+
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  const onBrowser = useIsBrowser();
+  if (!onBrowser) return null;
+
+  return (
+    <TGame
+      game={new Worker(
+        new URL('@examples/post-processing/film-grain.ts', import.meta.url),
+      )}
+    />
+  );
+};
+
+<Game />

@@ -597,7 +597,13 @@ export class TRenderer {
 
       const program = this.postProcessingPrograms.get(effect.uuid);
       if (!program) throw new Error(`Post-processing program ${effect.uuid} not registered`);
-      program.render(gl, effect, source);
+      program.render(
+        gl,
+        effect,
+        source,
+        { width: this.canvas.width, height: this.canvas.height },
+        performance.now() / 1000,
+      );
       if (destination) source = destination.colorTexture;
     });
 
