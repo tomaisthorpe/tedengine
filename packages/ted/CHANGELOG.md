@@ -1,5 +1,17 @@
 # @tedengine/ted
 
+## 0.20.0
+
+### Minor Changes
+
+- 4f22a0f: Add film grain post processing effect
+- 99a0a04: Add post-processing programs with grayscale effect
+
+### Patch Changes
+
+- 48770ca: Fix mesh crash on loading UVs
+- 7d7bd7f: Update docusaurus to 3.10
+
 ## 0.19.0
 
 ### Minor Changes
