@@ -25,7 +25,7 @@ WebGL and TypeScript based game engine designed for rapid game jam development a
 - ✅ Simple multi-threaded architecture separating game logic and rendering
 - ✅ Basic audio system
 - ✅ Rigid body physics with [Rapier](https://github.com/dimforge/rapier.js)
-- 🚧 Entity Component System (ECS) implementation
+- ✅ Entity Component System (ECS) implementation
 - 🚧 Improve profiling and debug tools
 - 📝 Better asset loading pipeline
 - 📝 Increased test coverage
