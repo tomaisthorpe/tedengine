@@ -1,33 +1,24 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import js from '@eslint/js';
+import eslintReact from '@eslint-react/eslint-plugin';
 import baseConfig from '../../eslint.config.mjs';
 
-const compat = new FlatCompat({
-  baseDirectory: dirname(fileURLToPath(import.meta.url)),
-  recommendedConfig: js.configs.recommended,
-});
-
 export default [
-  {
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
-  },
   {
     ignores: ['**/dist'],
   },
   ...baseConfig,
-  ...compat.extends('plugin:react/recommended'),
+  {
+    ...eslintReact.configs.recommended,
+    files: ['**/*.js', '**/*.jsx'],
+  },
+  {
+    ...eslintReact.configs['recommended-typescript'],
+    files: ['**/*.ts', '**/*.tsx'],
+  },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
     rules: {
-      'react/react-in-jsx-scope': 'off',
-      'react/no-unescaped-entities': 'off',
+      '@eslint-react/rules-of-hooks': 'off',
+      '@eslint-react/exhaustive-deps': 'off',
     },
   },
   {
