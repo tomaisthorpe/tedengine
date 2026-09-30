@@ -18,6 +18,8 @@ export interface SampleEvent {
 const GameContextUI = () => {
   const gameContext = useGameContext();
   const events = useEventQueue();
+  const spaceCount =
+    typeof gameContext.spaceCount === 'number' ? gameContext.spaceCount : 0;
 
   const onClick = () => {
     events?.broadcast({
@@ -27,7 +29,7 @@ const GameContextUI = () => {
   return (
     <DemoUI>
       <p>
-        You{"'"}ve pressed space {gameContext.spaceCount} times.
+        You{"'"}ve pressed space {spaceCount} times.
       </p>
       <button onClick={onClick}>Press this</button>
     </DemoUI>

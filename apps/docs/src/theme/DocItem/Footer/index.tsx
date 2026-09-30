@@ -7,7 +7,7 @@ import EditMetaRow from '@theme/EditMetaRow';
 import Link from '@docusaurus/Link';
 import ExternalLinkIcon from '@theme/Icon/ExternalLink';
 
-export default function DocItemFooter(): JSX.Element | null {
+export default function DocItemFooter(): React.JSX.Element | null {
   const { metadata } = useDoc();
   const { editUrl, lastUpdatedAt, lastUpdatedBy, tags } = metadata;
 

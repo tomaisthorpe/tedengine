@@ -37,7 +37,7 @@ export function useUIContext() {
 }
 
 export function useClickOutside(
-  ref: React.RefObject<HTMLElement>,
+  ref: React.RefObject<HTMLElement | null>,
   handler: (event: MouseEvent | TouchEvent) => void,
 ) {
   React.useEffect(() => {
