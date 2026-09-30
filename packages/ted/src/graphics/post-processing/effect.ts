@@ -1,5 +1,6 @@
 import type { TJobManager } from '../../jobs/job-manager';
 import type {
+  TPostProcessingMask,
   TPostProcessingUniformValue,
   TSerializedPostProcessingEffect,
 } from '../../renderer/frame-params';
@@ -10,6 +11,7 @@ import {
 
 export class TPostProcessingEffect {
   public enabled = true;
+  public mask?: TPostProcessingMask;
   protected uuid?: string;
   protected uniforms: Record<string, TPostProcessingUniformValue> = {};
 
@@ -53,6 +55,10 @@ export class TPostProcessingEffect {
 
   public serialise(): TSerializedPostProcessingEffect | undefined {
     if (!this.enabled || !this.uuid) return undefined;
-    return { uuid: this.uuid, uniforms: { ...this.uniforms } };
+    return {
+      uuid: this.uuid,
+      uniforms: { ...this.uniforms },
+      mask: this.mask,
+    };
   }
 }

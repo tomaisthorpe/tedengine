@@ -19,6 +19,7 @@ import { TPhysicsDebug } from './physics-debug';
 import { TProbeProgram } from './probe-program';
 import { TFrameBuffer } from './frame-buffer';
 import type { TPostProcessingProgram } from './post-processing-program';
+import { TPostProcessingCompositeProgram } from './post-processing-composite-program';
 import { v4 as uuidv4 } from 'uuid';
 
 export class TRenderer {
@@ -40,6 +41,7 @@ export class TRenderer {
   private sceneTarget?: TFrameBuffer;
   private postProcessingTargets?: [TFrameBuffer, TFrameBuffer];
   private postProcessingPrograms = new Map<string, TPostProcessingProgram>();
+  private postProcessingCompositeProgram?: TPostProcessingCompositeProgram;
   private postProcessingSize = { width: 0, height: 0 };
 
   // @todo remove, needed for input atm
@@ -576,7 +578,10 @@ export class TRenderer {
     this.postProcessingSize = options;
   }
 
-  private renderPostProcessing(gl: WebGL2RenderingContext, frameParams: TFrameParams) {
+  private renderPostProcessing(
+    gl: WebGL2RenderingContext,
+    frameParams: TFrameParams,
+  ) {
     if (!this.sceneTarget || !this.postProcessingTargets) return;
 
     gl.disable(gl.DEPTH_TEST);
@@ -584,27 +589,54 @@ export class TRenderer {
     gl.disable(gl.BLEND);
 
     let source = this.sceneTarget.colorTexture;
-    frameParams.postProcessing.forEach((effect, index) => {
-      const isLast = index === frameParams.postProcessing.length - 1;
-      const destination = isLast
-        ? undefined
-        : this.postProcessingTargets?.[index % 2];
-
-      if (destination) destination.bind();
+    const targets = [this.sceneTarget, ...this.postProcessingTargets];
+    const resolution = { width: this.canvas.width, height: this.canvas.height };
+    const bindDestination = (target?: TFrameBuffer) => {
+      if (target) target.bind();
       else gl.bindFramebuffer(gl.FRAMEBUFFER, null);
       gl.viewport(0, 0, this.canvas.width, this.canvas.height);
       gl.clear(gl.COLOR_BUFFER_BIT);
+    };
+
+    frameParams.postProcessing.forEach((effect, index) => {
+      const isLast = index === frameParams.postProcessing.length - 1;
+      const destination =
+        isLast && !effect.mask
+          ? undefined
+          : targets.find((target) => target.colorTexture !== source);
+      bindDestination(destination);
 
       const program = this.postProcessingPrograms.get(effect.uuid);
-      if (!program) throw new Error(`Post-processing program ${effect.uuid} not registered`);
-      program.render(
-        gl,
-        effect,
-        source,
-        { width: this.canvas.width, height: this.canvas.height },
-        performance.now() / 1000,
-      );
-      if (destination) source = destination.colorTexture;
+      if (!program)
+        throw new Error(
+          `Post-processing program ${effect.uuid} not registered`,
+        );
+      program.render(gl, effect, source, resolution, performance.now() / 1000);
+
+      if (effect.mask && destination) {
+        if (!this.postProcessingCompositeProgram) {
+          this.postProcessingCompositeProgram =
+            new TPostProcessingCompositeProgram();
+          this.postProcessingCompositeProgram.load(gl);
+        }
+        const compositeDestination = isLast
+          ? undefined
+          : targets.find(
+              (target) =>
+                target.colorTexture !== source && target !== destination,
+            );
+        bindDestination(compositeDestination);
+        this.postProcessingCompositeProgram.render(
+          gl,
+          source,
+          destination.colorTexture,
+          effect.mask,
+          resolution,
+        );
+        if (compositeDestination) source = compositeDestination.colorTexture;
+      } else if (destination) {
+        source = destination.colorTexture;
+      }
     });
 
     gl.enable(gl.BLEND);
@@ -660,7 +692,9 @@ export class TRenderer {
     this.registeredTextures[mesh.uuid] = mesh;
   }
 
-  public registerPostProcessingProgram(program: TPostProcessingProgram): string {
+  public registerPostProcessingProgram(
+    program: TPostProcessingProgram,
+  ): string {
     const uuid = uuidv4();
     this.postProcessingPrograms.set(uuid, program);
     return uuid;
@@ -678,6 +712,7 @@ export class TRenderer {
     this.shadowMap?.dispose();
     this.postProcessingPrograms.forEach((program) => program.dispose(gl));
     this.postProcessingPrograms.clear();
+    this.postProcessingCompositeProgram?.dispose(gl);
     this.colorProgram?.dispose();
     this.texturedProgram?.dispose();
     this.physicsDebugProgram?.dispose();

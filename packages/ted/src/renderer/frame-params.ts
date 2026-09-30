@@ -16,9 +16,25 @@ export interface TFrameParams {
 
 export type TPostProcessingUniformValue = number | number[];
 
+/** Coordinates and sizes are fractions of the screen; circle radius and feather use screen height. */
+export type TPostProcessingMask =
+  | {
+      type: 'circle';
+      center: [number, number];
+      radius: number;
+      feather?: number;
+    }
+  | {
+      type: 'rectangle';
+      center: [number, number];
+      size: [number, number];
+      feather?: number;
+    };
+
 export interface TSerializedPostProcessingEffect {
   uuid: string;
   uniforms: Record<string, TPostProcessingUniformValue>;
+  mask?: TPostProcessingMask;
 }
 
 export interface TSerializedShader {
@@ -87,8 +103,7 @@ export interface TSerializedPhysicsDebug {
 }
 
 export type TSerializedMaterial =
-  | TSerializedColorMaterial
-  | TSerializedTexturedMaterial;
+  TSerializedColorMaterial | TSerializedTexturedMaterial;
 
 export interface TColorMaterialOptions {
   palette: TPalette;

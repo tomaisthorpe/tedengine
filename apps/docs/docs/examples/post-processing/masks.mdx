@@ -1,0 +1,49 @@
+# Effect masks
+
+Each post-processing effect can have its own mask. This example applies grayscale inside a soft circle, then wobble inside an overlapping soft rectangle. Where the shapes overlap, both effects apply in stack order.
+
+```ts
+const grayscale = await TGrayscalePostProcessingEffect.create(this.jobs);
+grayscale.mask = {
+  type: 'circle',
+  center: [0.38, 0.5],
+  radius: 0.32,
+  feather: 0.06,
+};
+
+const wobble = await TWobblePostProcessingEffect.create(this.jobs, {
+  amplitude: 12,
+});
+wobble.mask = {
+  type: 'rectangle',
+  center: [0.65, 0.5],
+  size: [0.45, 0.7],
+  feather: 0.06,
+};
+
+this.postProcessing.add(grayscale);
+this.postProcessing.add(wobble);
+```
+
+Centers and rectangle sizes are fractions of the screen. Circle radius and feather are fractions of the screen height, which keeps circles round at different aspect ratios.
+
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  use(browser());
+  return (
+    <TGame
+      game={
+        new Worker(
+          new URL('@examples/post-processing/masks.ts', import.meta.url),
+        )
+      }
+    />
+  );
+};
+
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

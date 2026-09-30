@@ -4,7 +4,7 @@ import type {
 } from './frame-params';
 import { TProgram } from './program';
 
-const fullscreenVertexShader = `#version 300 es
+export const fullscreenVertexShader = `#version 300 es
 precision mediump float;
 
 out vec2 vUV;
@@ -41,7 +41,8 @@ export class TPostProcessingProgram {
     resolution: { width: number; height: number },
     time: number,
   ) {
-    if (!this.program.program) throw new Error('Post-processing program not loaded');
+    if (!this.program.program)
+      throw new Error('Post-processing program not loaded');
 
     gl.useProgram(this.program.program);
     gl.activeTexture(gl.TEXTURE0);
@@ -90,7 +91,9 @@ export class TPostProcessingProgram {
         gl.uniform4fv(location, value);
         break;
       default:
-        throw new Error(`Unsupported post-processing uniform length: ${value.length}`);
+        throw new Error(
+          `Unsupported post-processing uniform length: ${value.length}`,
+        );
     }
   }
 }

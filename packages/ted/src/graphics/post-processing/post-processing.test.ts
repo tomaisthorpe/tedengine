@@ -87,4 +87,19 @@ describe('TWobblePostProcessingEffect', () => {
       uSpeed: 1,
     });
   });
+
+  it('serialises an optional mask with the effect', () => {
+    const effect = new LoadedWobbleEffect();
+    effect.mask = {
+      type: 'circle',
+      center: [0.5, 0.5],
+      radius: 0.3,
+      feather: 0.05,
+    };
+
+    expect(effect.serialise()?.mask).toEqual(effect.mask);
+
+    effect.mask = undefined;
+    expect(effect.serialise()?.mask).toBeUndefined();
+  });
 });
