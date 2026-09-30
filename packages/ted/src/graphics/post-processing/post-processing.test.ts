@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TPostProcessingEffect } from './effect';
 import { TGrayscalePostProcessingEffect } from './effects/grayscale';
+import { TWobblePostProcessingEffect } from './effects/wobble';
 import { TPostProcessingStack } from './stack';
 
 class LoadedEffect extends TPostProcessingEffect {
@@ -14,6 +15,13 @@ class LoadedGrayscaleEffect extends TGrayscalePostProcessingEffect {
   constructor() {
     super();
     this.uuid = 'grayscale';
+  }
+}
+
+class LoadedWobbleEffect extends TWobblePostProcessingEffect {
+  constructor() {
+    super();
+    this.uuid = 'wobble';
   }
 }
 
@@ -58,5 +66,25 @@ describe('TGrayscalePostProcessingEffect', () => {
     effect.intensity = -1;
     expect(effect.intensity).toBe(0);
     expect(effect.serialise()?.uniforms).toEqual({ uIntensity: 0 });
+  });
+});
+
+describe('TWobblePostProcessingEffect', () => {
+  it('serialises adjustable wave parameters', () => {
+    const effect = new LoadedWobbleEffect();
+    expect(effect.serialise()?.uniforms).toEqual({
+      uAmplitude: 6,
+      uFrequency: 3,
+      uSpeed: 0.5,
+    });
+
+    effect.amplitude = 12;
+    effect.frequency = 4;
+    effect.speed = 1;
+    expect(effect.serialise()?.uniforms).toEqual({
+      uAmplitude: 12,
+      uFrequency: 4,
+      uSpeed: 1,
+    });
   });
 });

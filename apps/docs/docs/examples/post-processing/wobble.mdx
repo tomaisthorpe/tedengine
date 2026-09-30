@@ -1,0 +1,35 @@
+# Screen wobble
+
+Screen wobble shifts each row of the completed scene horizontally in a moving wave. Use the debug controls to adjust the displacement, number of waves, and speed.
+
+```ts
+const wobble = await TWobblePostProcessingEffect.create(this.jobs, {
+  amplitude: 6, // Maximum displacement in screen pixels
+  frequency: 3, // Waves across the screen height
+  speed: 0.5, // Cycles per second
+});
+
+this.postProcessing.add(wobble);
+wobble.amplitude = 10;
+```
+
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  use(browser());
+  return (
+    <TGame
+      game={
+        new Worker(
+          new URL('@examples/post-processing/wobble.ts', import.meta.url),
+        )
+      }
+    />
+  );
+};
+
+<Suspense fallback={null}>
+  <Game />
+</Suspense>
