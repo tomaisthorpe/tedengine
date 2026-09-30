@@ -1,0 +1,43 @@
+# Multiple effects
+
+You can apply multiple post-processing effects. This example uses grayscale and film grain, each effect processes the output of the previous one.
+
+Use the debug controls to adjust or disable them independently.
+
+```ts
+const grayscale = await TGrayscalePostProcessingEffect.create(this.jobs);
+const filmGrain = await TFilmGrainPostProcessingEffect.create(this.jobs, {
+  amount: 0.06,
+  grainSize: 1,
+  speed: 1,
+});
+
+this.postProcessing.add(grayscale);
+this.postProcessing.add(filmGrain);
+```
+
+Effects run in the order they are added.
+
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  use(browser());
+  return (
+    <TGame
+      game={
+        new Worker(
+          new URL(
+            '@examples/post-processing/multiple-effects.ts',
+            import.meta.url,
+          ),
+        )
+      }
+    />
+  );
+};
+
+<Suspense fallback={null}>
+  <Game />
+</Suspense>
