@@ -1,0 +1,33 @@
+# Fade
+
+Use the fade effect to change the visibility of the completed scene.
+
+```ts
+const fade = await TFadePostProcessingEffect.create(this.jobs, {
+  amount: 0.5,
+});
+
+this.postProcessing.add(fade);
+fade.amount = 0.75;
+```
+
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
+import { TGame } from '@tedengine/ted';
+
+export const Game = () => {
+  use(browser());
+  return (
+    <TGame
+      game={
+        new Worker(
+          new URL('@examples/post-processing/fade.ts', import.meta.url),
+        )
+      }
+    />
+  );
+};
+
+<Suspense fallback={null}>
+  <Game />
+</Suspense>
