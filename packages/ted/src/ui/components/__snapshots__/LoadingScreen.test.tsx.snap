@@ -3,7 +3,7 @@
 exports[`renders LoadingScreen component 1`] = `
 <div>
   <div
-    class="sc-bdvvNz dRzzvM"
+    class="sc-bdvwhi cbplOF"
   >
     Loading...
   </div>

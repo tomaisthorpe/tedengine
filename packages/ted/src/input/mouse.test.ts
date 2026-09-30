@@ -31,11 +31,10 @@ describe('TMouse', () => {
       clientY: 500,
     });
 
-    // Assign these here as the above does not properly set them
-    // @ts-expect-error - above doesn't work
-    event.movementX = 50;
-    // @ts-expect-error - above doesn't work
-    event.movementY = 50;
+    Object.defineProperties(event, {
+      movementX: { value: 50 },
+      movementY: { value: 50 },
+    });
 
     const broadcastSpy = vi.spyOn(eventQueue, 'broadcast');
 
