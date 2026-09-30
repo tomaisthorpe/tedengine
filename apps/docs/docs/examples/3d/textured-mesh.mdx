@@ -4,14 +4,12 @@ Textured meshes can also be loaded from an OBJ and MTL file.
 
 This example shows how to load a textured mesh and add it to the world.
 
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useIsBrowser();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       aspectRatio="auto"
@@ -22,4 +20,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

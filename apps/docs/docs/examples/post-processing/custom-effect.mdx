@@ -30,29 +30,35 @@ this.postProcessing.add(invert);
 
 TED supplies these values to every custom effect:
 
-| Name | Type | Value |
-| --- | --- | --- |
-| `uSource` | `sampler2D` | The output of the scene or previous effect |
-| `uResolution` | `vec2` | Output width and height in pixels |
-| `uTime` | `float` | Time in seconds |
-| `vUV` | `vec2` | Interpolated texture coordinates from 0 to 1 |
+| Name          | Type        | Value                                        |
+| ------------- | ----------- | -------------------------------------------- |
+| `uSource`     | `sampler2D` | The output of the scene or previous effect   |
+| `uResolution` | `vec2`      | Output width and height in pixels            |
+| `uTime`       | `float`     | Time in seconds                              |
+| `vUV`         | `vec2`      | Interpolated texture coordinates from 0 to 1 |
 
 Use `setUniform()` for custom values. Effects can be adjusted or enabled and disabled at runtime, and shader files can be loaded with `TPostProcessingEffect.fromUrl()`.
 
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useIsBrowser();
-  if (!onBrowser) return null;
-
+  use(browser());
   return (
     <TGame
-      game={new Worker(
-        new URL('@examples/post-processing/custom-effect.ts', import.meta.url),
-      )}
+      game={
+        new Worker(
+          new URL(
+            '@examples/post-processing/custom-effect.ts',
+            import.meta.url,
+          ),
+        )
+      }
     />
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

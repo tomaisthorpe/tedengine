@@ -2,14 +2,12 @@
 
 This example shows how to create a system that rotates an object.
 
-import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useBrowserOnly();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       game={
@@ -19,4 +17,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

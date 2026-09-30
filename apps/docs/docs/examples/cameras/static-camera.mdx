@@ -3,14 +3,12 @@
 This example demonstrates a static camera looking at a rotating 3D object.
 You can switch between perspective and orthographic cameras using the dropdown.
 
-import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useBrowserOnly();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       game={
@@ -22,4 +20,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

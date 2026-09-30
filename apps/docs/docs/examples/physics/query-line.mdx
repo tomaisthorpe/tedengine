@@ -3,14 +3,12 @@
 This example shows how to raycast a line in the world and get the hits.
 The example will log the hits to the console.
 
-import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useBrowserOnly();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       game={
@@ -20,4 +18,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

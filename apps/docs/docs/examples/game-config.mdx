@@ -4,14 +4,12 @@ Simple example to show what can be configured.
 This example shows 100% container width with fixed 4:3 ratio and rendering at 400x300.
 It also shows how to configure the colors for the loading screen and clear color.
 
-import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useBrowserOnly();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       width="100%"
@@ -30,4 +28,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

@@ -4,14 +4,12 @@ The engine provides a `createBoxMesh` function to create a box mesh.
 
 This example shows how to create a box mesh and add it to the world.
 
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export function Game() {
-  const onBrowser = useIsBrowser();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       game={new Worker(new URL('@examples/3d/box-mesh.ts', import.meta.url))}
@@ -19,4 +17,6 @@ export function Game() {
   );
 }
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

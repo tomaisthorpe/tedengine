@@ -4,14 +4,12 @@ This example shows how to use the game context to pass data between your UI and 
 
 Clicking on 'Press this' will trigger an event which is being listened for by the game and it will log when it is received.
 
-import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import Game from '@examples/ui/game-context';
 
 export const GameExample = () => {
-  const onBrowser = useBrowserOnly();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <Game
       worker={
@@ -23,4 +21,6 @@ export const GameExample = () => {
   );
 };
 
-<GameExample />
+<Suspense fallback={null}>
+  <GameExample />
+</Suspense>

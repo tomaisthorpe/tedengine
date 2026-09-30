@@ -4,14 +4,12 @@ This example shows loading a mesh from an OBJ and MTL file.
 
 The mesh is then added to the world and rendered.
 
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useIsBrowser();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       aspectRatio="auto"
@@ -20,4 +18,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>

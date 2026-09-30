@@ -4,14 +4,12 @@ This example shows a box following the mouse location within the game window.
 
 Mouse location and clicks are logged in console.
 
-import useBrowserOnly from '@docusaurus/useIsBrowser';
+import { Suspense, use } from 'react';
+import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
 
 export const Game = () => {
-  const onBrowser = useBrowserOnly();
-  if (!onBrowser) {
-    return null;
-  }
+  use(browser());
   return (
     <TGame
       game={new Worker(new URL('@examples/input/mouse.ts', import.meta.url))}
@@ -19,4 +17,6 @@ export const Game = () => {
   );
 };
 
-<Game />
+<Suspense fallback={null}>
+  <Game />
+</Suspense>
