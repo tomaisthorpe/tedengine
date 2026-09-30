@@ -1,5 +1,26 @@
 # @tedengine/ted
 
+## 0.20.0
+
+### Minor Changes
+
+- 4f22a0f: Add film grain post processing effect
+- 0e5e85a: Add fade post processing effect
+- 99a0a04: Add post-processing programs with grayscale effect
+- 0c23db8: Add wobble post processing effect
+- 8cc029a: Add masks for post-processing effects
+- c1adf42: Update to React 19.3
+
+### Patch Changes
+
+- ae066a5: Update rapier to 0.21.0
+- 27e306e: Rendering Context directly instead of Context.Provider
+- 48770ca: Fix mesh crash on loading UVs
+- 7d7bd7f: Update docusaurus to 3.10
+- 4c33899: Update deps with audit
+- ad07508: Updated various dependencies
+- 433b293: Update @tedengine/ted dependencies
+
 ## 0.19.0
 
 ### Minor Changes
