@@ -29,7 +29,7 @@
     }
   },
   "dependencies": {
-    "@dimforge/rapier3d-compat": "^0.19.3",
+    "@dimforge/rapier3d-compat": "^0.21.0",
     "gl-matrix": "^3.4.4",
     "howler": "^2.2.4",
     "react-colorful": "^5.8.1",
