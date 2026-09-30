@@ -4,7 +4,7 @@ import { TUIContext } from '../context';
 
 test('renders FullscreenToggle component', () => {
   const { container } = render(
-    <TUIContext.Provider
+    <TUIContext
       value={{
         scaling: 1,
         renderingSize: { width: 1, height: 1 },
@@ -13,7 +13,7 @@ test('renders FullscreenToggle component', () => {
       }}
     >
       <FullscreenToggle toggleFullscreen={() => {}} />,
-    </TUIContext.Provider>,
+    </TUIContext>,
   );
   expect(container).toMatchSnapshot();
 });

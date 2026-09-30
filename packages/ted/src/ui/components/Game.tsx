@@ -116,8 +116,8 @@ const TGame = ({
   }
 
   return (
-    <TFredContext.Provider value={{ fred }}>
-      <TUIContext.Provider
+    <TFredContext value={{ fred }}>
+      <TUIContext
         value={{
           scaling,
           renderingSize,
@@ -125,9 +125,9 @@ const TGame = ({
           showAudioToggle: config?.showAudioToggle ?? false,
         }}
       >
-        <TEventQueueContext.Provider value={{ events }}>
-          <TEngineContext.Provider value={engineData}>
-            <TGameContext.Provider value={gameData}>
+        <TEventQueueContext value={{ events }}>
+          <TEngineContext value={engineData}>
+            <TGameContext value={gameData}>
               <OuterContainer
                 style={{ width, height }}
                 ref={fullscreenContainer}
@@ -157,11 +157,11 @@ const TGame = ({
                   {errorMessage && <ErrorScreen error={errorMessage} />}
                 </Container>
               </OuterContainer>
-            </TGameContext.Provider>
-          </TEngineContext.Provider>
-        </TEventQueueContext.Provider>
-      </TUIContext.Provider>
-    </TFredContext.Provider>
+            </TGameContext>
+          </TEngineContext>
+        </TEventQueueContext>
+      </TUIContext>
+    </TFredContext>
   );
 };
 
