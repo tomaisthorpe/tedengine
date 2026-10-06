@@ -10,6 +10,16 @@ This example demonstrates the basic audio system capabilities. You can:
 
 The audio system uses the [Howler.js](https://howlerjs.com/) library under the hood.
 
+```ts
+const pack = new TResourcePack(engine, { sounds: [sound] });
+await pack.load();
+const clip = engine.resources.get<TSound>(sound)!;
+
+clip.volume = 0.3;
+clip.loop = true;
+clip.play();
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -2,6 +2,29 @@
 
 This example shows a simple particle system. It uses instanced sprites to render the particles.
 
+```ts
+this.world.addSystem(new TParticlesSystem(this.world));
+const particles = new TParticlesComponent({
+  emitter: { maxParticles: 1000, maxEmitRate: 200, minEmitRate: 50 },
+  initializers: {
+    ttl: 1,
+    position: () => vec3.fromValues(0, 0, 0),
+    velocity: () => vec3.fromValues(0, 0.02, 0),
+  },
+  behaviours: {
+    force: () => vec3.fromValues(0, -0.02, 0),
+  },
+});
+
+this.world.createEntity([
+  TTransformBundle,
+  new TSpriteComponent({ width: 0.2, height: 0.2 }),
+  particles,
+  new TSpriteInstancesComponent([]),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -5,6 +5,19 @@ The orbit camera moves the camera around a target object.
 You can manually rotate around the object by clicking and dragging.
 This behaviour can be toggled when creating the orbit camera component.
 
+```ts
+this.world.addSystem(new TOrbitCameraSystem(this.world, engine.inputManager));
+this.world.addSystem(new TMouseInputSystem(this.world, engine.inputManager));
+
+this.world.createEntity([
+  TTransformBundle,
+  new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
+  new TActiveCameraComponent(),
+  new TOrbitCameraComponent({ distance: 15, speed: 1, enableDrag: true }),
+  new TMouseInputComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

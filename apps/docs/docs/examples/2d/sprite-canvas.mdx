@@ -2,6 +2,23 @@
 
 The standard 2D canvas context can be used to create textures which can then be used to create sprites.
 
+```ts
+const canvas = new TCanvas(engine, 100, 100);
+const ctx = canvas.getContext();
+ctx.fillStyle = 'green';
+ctx.fillRect(10, 10, 80, 80);
+const texture = await canvas.getTexture({ filter: TTextureFilter.Nearest });
+
+this.world.createEntity([
+  TTransformBundle.with(
+    new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+  ),
+  new TSpriteComponent({ width: 1, height: 1 }),
+  new TTextureComponent(texture),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -4,6 +4,21 @@ Textured meshes can also be loaded from an OBJ and MTL file.
 
 This example shows how to load a textured mesh and add it to the world.
 
+```ts
+const pack = new TResourcePack(engine, {
+  texturedMeshes: [trainLocoMesh],
+  textures: [trainTexture],
+});
+await pack.load();
+
+this.world.createEntity([
+  TTransformBundle,
+  new TTexturedMeshComponent({ source: 'path', path: trainLocoMesh }),
+  new TTextureComponent(engine.resources.get<TTexture>(trainTexture)!),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

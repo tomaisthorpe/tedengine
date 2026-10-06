@@ -4,6 +4,16 @@ As with the [box mesh](./box-mesh.mdx), the engine provides a `createSphereMesh`
 
 This example shows how to create a sphere mesh and add it to the world.
 
+```ts
+const sphere = createSphereMesh(0.5, 12, 12);
+this.world.createEntity([
+  TTransformBundle,
+  new TMeshComponent({ source: 'inline', geometry: sphere.geometry }),
+  new TMaterialComponent(sphere.material),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

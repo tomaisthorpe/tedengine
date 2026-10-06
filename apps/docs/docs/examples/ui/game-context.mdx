@@ -4,6 +4,21 @@ This example shows how to use the game context to pass data between your UI and 
 
 Clicking on 'Press this' will trigger an event which is being listened for by the game and it will log when it is received.
 
+```ts
+// In the game worker:
+this.engine.updateGameContext({ spaceCount: this.spaceCount });
+this.events.addListener<TKeyDownEvent>('keydown', (event) => {
+  if (event.subType === 'Space') {
+    this.engine.updateGameContext({ spaceCount: ++this.spaceCount });
+  }
+});
+
+// In the React UI:
+const gameContext = useGameContext();
+const events = useEventQueue();
+events?.broadcast({ type: 'SAMPLE_EVENT' });
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import Game from '@examples/ui/game-context';

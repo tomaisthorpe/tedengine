@@ -2,6 +2,19 @@
 
 Use WASD to move the box, the camera will rotate towards it.
 
+```ts
+this.world.addSystem(new TFollowComponentCameraSystem(this.world));
+
+// Add this to the entity that should be followed.
+const follow = new TFollowComponentCameraComponent();
+
+this.world.createEntity([
+  TTransformBundle,
+  new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
+  new TActiveCameraComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

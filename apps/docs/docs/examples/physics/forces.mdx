@@ -4,6 +4,20 @@ This example shows how to apply forces to a rigid body.
 
 Use WASD to move the box.
 
+```ts
+setPlayerInputMapping(engine.inputManager);
+this.world.addSystem(new TPlayerInputSystem(this.world, engine.inputManager));
+this.world.addSystem(new PlayerMovementSystem(this.world));
+
+// In PlayerMovementSystem:
+const force = vec3.fromValues(
+  input.moveDirection[0] * 10,
+  0,
+  -input.moveDirection[1] * 10,
+);
+world.applyCentralForce(entity, force);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

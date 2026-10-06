@@ -4,6 +4,21 @@ This example shows loading a mesh from an OBJ and MTL file.
 
 The mesh is then added to the world and rendered.
 
+```ts
+const pack = new TResourcePack(engine, {
+  meshes: [landscapeMesh],
+  materials: [landscapeMtl],
+});
+await pack.load();
+
+this.world.createEntity([
+  TTransformBundle,
+  new TMeshComponent({ source: 'path', path: landscapeMesh }),
+  new TMaterialComponent(engine.resources.get<TColorMaterial>(landscapeMtl)!),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

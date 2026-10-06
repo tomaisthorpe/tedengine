@@ -3,6 +3,20 @@
 Sprites are the most basic 2D object in the engine.
 They can be created from a texture or a [canvas](./sprite-canvas.mdx).
 
+```ts
+const pack = new TResourcePack(engine, { textures: [asteroidTexture] });
+await pack.load();
+
+this.world.createEntity([
+  TTransformBundle.with(
+    new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+  ),
+  new TSpriteComponent({ width: 1, height: 1, origin: TOriginPoint.Center }),
+  new TTextureComponent(engine.resources.get<TTexture>(asteroidTexture)!),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -2,6 +2,21 @@
 
 Use WASD to move the box. You can select which axis to fix using the select box.
 
+```ts
+this.world.addSystem(new TFixedAxisCameraSystem(this.world));
+
+// Add TFixedAxisCameraTargetComponent to the entity to follow.
+const target = new TFixedAxisCameraTargetComponent();
+
+const camera = new TFixedAxisCameraComponent({
+  distance: 5,
+  axis: 'z',
+  leadFactor: 50,
+  maxLead: 0.9,
+  lerpFactor: 0.9,
+});
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -2,6 +2,17 @@
 
 This example shows how to build a custom system to calculate rotation of a sprite towards the mouse location.
 
+```ts
+this.world.addSystem(new TMouseInputSystem(this.world, engine.inputManager));
+this.world.addSystem(new TTopDownInputSystem(this.world));
+this.world.addSystem(new TopDownRotatorSystem(this.world));
+
+// The sprite has TMouseInputComponent and TTopDownInputComponent.
+// In TopDownRotatorSystem, query that sprite and its transform:
+const angle = (topDownInputComponent.angle * 180) / Math.PI + 90;
+transform.transform.rotation = quat.fromEuler(quat.create(), 0, 0, angle);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

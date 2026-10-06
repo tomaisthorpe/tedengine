@@ -2,6 +2,16 @@
 
 Use the debug menu to push and pop game states.
 
+```ts
+const config = {
+  states: { game: GameState, game2: DupeState },
+  defaultState: 'game',
+};
+
+engine.gameState.push('game2');
+engine.gameState.pop();
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

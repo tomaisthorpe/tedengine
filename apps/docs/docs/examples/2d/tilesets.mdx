@@ -4,6 +4,19 @@ Tilesets are a way to create complex 2D environments quickly and easily.
 
 The engine supports loading tilesets from [LDtk](https://ldtk.io/) exported JSON files.
 
+```ts
+this.world.addSystem(new TTilemapSystem(this.world));
+const pack = new TResourcePack(engine, {
+  images: [tileset],
+  tilemaps: [tilemap],
+});
+await pack.load();
+
+new TTilemapComponent(engine.resources.get<TTilemap>(tilemap)!, [
+  { id: 1, image: engine.resources.get<TImage>(tileset)! },
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

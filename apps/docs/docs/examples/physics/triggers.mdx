@@ -6,6 +6,25 @@ This example shows a box collider that is set as a trigger and a falling box.
 
 When the falling box collides with the trigger, a message will be logged to the console.
 
+```ts
+this.world!.config.collisionClasses.push({ name: 'Trigger' });
+
+new TRigidBodyComponent(
+  { mass: 0, isTrigger: true },
+  createBoxCollider(1, 1, 1, 'Trigger'),
+);
+
+this.events.addListener(
+  TEventTypesPhysics.COLLISION_START,
+  'Trigger',
+  (event: TCollisionStartEvent) => {
+    if (event.payload.entityA === box) {
+      console.log('Collision started', event);
+    }
+  },
+);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -4,6 +4,23 @@ Sprites are rendered in layers, the layer is a property of the sprite component.
 
 In this example, pressing the `Flip` button will flip the sprite ordering.
 
+```ts
+const asteroid = new TSpriteComponent({
+  width: 0.8,
+  height: 0.8,
+  layer: TSpriteLayer.Foreground_0,
+});
+const crystal = new TSpriteComponent({
+  width: 1,
+  height: 1,
+  layer: TSpriteLayer.Background_0,
+});
+
+// Change the draw order at runtime.
+asteroid.layer = TSpriteLayer.Background_0;
+crystal.layer = TSpriteLayer.Foreground_0;
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -2,6 +2,26 @@
 
 Sprites can be animated by providing a sprite sheet and a frame rate.
 
+```ts
+const sprite = new TSpriteComponent({
+  width: 12 * 4,
+  height: 24 * 4,
+  origin: TOriginPoint.Center,
+  layer: TSpriteLayer.Foreground_0,
+});
+const animation = new TAnimatedSpriteComponent(10, 9);
+
+this.world.createEntity([
+  TTransformBundle,
+  sprite,
+  animation,
+  new TTextureComponent(engine.resources.get<TTexture>(personTexture)!),
+  new TVisibilityComponent(),
+]);
+
+animation.paused = !animation.paused;
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

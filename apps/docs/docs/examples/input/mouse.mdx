@@ -4,6 +4,27 @@ This example shows a box following the mouse location within the game window.
 
 Mouse location and clicks are logged in console.
 
+```ts
+engine.inputManager.mapInput('click', {
+  device: TInputDevice.Mouse,
+  key: '0',
+});
+
+this.world.addSystem(new TMouseInputSystem(this.world, engine.inputManager));
+
+// In a system querying TMouseInputComponent:
+if (engine.inputManager.wasActionJustPressed('click')) {
+  console.log(mouseInputComponent.mouseLocation?.clip);
+}
+
+if (mouseInputComponent.mouseLocation) {
+  const loc = world.cameraSystem.clipToWorldSpace(
+    mouseInputComponent.mouseLocation.clip,
+  );
+  transform.transform.translation = vec3.fromValues(loc[0], loc[1], -10);
+}
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

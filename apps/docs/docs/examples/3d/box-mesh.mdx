@@ -4,6 +4,18 @@ The engine provides a `createBoxMesh` function to create a box mesh.
 
 This example shows how to create a box mesh and add it to the world.
 
+```ts
+const box = createBoxMesh(1, 1, 1);
+this.world.createEntity([
+  TTransformBundle.with(
+    new TTransformComponent(new TTransform(vec3.fromValues(0, 0, -3))),
+  ),
+  new TMeshComponent({ source: 'inline', geometry: box.geometry }),
+  new TMaterialComponent(box.material),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

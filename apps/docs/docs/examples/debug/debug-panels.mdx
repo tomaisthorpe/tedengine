@@ -2,6 +2,22 @@
 
 This example shows how to use the various types of debug panels.
 
+```ts
+const section = engine.debugPanel.addSection('New Section', true);
+section.addValue('Label', () => 'Value');
+section.addInput('Translate Z', 'number', '-3', (value) => {
+  const transform = this.world.getComponent(entity, TTransformComponent);
+  transform.transform.translation[2] = parseFloat(value);
+});
+section.addButtons('Rotation', {
+  label: 'Pause',
+  onClick: () => {
+    const rotating = this.world.getComponent(entity, TRotatingComponent);
+    rotating.paused = !rotating.paused;
+  },
+});
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

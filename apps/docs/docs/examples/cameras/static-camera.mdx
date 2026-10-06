@@ -3,6 +3,20 @@
 This example demonstrates a static camera looking at a rotating 3D object.
 You can switch between perspective and orthographic cameras using the dropdown.
 
+```ts
+const perspective = this.world.createEntity([
+  TTransformBundle,
+  new TCameraComponent({ type: TProjectionType.Perspective, fov: 45 }),
+  new TActiveCameraComponent(),
+]);
+const orthographic = this.world.createEntity([
+  TTransformBundle,
+  new TCameraComponent({ type: TProjectionType.Orthographic }),
+]);
+
+this.world.cameraSystem.setActiveCamera(orthographic);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

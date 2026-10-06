@@ -2,6 +2,18 @@
 
 Clicking on the game will lock the pointer to the game. This is useful for games that require the mouse to be locked, such as first-person shooters.
 
+```ts
+this.world.addSystem(new TMouseInputSystem(this.world, engine.inputManager));
+this.world.addSystem(new PointerLockSystem(this.world));
+engine.inputManager.enablePointerLock();
+
+// In PointerLockSystem, use mouseMovement on an entity with TMouseInputComponent.
+const movement = world.getComponent(
+  entity,
+  TMouseInputComponent,
+)?.mouseMovement;
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

@@ -8,6 +8,29 @@ Some recent changes in the engine have resulted in a performance regression when
 This is a known issue and will be fixed in a future release.
 :::
 
+```ts
+const boxMesh = createBoxMesh(1, 1, 1);
+for (let level = 0; level < 6; level++) {
+  for (let row = 0; row < 10; row++) {
+    for (let col = 0; col < 10; col++) {
+      const x = -9 + (18 / 10) * col;
+      const y = 0.5 + 3 * level;
+      const z = -9 + (18 / 10) * row;
+      const entity = this.world.createEntity();
+      this.world.addComponents(entity, [
+        TTransformBundle.with(
+          new TTransformComponent(new TTransform(vec3.fromValues(x, y, z))),
+        ),
+        new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
+        new TMaterialComponent(boxMesh.material),
+        new TVisibilityComponent(),
+        new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
+      ]);
+    }
+  }
+}
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

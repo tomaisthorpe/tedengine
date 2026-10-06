@@ -12,6 +12,21 @@ The shadows in this example sometimes have some artifacts, this is due to the li
 This will be improved in future versions of the engine.
 :::
 
+```ts
+this.world.config.lighting = {
+  shadows: { enabled: true },
+  ambientLight: {
+    intensity: 0.1,
+    color: vec3.fromValues(1, 1, 1),
+  },
+  directionalLight: {
+    direction: vec3.fromValues(-0.5, 0.7, 0.2),
+    intensity: 1,
+    color: vec3.fromValues(1, 1, 1),
+  },
+};
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

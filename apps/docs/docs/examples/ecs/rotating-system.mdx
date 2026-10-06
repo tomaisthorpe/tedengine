@@ -2,6 +2,18 @@
 
 This example shows how to create a system that rotates an object.
 
+```ts
+this.world.addSystem(new TRotatingSystem(this.world));
+
+this.world.createEntity([
+  TTransformBundle,
+  new TRotatingComponent(),
+  new TMeshComponent({ source: 'inline', geometry: mesh.geometry }),
+  new TMaterialComponent(mesh.material),
+  new TVisibilityComponent(),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

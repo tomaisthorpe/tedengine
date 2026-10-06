@@ -2,6 +2,22 @@
 
 This example shows how to create a box, sphere, and plane collider.
 
+```ts
+this.world.createEntity([
+  TTransformBundle,
+  new TMeshComponent({ source: 'inline', geometry: boxMesh.geometry }),
+  new TMaterialComponent(boxMesh.material),
+  new TVisibilityComponent(),
+  new TRigidBodyComponent({ mass: 1 }, createBoxCollider(1, 1, 1)),
+]);
+
+// A fixed floor uses mass 0.
+this.world.createEntity([
+  TTransformBundle,
+  new TRigidBodyComponent({ mass: 0 }, createPlaneCollider(10, 10)),
+]);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';

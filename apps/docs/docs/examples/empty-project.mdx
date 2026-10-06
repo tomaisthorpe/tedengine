@@ -2,6 +2,17 @@
 
 This example shows the bare minimum code required for the engine to run.
 
+```ts
+import { TEngine, TGameState } from '@tedengine/ted';
+
+class EmptyState extends TGameState {}
+
+new TEngine(
+  { states: { empty: EmptyState }, defaultState: 'empty' },
+  self as DedicatedWorkerGlobalScope,
+);
+```
+
 import { Suspense, use } from 'react';
 import { browser } from 'react-dom';
 import { TGame } from '@tedengine/ted';
