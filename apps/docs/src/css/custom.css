@@ -28,3 +28,13 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+.codeApiLink {
+  color: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.15em;
+}
+
+.codeApiLink:hover {
+  color: inherit;
+  text-decoration-style: solid;
+}
