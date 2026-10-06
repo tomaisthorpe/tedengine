@@ -96,7 +96,23 @@ const config: Config = {
     locales: ['en'],
   },
 
-  plugins: [configureEngine as any],
+  plugins: [
+    configureEngine as any,
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        entryPoints: ['../../packages/ted/src/index.ts'],
+        tsconfig: '../../packages/ted/tsconfig.lib.json',
+        out: 'docs/api',
+        readme: 'none',
+        excludePrivate: true,
+        excludeProtected: true,
+        // The engine build checks types separately; API generation can proceed
+        // while there are unrelated TypeScript errors in the source tree.
+        skipErrorChecking: true,
+      },
+    ],
+  ],
   presets: [
     [
       'classic',
@@ -125,6 +141,11 @@ const config: Config = {
           sidebarId: 'docsSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          to: '/api/',
+          position: 'left',
+          label: 'API',
         },
         {
           href: 'https://github.com/tomaisthorpe/tedengine',

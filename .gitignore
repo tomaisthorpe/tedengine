@@ -48,6 +48,7 @@ Thumbs.db
 .docusaurus/
 .cache-loader/
 /apps/docs/build/
+/apps/docs/docs/api/
 
 .vscode/
 .cursor/
